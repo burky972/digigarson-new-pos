@@ -8,9 +8,7 @@ import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/widget/button/light_blue_button.dart';
 import 'package:a_pos_flutter/product/widget/textfield/custom_border_all_textfield.dart';
 import 'package:core/cache/shared_manager.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 import 'right_table_layout_view.dart';
 
@@ -26,10 +24,8 @@ class _TableLayoutViewState extends State<TableLayoutView>
   @override
   void initState() {
     super.initState();
-    // _loadPlacedTables();
     _loadAllTableStates();
     setSelectedSection();
-
     _tabController = TabController(length: 2, vsync: this);
   }
 
@@ -409,23 +405,6 @@ mixin TableLayoutMixin on State<TableLayoutView> {
     }); // Ensure UI is updated with loaded tables
   }
 
-  /// delete selected table from draggable view
-  //!TODO: SOMETHING WRONG WITH THIS FUNC CHECK IT LATER
-  // Future<void> _deleteSelectedTable() async {
-  //   if (selectedTable == null) return;
-  //   setState(() {
-  //     for (String key in sections) {
-  //       List<TableItem> tables = tableStates[key] ?? [];
-  //       tables.removeWhere((table) => table.name == selectedTable!.name);
-  //       tableStates[key] = tables;
-  //     }
-  //     selectedTable = null;
-  //   });
-
-  //   setState(() {
-  //     selectedTable = null;
-  //   });
-  // }
   //! check this delete function
   Future<void> _deleteSelectedTable() async {
     if (selectedTable == null) return;
@@ -435,18 +414,6 @@ mixin TableLayoutMixin on State<TableLayoutView> {
       List<TableItem> tables = tableStates[_selectedOption] ?? [];
       tables.removeWhere((table) => table.uniqueId == newSelectedTable.uniqueId);
       tableStates[_selectedOption!] = tables;
-      // if (newSelectedTable.name != null && newSelectedTable.name!.isNotEmpty) {
-      //   tables.removeWhere((table) => table.id == newSelectedTable.id);
-      //   tableStates[_selectedOption!] = tables;
-      // } else {
-      //   tables.removeWhere((table) => table.uniqueId == newSelectedTable.uniqueId);
-      //   tableStates[_selectedOption!] = tables;
-      //   // tables.removeWhere((table) => table.position == newSelectedTable.position);
-      //   // tableStates[_selectedOption!] = tables;
-      // }
-      // tables.removeWhere((table) => table.id == newSelectedTable.id);
-      // tableStates[_selectedOption!] = tables;
-
       selectedTable = null;
     });
   }

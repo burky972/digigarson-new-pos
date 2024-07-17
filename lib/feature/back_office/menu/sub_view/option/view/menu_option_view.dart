@@ -34,7 +34,6 @@ class _MenuOptionsViewState extends State<MenuOptionsView>
         children: [
           SizedBox(
             width: context.dynamicWidth(0.2),
-            // height: context.dynamicHeight(0.85),
             child: SingleChildScrollView(
                 child: Column(
               children: [
@@ -199,10 +198,8 @@ class _MenuOptionsViewState extends State<MenuOptionsView>
 
                 Expanded(
                     flex: 2,
-                    // height: context.dynamicHeight(0.2),
                     child: Column(
                       children: [
-                        // const SizedBox(height: 10),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -539,7 +536,6 @@ class _MenuOptionsViewState extends State<MenuOptionsView>
                 /// Bottom buttons
                 const Expanded(
                   flex: 1,
-                  // height: context.dynamicHeight(0.2),
                   child: _BottomButtonFields(),
                 ),
               ],
