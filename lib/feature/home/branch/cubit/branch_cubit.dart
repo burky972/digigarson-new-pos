@@ -134,4 +134,8 @@ class BranchCubit extends IBranchCubit {
   void setSubCategorySelected(CategoriesModel? category) {
     emit(state.copyWith(subCategory: category));
   }
+
+  setFilter(String filter_) {
+    emit(state.copyWith(filter: filter_));
+  }
 }

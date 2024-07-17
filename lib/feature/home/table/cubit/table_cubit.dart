@@ -18,6 +18,7 @@ class TableCubit extends ITableCubit {
     _tableService = TableService();
   }
 
+  /// get table api request
   @override
   Future getTable(UserModel userModel) async {
     tableModel.clear();
@@ -45,6 +46,7 @@ class TableCubit extends ITableCubit {
     });
   }
 
+  /// set new table
   @override
   Future<void> setNewTableList(List<TableModel> newTableList) async {
     tableModel.clear();

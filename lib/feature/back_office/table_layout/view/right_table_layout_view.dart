@@ -24,7 +24,7 @@ class _RightTableLayoutViewState extends State<RightTableLayoutView>
   List<TableItem> placedTables = [];
   GlobalKey rightPanelKey = GlobalKey();
   TableItem? selectedTable;
-
+  final TextEditingController _tableNameController = TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -37,6 +37,12 @@ class _RightTableLayoutViewState extends State<RightTableLayoutView>
     if (oldWidget.keyName != widget.keyName) {
       loadPlacedTables();
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _tableNameController.dispose();
   }
 
   @override
@@ -151,26 +157,56 @@ class _RightTableLayoutViewState extends State<RightTableLayoutView>
   }
 
   void _setTableName(TableItem? table) {
+    if (table == null) return;
+    if (table.name != null && table.name!.isNotEmpty) {
+      _tableNameController.text = table.name!;
+    } else {
+      _tableNameController.clear();
+    }
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Enter Table Name'),
         content: TextField(
+          controller: _tableNameController,
           onChanged: (value) {
-            table!.name = value;
+            _tableNameController.text = value;
           },
         ),
         actions: [
           TextButton(
-            onPressed: () {
-              setState(() {});
-              Navigator.pop(context);
-            },
+            onPressed: () => onSetTableNameClicked(table),
             child: const Text('Save'),
           ),
         ],
       ),
     );
+  }
+
+  onSetTableNameClicked(TableItem table) {
+    if (_tableNameController.text.isEmpty) return;
+    if (checkName(_tableNameController.text)) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('NAME ALREADY EXIST!!')));
+    } else {
+      table.name = _tableNameController.text;
+      Navigator.pop(context);
+    }
+    setState(() {});
+  }
+
+  bool checkName(String name) {
+    bool isExist = false;
+    for (var table in placedTables) {
+      if (name == table.name) {
+        debugPrint('name already exist!');
+        isExist = true;
+        break;
+      } else {
+        debugPrint('new name!');
+      }
+    }
+    return isExist;
   }
 
   @override

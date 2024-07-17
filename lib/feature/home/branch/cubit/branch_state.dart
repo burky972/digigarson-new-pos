@@ -12,6 +12,7 @@ class BranchState extends BaseState {
     required this.subCategory,
     required this.mainCategoryList,
     required this.originalCategoryList,
+    required this.filter,
   });
 
   factory BranchState.initial() {
@@ -25,6 +26,7 @@ class BranchState extends BaseState {
       subCategory: null,
       mainCategoryList: [],
       originalCategoryList: [],
+      filter: '',
     );
   }
   final BranchStates states;
@@ -36,6 +38,7 @@ class BranchState extends BaseState {
   final CategoriesModel? subCategory;
   final List<CategoriesModel> mainCategoryList;
   final List<CategoriesModel> originalCategoryList;
+  final String filter;
 
   @override
   List<Object?> get props => [
@@ -48,6 +51,7 @@ class BranchState extends BaseState {
         subCategory,
         mainCategoryList,
         originalCategoryList,
+        filter,
       ];
 
   BranchState copyWith({
@@ -61,6 +65,7 @@ class BranchState extends BaseState {
     CategoriesModel? subCategory,
     List<CategoriesModel>? mainCategoryList,
     List<CategoriesModel>? originalCategoryList,
+    String? filter,
   }) {
     return BranchState(
       states: states ?? this.states,
@@ -72,6 +77,7 @@ class BranchState extends BaseState {
       subCategory: subCategory ?? this.subCategory,
       mainCategoryList: mainCategoryList ?? this.mainCategoryList,
       originalCategoryList: originalCategoryList ?? this.originalCategoryList,
+      filter: filter ?? this.filter,
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:a_pos_flutter/feature/home/main/view/widget/main_right_widget.dart';
+import 'package:a_pos_flutter/feature/home/table/view/table_view.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
 import 'package:flutter/material.dart';
@@ -100,7 +101,11 @@ class _MainSavedTableViewState extends State<MainSavedTableView>
           child: Padding(
             padding: const AppPadding.extraMinAll(),
             child: InkWell(
-                onTap: () => debugPrint(table.name.toString() + table.id.toString()),
+                //! selected table onTap
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const TableView()));
+                  debugPrint(table.name.toString() + table.id.toString());
+                },
                 child: table.buildTable()),
           ),
         );

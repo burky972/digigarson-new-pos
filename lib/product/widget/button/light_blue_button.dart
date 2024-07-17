@@ -27,6 +27,7 @@ class LightBlueButton extends StatelessWidget {
       child: Center(
         child: Text(
           buttonText,
+          textAlign: TextAlign.center,
           style: CustomFontStyle.buttonTextStyle.copyWith(color: context.colorScheme.primary),
         ),
       ),
