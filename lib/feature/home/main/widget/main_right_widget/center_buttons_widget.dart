@@ -1,6 +1,7 @@
 import 'package:a_pos_flutter/feature/back_office/launch/view/back_office_launch_view.dart';
 import 'package:a_pos_flutter/feature/home/main/widget/main_right_widget/main_right_button.dart';
 import 'package:a_pos_flutter/feature/home/reopen/view/re_open_view.dart';
+import 'package:a_pos_flutter/feature/home/reservation/view/reservation_view.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
 import 'package:flutter/material.dart';
 
@@ -20,7 +21,8 @@ class CenterButtonsWidget extends StatelessWidget {
               const MainRightButton(text: 'Take Out'),
               InkWell(
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const ReOpenView()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const ReOpenView()));
                 },
                 child: const MainRightButton(text: 'Re-Open'),
               ),
@@ -44,11 +46,22 @@ class CenterButtonsWidget extends StatelessWidget {
               const MainRightButton(text: 'Open Drawer')
             ],
           ),
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              MainRightButton(text: 'Quick Service'),
-              MainRightButton(text: 'Reservation'),
+              InkWell(
+                onTap: () {},
+                child: const MainRightButton(text: 'Quick Service'),
+              ),
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const ReservationView()));
+                },
+                child: const MainRightButton(text: 'Reservation'),
+              )
             ],
           ),
           Row(
@@ -61,7 +74,9 @@ class CenterButtonsWidget extends StatelessWidget {
               InkWell(
                 onTap: () {
                   Navigator.push(
-                      context, MaterialPageRoute(builder: (_) => const BackOfficeLaunchView()));
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const BackOfficeLaunchView()));
                 },
                 child: const MainRightButton(text: 'Back Office'),
               ),
