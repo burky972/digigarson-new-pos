@@ -5,10 +5,12 @@ import 'package:a_pos_flutter/feature/auth/login/cubit/login_cubit.dart';
 import 'package:a_pos_flutter/feature/auth/login/cubit/login_state.dart';
 import 'package:a_pos_flutter/feature/auth/login/model/login_model.dart';
 import 'package:a_pos_flutter/feature/auth/login/view/widget/login_body_widget.dart';
-import 'package:a_pos_flutter/feature/home/branch/cubit/branch_cubit.dart';
 import 'package:a_pos_flutter/feature/home/case/cubit/case_cubit.dart';
+import 'package:a_pos_flutter/feature/home/case/view/case_view.dart';
+import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/cubit/category_cubit.dart';
 import 'package:a_pos_flutter/feature/home/main/view/main_view.dart';
-import 'package:a_pos_flutter/feature/home/note_serve_payment_cancel_reason/cubit/note_cubit.dart';
+
+import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/cubit/product_cubit.dart';
 import 'package:a_pos_flutter/feature/home/reopen/cubit/reopen_cubit.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
 import 'package:a_pos_flutter/language/locale_keys.g.dart';
@@ -17,7 +19,6 @@ import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/utils/helper/network_info.dart';
 import 'package:a_pos_flutter/product/utils/helper/timer_convert.dart';
 import 'package:a_pos_flutter/product/widget/button/custom_yes_no_button.dart';
-import 'package:core/core.dart';
 import 'package:core/logger/a_pos_logger.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -190,37 +191,44 @@ mixin LoginMixin on State<LoginBodyWidget> {
 
   Future<void> route({required LoginState state}) async {
     if (state.userModel == null || state.userModel!.accessToken == null) {
-      // Navigator.pushAndRemoveUntil(//TODO: open this code later!
+      // Navigator.pushAndRemoveUntil(//TODO: open this code later! also get datas from DB.
       //     context, MaterialPageRoute(builder: (_) => MainScreen()), (route) => false);
       return;
     }
 
     if (state.states == LoginStates.completed && state.userModel!.accessToken!.isNotEmpty) {
-      if (state.userModel!.user!.permissions!.contains(511) ||
-          state.userModel!.user!.permissions!.contains(510)) {
-        await Future.wait([
-          context.read<CaseCubit>().getCase(state.userModel!),
-        ]).then((_) => context.read<LoginCubit>().updateIsLoading(true));
-
-        await Future.wait([
-          context.read<BranchCubit>().getBranch(
-              userModel: state.userModel!, languageModel: LanguageManager.supportedLocales.first),
-          context.read<NoteServePaymentCancelReasonCubit>().getALLFunctions(state.userModel!),
-          context.read<ReopenCubit>().oldCheckGet(
-              userModel: state.userModel!, id: context.read<CaseCubit>().cases!.id.toString()),
-          context.read<TableCubit>().getTable(state.userModel!),
-        ]).then((_) => context.read<LoginCubit>().updateIsLoading(false)).then((_) {
-          if (context.read<CaseCubit>().cases != null) {
-            context.read<GlobalCubit>().setUser(state.userModel!);
-            //TODO: check HERE TO NAVIGATE AFTER CLICKING LOGIN BUTTON!
-            Navigator.pushAndRemoveUntil(
-                context, MaterialPageRoute(builder: (_) => const MainView()), (route) => false);
-          } else {
-            // Navigator.pushAndRemoveUntil(
-            //     context, MaterialPageRoute(builder: (_) => CaseSelectedScreen()), (route) => false);
-          }
-        });
+      List<int> permissions = state.userModel?.user?.role?.permissions ?? [];
+      // if (permissions.contains(511) || permissions.contains(510)) {//TODO Check permissions LATER!
+      if (permissions.contains(1) || permissions.contains(2)) {
+        bool isOpenCase = await context.read<CaseCubit>().getOpenCase();
+        await callNecessaryFunctions(isOpenCase, state);
       }
     }
+  }
+
+  Future<void> callNecessaryFunctions(bool isCaseOpened, LoginState state) async {
+    await Future.wait([
+      // context.read<BranchCubit>().getBranch(
+      //     userModel: state.userModel!, languageModel: LanguageManager.supportedLocales.first),
+      context.read<CategoryCubit>().getCategories(),
+      context.read<ProductCubit>().getProducts(),
+      //TODO: OPEN THIS CODE LATER!
+      // context.read<NoteServePaymentCancelReasonCubit>().getALLFunctions(state.userModel!),
+      context.read<ReopenCubit>().getAllCheck(
+          userModel: state.userModel!, id: context.read<CaseCubit>().cases!.id.toString()),
+      context.read<TableCubit>().getTable(state.userModel!),
+    ]).then((_) {
+      if (isCaseOpened) {
+        context.read<GlobalCubit>().setUser(state.userModel!);
+        context.read<LoginCubit>().updateIsLoading(false);
+        //TODO: check HERE TO NAVIGATE AFTER CLICKING LOGIN BUTTON!
+        Navigator.pushAndRemoveUntil(
+            context, MaterialPageRoute(builder: (_) => const MainView()), (route) => false);
+      } else {
+        context.read<LoginCubit>().updateIsLoading(false);
+        Navigator.pushAndRemoveUntil(
+            context, MaterialPageRoute(builder: (_) => const CaseView()), (route) => false);
+      }
+    });
   }
 }

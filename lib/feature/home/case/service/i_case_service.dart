@@ -4,7 +4,8 @@ import 'package:a_pos_flutter/product/utils/helper/typedef.dart';
 import 'package:core/base/model/base_response_model.dart';
 
 abstract class ICaseService {
-  BaseResponseData<BaseResponseModel> getCases({required UserModel userModel});
-  BaseResponseData<BaseResponseModel> postCases(
-      {required UserModel userModel, required BalanceModel balanceModel});
+  BaseResponseData<BaseResponseModel> getCases(
+      {required UserModel userModel, int page = 1, int per = 100});
+  BaseResponseData<BaseResponseModel> getOpenCases();
+  BaseResponseData<BaseResponseModel> postCases({required BalanceModel balanceModel});
 }

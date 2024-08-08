@@ -4,6 +4,7 @@ import 'package:a_pos_flutter/feature/home/reopen/cubit/reopen_state.dart';
 import 'package:a_pos_flutter/feature/home/reopen/model/chek_old_model.dart';
 import 'package:a_pos_flutter/product/constant/app/app_constant.dart';
 import 'package:a_pos_flutter/product/global/cubit/global_cubit.dart';
+import 'package:a_pos_flutter/product/responsive/border.dart';
 import 'package:a_pos_flutter/product/widget/keyboard/re_open_custom_keyboard.dart';
 import 'package:a_pos_flutter/product/widget/pop_up/pop_up.dart';
 import 'package:flutter/material.dart';
@@ -162,13 +163,9 @@ class OldCheckDialog {
                                 width: MediaQuery.of(context).size.width * .15,
                                 constraints: const BoxConstraints(minWidth: 100, maxWidth: 150),
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: const BorderRadius.all(Radius.circular(5)),
-                                  border: Border.all(
-                                    color: Colors.black,
-                                    width: 1.0,
-                                  ),
-                                ),
+                                    color: Colors.white,
+                                    borderRadius: const BorderRadius.all(Radius.circular(5)),
+                                    border: BorderConstants.borderAllSmall),
                                 child: TextField(
                                   onTap: () {
                                     showCustomNumberKeyKeyboard(
@@ -226,7 +223,7 @@ class OldCheckDialog {
 
                             if (return_) {
                               Navigator.of(context).pop();
-                              await context.read<ReopenCubit>().oldCheckGet(
+                              await context.read<ReopenCubit>().getAllCheck(
                                   userModel: context.read<GlobalCubit>().user,
                                   id: context.read<CaseCubit>().cases!.id.toString());
                               showOrderSuccesDialog(context, "Order has been updated successfully.",
@@ -247,14 +244,10 @@ class OldCheckDialog {
                               minWidth: 55, maxWidth: 65, minHeight: 30, maxHeight: 45),
                           padding: const EdgeInsets.all(3),
                           decoration: BoxDecoration(
-                            color: Colors.black12,
-                            borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(5), topRight: Radius.circular(5)),
-                            border: Border.all(
-                              color: Colors.black,
-                              width: 1.0,
-                            ),
-                          ),
+                              color: Colors.black12,
+                              borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(5), topRight: Radius.circular(5)),
+                              border: BorderConstants.borderAllSmall),
                           child: const Center(
                             child: Text(
                               "Change",
@@ -277,14 +270,10 @@ class OldCheckDialog {
                           minWidth: 50, maxWidth: 55, minHeight: 30, maxHeight: 45),
                       padding: const EdgeInsets.all(3),
                       decoration: BoxDecoration(
-                        color: Colors.black12,
-                        borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(5), topRight: Radius.circular(5)),
-                        border: Border.all(
-                          color: Colors.black,
-                          width: 1.0,
-                        ),
-                      ),
+                          color: Colors.black12,
+                          borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(5), topRight: Radius.circular(5)),
+                          border: BorderConstants.borderAllSmall),
                       child: const Center(
                         child: Text(
                           "Close",

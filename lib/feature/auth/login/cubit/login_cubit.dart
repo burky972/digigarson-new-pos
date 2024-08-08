@@ -3,7 +3,6 @@ import 'package:a_pos_flutter/feature/auth/login/cubit/login_state.dart';
 import 'package:a_pos_flutter/feature/auth/login/model/login_model.dart';
 import 'package:a_pos_flutter/feature/auth/login/service/i_login_service.dart';
 import 'package:a_pos_flutter/feature/auth/login/service/login_service.dart';
-import 'package:a_pos_flutter/product/enums/country_code/enum.dart';
 import 'package:a_pos_flutter/product/global/model/user_model.dart';
 import 'package:core/cache/shared_manager.dart';
 import 'package:core/network/dio_client.dart';
@@ -23,13 +22,13 @@ class LoginCubit extends ILoginCubit {
   /// Login function
   @override
   Future login(LoginModel loginModel) async {
-    emit(state.copyWith(states: LoginStates.loading));
+    emit(state.copyWith(states: LoginStates.loading, isLoading: true));
     final response = await _loginService.login(loginModel: loginModel);
     response.fold((l) {
-      emit(state.copyWith(states: LoginStates.error));
+      emit(state.copyWith(states: LoginStates.error, isLoading: false));
     }, (r) async {
       final token = r.data['accessToken'];
-      DioClient.instance.updateHeader(token, CountryCodeEnum.US.name);
+      DioClient.instance.updateHeader(token);
       UserModel user = UserModel().fromJson(r.data);
       await SharedManager.instance.setStringValue(CacheKeys.token, user.accessToken!);
       // await SharedManager.instance.removeValue(CacheKeys.token);

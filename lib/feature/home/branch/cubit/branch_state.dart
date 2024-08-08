@@ -56,28 +56,29 @@ class BranchState extends BaseState {
 
   BranchState copyWith({
     BranchStates? states,
-    bool? isLoading,
-    BranchModel? branchModel,
-    SectionsModel? selectedSection,
-    SectionsModel? selectedMoveSection,
-    CategoriesModel? selectedCategory,
-    CategoriesModel? mainCategory,
-    CategoriesModel? subCategory,
-    List<CategoriesModel>? mainCategoryList,
-    List<CategoriesModel>? originalCategoryList,
-    String? filter,
+    BranchModel? Function()? branchModel,
+    SectionsModel? Function()? selectedSection,
+    SectionsModel? Function()? selectedMoveSection,
+    CategoriesModel? Function()? selectedCategory,
+    CategoriesModel? Function()? mainCategory,
+    CategoriesModel? Function()? subCategory,
+    List<CategoriesModel>? Function()? mainCategoryList,
+    List<CategoriesModel>? Function()? originalCategoryList,
+    String? Function()? filter,
   }) {
     return BranchState(
       states: states ?? this.states,
-      branchModel: branchModel ?? this.branchModel,
-      selectedSection: selectedSection ?? this.selectedSection,
-      selectedMoveSection: selectedMoveSection ?? this.selectedMoveSection,
-      selectedCategory: selectedCategory ?? this.selectedCategory,
-      mainCategory: mainCategory ?? this.mainCategory,
-      subCategory: subCategory ?? this.subCategory,
-      mainCategoryList: mainCategoryList ?? this.mainCategoryList,
-      originalCategoryList: originalCategoryList ?? this.originalCategoryList,
-      filter: filter ?? this.filter,
+      branchModel: branchModel != null ? branchModel() : this.branchModel,
+      selectedSection: selectedSection != null ? selectedSection() : this.selectedSection,
+      selectedMoveSection:
+          selectedMoveSection != null ? selectedMoveSection() : this.selectedMoveSection,
+      selectedCategory: selectedCategory != null ? selectedCategory() : this.selectedCategory,
+      mainCategory: mainCategory != null ? mainCategory() : this.mainCategory,
+      subCategory: subCategory != null ? subCategory() : this.subCategory,
+      mainCategoryList: mainCategoryList != null ? mainCategoryList()! : this.mainCategoryList,
+      originalCategoryList:
+          originalCategoryList != null ? originalCategoryList()! : this.originalCategoryList,
+      filter: filter != null ? filter()! : this.filter,
     );
   }
 }

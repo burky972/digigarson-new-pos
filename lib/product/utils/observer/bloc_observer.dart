@@ -13,7 +13,8 @@ final class AppBlocObserver extends BlocObserver {
   @override
   void onChange(BlocBase<dynamic> bloc, Change<dynamic> change) {
     super.onChange(bloc, change);
-    _log('onChange(${bloc.runtimeType}, $change)');
+    //TODO: OPEN IT LATER
+    // _log('onChange(${bloc.runtimeType}, $change)');
   }
 
   @override

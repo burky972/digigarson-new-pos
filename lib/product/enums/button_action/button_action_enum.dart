@@ -1,0 +1,52 @@
+enum ButtonAction {
+  cancelProduct(0),
+  moveProduct(1),
+  qrApprove(2),
+  qrCancel(3),
+  cover(4),
+  editCustomerCount(5),
+  cashOpen(6),
+  changePrice(7),
+  closeTable(8),
+  checkout(9),
+  sales(10),
+  newSale(11),
+  split(12),
+  specialItem(13),
+  duplicate(14),
+  combine(15),
+  printReceipt(16),
+  settle(17),
+  reSend(18),
+  service(19),
+  discount(20),
+  catering(21);
+
+  final int value;
+  const ButtonAction(this.value);
+
+  static Map<ButtonAction, String> buttonLabels = {
+    ButtonAction.cancelProduct: "Cancel Product",
+    ButtonAction.moveProduct: "Move Product",
+    ButtonAction.qrApprove: "QR Approve",
+    ButtonAction.qrCancel: "QR Cancel",
+    ButtonAction.cover: "Cover",
+    ButtonAction.editCustomerCount: "Edit Customer Count",
+    ButtonAction.cashOpen: "Cash Open",
+    ButtonAction.changePrice: "Change price",
+    ButtonAction.closeTable: "Close Table",
+    ButtonAction.checkout: "Checkout",
+    ButtonAction.sales: "Sales",
+    ButtonAction.newSale: "New Sale",
+    ButtonAction.split: "Split",
+    ButtonAction.specialItem: "Special Item",
+    ButtonAction.duplicate: "Duplicate",
+    ButtonAction.combine: "Combine",
+    ButtonAction.printReceipt: "Print Receipt",
+    ButtonAction.settle: "Settle",
+    ButtonAction.reSend: "Re-Send",
+    ButtonAction.service: "Service",
+    ButtonAction.discount: "Discount",
+    ButtonAction.catering: "Catering",
+  };
+}

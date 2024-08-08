@@ -8,8 +8,6 @@ abstract class ICaseCubit extends BaseCubit<CaseState> {
   CaseModel? get cases;
   Future<void> setNewCase(CaseModel? cases);
   Future getCase(UserModel userModel);
-  Future postCase(
-      {required UserModel userModel,
-      required BalanceModel balanceModel,
-      required Function callback});
+  Future<bool> getOpenCase();
+  Future postCase({required BalanceModel balanceModel});
 }

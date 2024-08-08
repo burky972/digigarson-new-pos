@@ -11,10 +11,12 @@ import 'package:a_pos_flutter/product/utils/helper/typedef.dart';
 
 class CaseService extends ICaseService {
   @override
-  BaseResponseData<BaseResponseModel> getCases({required UserModel userModel}) async {
+  BaseResponseData<BaseResponseModel> getCases(
+      {required UserModel userModel, int page = 1, int per = 100}) async {
+    DioClient.instance.updateHeader(userModel.accessToken!);
     BaseResponseModel response = await DioClient.instance.get(
       NetworkConstants.cases,
-      queryParameters: QueryParams.dioQueryParams(userModel),
+      queryParameters: QueryParams.getCasesQueries(page: page, per: per),
     );
     APosLogger.instance!.info('CASE SERVICE', response.data.toString());
 
@@ -22,14 +24,18 @@ class CaseService extends ICaseService {
   }
 
   @override
-  BaseResponseData<BaseResponseModel> postCases(
-      {required UserModel userModel, required BalanceModel balanceModel}) async {
+  BaseResponseData<BaseResponseModel> getOpenCases() async {
+    // DioClient.instance.updateHeader(userModel.accessToken!);
+    BaseResponseModel response = await DioClient.instance.get(NetworkConstants.openCases);
+    APosLogger.instance!.info('CASE SERVICE', response.data.toString());
+    return ApiResponseHandler.handleResponse(response);
+  }
+
+  @override
+  BaseResponseData<BaseResponseModel> postCases({required BalanceModel balanceModel}) async {
     BaseResponseModel response = await DioClient.instance.post(
       NetworkConstants.cases,
-      queryParameters: QueryParams.dioQueryParams(userModel),
-      data: {
-        'start_balance': [balanceModel.toJson()]
-      },
+      data: {'start_balance': balanceModel.toJson()},
     );
     return ApiResponseHandler.handleResponse(response);
   }

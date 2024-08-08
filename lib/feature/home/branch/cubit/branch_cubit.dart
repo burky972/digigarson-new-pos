@@ -12,6 +12,7 @@ class BranchCubit extends IBranchCubit {
   BranchCubit() : super(BranchState.initial()) {
     init();
   }
+  //TODO: SEPERATE BRANCH TO CATEGORIES-PRODUCTS-SECTIONS-TABLES-OPTIONS!
   late IBranchService _branchService;
   final TAG = "BranchCubit";
   BranchModel? branchModel;
@@ -41,16 +42,16 @@ class BranchCubit extends IBranchCubit {
               state.copyWith(states: BranchStates.error),
             ), (response) {
       branchModel = BranchModel.fromJson(response.data);
-      emit(state.copyWith(branchModel: branchModel));
+      emit(state.copyWith(branchModel: () => branchModel));
       if (branchModel != null) {
         List<CategoriesModel> categoryList = [];
         branchModel!.sections!.isNotEmpty
-            ? emit(state.copyWith(selectedSection: branchModel!.sections?.first))
+            ? emit(state.copyWith(selectedSection: () => branchModel!.sections?.first))
             : emit(state.copyWith(selectedSection: null));
         branchModel!.sections?.add(SectionsModel(sId: "Setting", title: "Setting"));
         if (branchModel!.categories!.isNotEmpty) {
           originalCategoryList.addAll(branchModel!.categories!);
-          emit(state.copyWith(originalCategoryList: originalCategoryList));
+          emit(state.copyWith(originalCategoryList: () => originalCategoryList));
           categoryList = createCategoryTree(branchModel!.categories!);
         }
         branchModel!.categories = [];
@@ -58,7 +59,8 @@ class BranchCubit extends IBranchCubit {
         for (var category in branchModel!.categories!) {
           mainCategoryList.add(category);
         }
-        emit(state.copyWith(mainCategoryList: mainCategoryList));
+        emit(state.copyWith(
+            mainCategoryList: () => mainCategoryList, states: BranchStates.completed));
       }
     });
   }
@@ -88,54 +90,54 @@ class BranchCubit extends IBranchCubit {
   Future<void> setNewBranch(BranchModel? branch) async {
     emit(state.copyWith(states: BranchStates.loading));
     branchModel = branch;
-    emit(state.copyWith(branchModel: branch));
+    emit(state.copyWith(branchModel: () => branch));
     if (branchModel != null) {
       branchModel!.sections!.isNotEmpty
-          ? emit(state.copyWith(selectedSection: branchModel!.sections?.first))
+          ? emit(state.copyWith(selectedSection: () => branchModel!.sections?.first))
           : emit(state.copyWith(selectedSection: null));
       branchModel!.sections?.add(SectionsModel(sId: "Setting", title: "Setting"));
 
       List<CategoriesModel> categoryList = [];
       if (branchModel!.categories!.isNotEmpty) {
         originalCategoryList.addAll(branchModel!.categories!);
-        emit(state.copyWith(originalCategoryList: originalCategoryList));
+        emit(state.copyWith(originalCategoryList: () => originalCategoryList));
         categoryList = createCategoryTree(branchModel!.categories!);
         branchModel!.categories = [];
         branchModel!.categories!.addAll(categoryList);
         for (var category in branchModel!.categories!) {
           mainCategoryList.add(category);
         }
-        emit(state.copyWith(mainCategoryList: mainCategoryList));
+        emit(state.copyWith(mainCategoryList: () => mainCategoryList));
       }
     }
   }
 
   @override
   void setSectionMoveSelected(SectionsModel sections) {
-    emit(state.copyWith(selectedMoveSection: sections));
+    emit(state.copyWith(selectedMoveSection: () => sections));
   }
 
   @override
   void setSectionSelected(SectionsModel sections) {
-    emit(state.copyWith(selectedSection: sections));
+    emit(state.copyWith(selectedSection: () => sections));
   }
 
   @override
   void setCategorySelected(CategoriesModel? category) {
-    emit(state.copyWith(selectedCategory: category));
+    emit(state.copyWith(selectedCategory: () => category));
   }
 
   @override
   void setMainCategorySelected(CategoriesModel? category) {
-    emit(state.copyWith(mainCategory: category));
+    emit(state.copyWith(mainCategory: () => category));
   }
 
   @override
   void setSubCategorySelected(CategoriesModel? category) {
-    emit(state.copyWith(subCategory: category));
+    emit(state.copyWith(subCategory: () => category));
   }
 
   setFilter(String filter_) {
-    emit(state.copyWith(filter: filter_));
+    emit(state.copyWith(filter: () => filter_));
   }
 }

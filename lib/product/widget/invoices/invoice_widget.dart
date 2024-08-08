@@ -6,6 +6,7 @@ import 'package:a_pos_flutter/product/constant/app/app_constant.dart';
 import 'package:a_pos_flutter/product/constant/string/incoive.dart';
 import 'package:a_pos_flutter/product/global/model/print/customer_printer_model.dart';
 import 'package:a_pos_flutter/product/global/model/print/print_invoice_model.dart';
+import 'package:a_pos_flutter/product/responsive/border.dart';
 import 'package:a_pos_flutter/product/utils/helper/format_double.dart';
 import 'package:a_pos_flutter/product/utils/helper/formatter.dart';
 import 'package:a_pos_flutter/product/utils/helper/general.dart';
@@ -257,7 +258,7 @@ class InvoiceWidget {
           Expanded(
               child: Container(
             height: 2,
-            decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+            decoration: BoxDecoration(border: BorderConstants.borderAllSmall),
           )),
         ],
       ),

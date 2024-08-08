@@ -5,7 +5,7 @@ import 'package:core/core.dart';
 
 abstract class IReopenCubit extends BaseCubit<ReopenState> {
   IReopenCubit(super.initialState);
-  Future oldCheckGet({required UserModel userModel, required String id});
+  Future getAllCheck({required UserModel userModel, required String id});
   Future<void> setReOpen(List<OldCheckModel> old);
   Future<bool> oldCheckPut(
       {required UserModel userModel, required String id, required PutPaymentModel paymentPut});

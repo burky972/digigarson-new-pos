@@ -1,6 +1,165 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
+import 'package:core/core.dart';
+import 'package:flutter/material.dart';
+import 'package:json_annotation/json_annotation.dart';
+
+import 'package:a_pos_flutter/feature/home/table/model/table_request_model.dart';
+
+part 'table_model.g.dart';
+
+@JsonSerializable()
+class TableModel extends BaseModel<TableModel> {
+  int? checkNo;
+  final String? title;
+  final bool? isPrinted;
+  final String? branch;
+  final String? section;
+  final int? tableType;
+  final LocationModel? location;
+  final double? totalPrice;
+  final double? totalTax;
+  final double? remainingPrice;
+  @JsonKey(name: '_id')
+  final String? id;
+  final List<OrderModel> orders;
+  final List<PaidOrderModel>? paidOrders;
+  final List<DiscountModel> discount;
+  final List<CoverModel> cover;
+  final List<Payment> payments;
+  final List<ServiceModel> serviceFee;
+  @JsonKey(name: 'createdAt')
+  final DateTime? createdAt;
+  @JsonKey(name: 'updatedAt')
+  final DateTime? updatedAt;
+  final String? url;
+  @JsonKey(name: '__v')
+  final int? version;
+
+  TableModel({
+    this.checkNo,
+    this.title,
+    this.isPrinted,
+    this.branch,
+    this.section,
+    this.tableType,
+    this.location,
+    this.totalPrice,
+    this.totalTax,
+    this.remainingPrice,
+    this.id,
+    required this.orders,
+    required this.paidOrders,
+    required this.discount,
+    required this.cover,
+    required this.payments,
+    required this.serviceFee,
+    this.createdAt,
+    this.updatedAt,
+    this.url,
+    this.version,
+  });
+
+  factory TableModel.fromJson(Map<String, dynamic> json) => _$TableModelFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => _$TableModelToJson(this);
+
+  @override
+  TableModel fromJson(Map<String, dynamic> json) => _$TableModelFromJson(json);
+
+  @override
+  List<Object?> get props => [
+        checkNo,
+        title,
+        isPrinted,
+        branch,
+        section,
+        tableType,
+        location,
+        totalPrice,
+        totalTax,
+        remainingPrice,
+        id,
+        orders,
+        paidOrders,
+        discount,
+        cover,
+        payments,
+        serviceFee,
+        createdAt,
+        updatedAt,
+        url,
+        version
+      ];
+
+  TableModel copyWith({
+    int? checkNo,
+    String? title,
+    bool? isPrinted,
+    String? branch,
+    String? section,
+    int? tableType,
+    LocationModel? location,
+    double? totalPrice,
+    double? totalTax,
+    double? remainingPrice,
+    String? id,
+    List<OrderModel>? orders,
+    List<PaidOrderModel>? paidOrders,
+    List<DiscountModel>? discount,
+    List<CoverModel>? cover,
+    List<Payment>? payments,
+    List<ServiceModel>? serviceFee,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? url,
+    int? version,
+  }) {
+    return TableModel(
+      checkNo: checkNo ?? this.checkNo,
+      title: title ?? this.title,
+      isPrinted: isPrinted ?? this.isPrinted,
+      branch: branch ?? this.branch,
+      section: section ?? this.section,
+      tableType: tableType ?? this.tableType,
+      location: location ?? this.location,
+      totalPrice: totalPrice ?? this.totalPrice,
+      totalTax: totalTax ?? this.totalTax,
+      remainingPrice: remainingPrice ?? this.remainingPrice,
+      id: id ?? this.id,
+      orders: orders ?? this.orders,
+      paidOrders: paidOrders ?? this.paidOrders,
+      discount: discount ?? this.discount,
+      cover: cover ?? this.cover,
+      payments: payments ?? this.payments,
+      serviceFee: serviceFee ?? this.serviceFee,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      url: url ?? this.url,
+      version: version ?? this.version,
+    );
+  }
+
+  Widget buildTable(Widget assetWidget) {
+    return SizedBox(
+      width: 65,
+      height: 65,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          assetWidget,
+          Positioned(
+              child: Text(title ?? '',
+                  style: CustomFontStyle.generalTextStyle
+                      .copyWith(color: Colors.white, fontWeight: FontWeight.bold))),
+        ],
+      ),
+    );
+  }
+}
+
 class CoverModel {
   CoverModel({
     required this.isPaid,
@@ -137,154 +296,6 @@ class TableListModel {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['TableListModel'] = tableList;
     return data;
-  }
-}
-
-class TableModel {
-  TableModel({
-    required this.isPrinted,
-    required this.orderType,
-    required this.isSafeSales,
-    required this.totalPrice,
-    required this.remainingPrice,
-    required this.checkNo,
-    required this.customTable,
-    required this.id,
-    required this.section,
-    required this.title,
-    required this.branch,
-    required this.orders,
-    required this.paidOrders,
-    required this.discount,
-    required this.cover,
-    required this.payments,
-    required this.serviceFee,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.lastOrderDate,
-    required this.url,
-    required this.customerCount,
-  });
-
-  late bool? isPrinted;
-  late int? orderType;
-  late bool? isSafeSales;
-  late double? totalPrice;
-  late double? remainingPrice;
-  int? checkNo;
-  late bool? customTable;
-  late String? id;
-  String? section;
-  late String? title;
-  late String? branch;
-  late List<OrderModel> orders;
-  late List<PaidOrderModel> paidOrders;
-  late List<DiscountModel> discount;
-  late List<CoverModel> cover;
-  late List<Payment> payments;
-  late List<ServiceModel> serviceFee;
-  late DateTime? createdAt;
-  late DateTime? updatedAt;
-  DateTime? lastOrderDate;
-  late String? url;
-  late String customerCount;
-
-  TableModel.fromJson(Map<String, dynamic> json) {
-    try {
-      id = json["_id"].toString();
-      totalPrice = double.tryParse(json["totalPrice"].toString());
-      remainingPrice = double.tryParse(json["remainingPrice"].toString());
-      checkNo = json["checkNo"];
-      if (json['orders'] != null && json['orders'] is List<dynamic>) {
-        orders = <OrderModel>[];
-        json['orders'].forEach((v) {
-          orders.add(OrderModel.fromJson(v));
-        });
-      }
-      paidOrders = json["paid_orders"] == null
-          ? []
-          : List<PaidOrderModel>.from(json["paid_orders"]!.map((x) => PaidOrderModel.fromJson(x)));
-      discount = json["discount"] == null
-          ? []
-          : List<DiscountModel>.from(json["discount"]!.map((x) => DiscountModel.fromJson(x)));
-      cover = json["cover"] == null
-          ? []
-          : List<CoverModel>.from(json["cover"]!.map((x) => CoverModel.fromJson(x)));
-      createdAt = DateTime.tryParse(json["createdAt"] ?? "");
-      updatedAt = DateTime.tryParse(json["updatedAt"] ?? "");
-      isPrinted = json["isPrinted"];
-      orderType = json["order_type"];
-      isSafeSales = json["isSafeSales"];
-      customTable = json["customTable"];
-      section = json["section"];
-      title = json["title"].toString();
-      branch = json["branch"].toString();
-      payments = json["payments"] == null
-          ? []
-          : List<Payment>.from(json["payments"]!.map((x) => Payment.fromJson(x)));
-      serviceFee = json["serviceFee"] == null
-          ? []
-          : List<ServiceModel>.from(json["serviceFee"]!.map((x) => ServiceModel.fromJson(x)));
-      lastOrderDate = null;
-      url = json["url"].toString();
-      customerCount = json["customerCount"].toString();
-    } catch (e) {
-      print('Error TableModel: $e');
-    }
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    try {
-      data['isPrinted'] = isPrinted;
-      data['order_type'] = orderType;
-      data['isSafeSales'] = isSafeSales;
-      data['totalPrice'] = totalPrice;
-      data['remainingPrice'] = remainingPrice;
-      data['checkNo'] = checkNo;
-      data['customTable'] = customTable;
-      data['_id'] = id;
-      data['section'] = section;
-      data['title'] = title;
-      data['branch'] = branch;
-      data['orders'] = orders.map((v) => v.toJson()).toList();
-      data['paid_orders'] = paidOrders.map((v) => v.toJson()).toList();
-      data['discount'] = discount.map((v) => v.toJson()).toList();
-      data['cover'] = cover.map((v) => v.toJson()).toList();
-      data['payments'] = payments.map((v) => v.toJson()).toList();
-      data['serviceFee'] = serviceFee.map((v) => v.toJson()).toList();
-      data['createdAt'] = createdAt.toString();
-      data['updatedAt'] = updatedAt.toString();
-      data['customerCount'] = customerCount;
-    } catch (e) {
-      print(e);
-    }
-    return data;
-  }
-
-  TableModel.copy(TableModel other) {
-    id = other.id;
-    title = other.title;
-    cover = other.cover.map((cover) => CoverModel.copy(cover)).toList();
-    checkNo = other.checkNo;
-    orders = other.orders.map((order) => OrderModel.copy(order)).toList();
-    serviceFee = other.serviceFee.map((service) => ServiceModel.copy(service)).toList();
-    section = other.section;
-    updatedAt = other.updatedAt;
-    createdAt = other.createdAt;
-    branch = other.branch;
-    customerCount = other.customerCount;
-    discount = other.discount;
-    customTable = other.customTable;
-    isPrinted = other.isPrinted;
-    isSafeSales = other.isSafeSales;
-    lastOrderDate = other.lastOrderDate;
-    orderType = other.orderType;
-    paidOrders = other.paidOrders;
-    payments = other.payments;
-    remainingPrice = other.remainingPrice;
-    totalPrice = other.totalPrice;
-    url = other.url;
   }
 }
 

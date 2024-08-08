@@ -65,8 +65,9 @@ class LoginService extends ILoginService {
   Future<void> saveAuthToken(String token) async {
     DioClient.instance.token = token;
     DioClient.instance.dio.options.headers = {
+      'accept': 'application/json', // new added
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer $token'
+      // 'Authorization': 'Bearer $token'
     };
 
     try {

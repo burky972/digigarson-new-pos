@@ -12,10 +12,14 @@ import 'package:core/network/network_constants.dart';
 
 class ReopenService extends IReopenService {
   @override
-  BaseResponseData<BaseResponseModel> getOldCheck({required UserModel userModel}) async {
+  BaseResponseData<BaseResponseModel> getAllCheck(
+      {required UserModel userModel,
+      int page = 1,
+      int per = 100,
+      required String orderType}) async {
     BaseResponseModel response = await DioClient.instance.get(
-      NetworkConstants.old,
-      queryParameters: QueryParams.dioQueryParams(userModel),
+      NetworkConstants.check,
+      queryParameters: QueryParams.getAllCheckQueries(page: page, per: per, orderType: orderType),
     );
     APosLogger.instance!.info('Reopen SERVICE', response.data.toString());
 

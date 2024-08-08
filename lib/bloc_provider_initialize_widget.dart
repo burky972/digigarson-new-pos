@@ -18,6 +18,15 @@ class BlocProviderInitializeWidget extends StatelessWidget {
           create: (context) => BranchCubit(),
         ),
         BlocProvider(
+          create: (context) => CategoryCubit(),
+        ),
+        BlocProvider(
+          create: (context) => ProductCubit(),
+        ),
+        BlocProvider(
+          create: (context) => OptionCubit()..init(),
+        ),
+        BlocProvider(
           create: (context) => NoteServePaymentCancelReasonCubit(),
         ),
         BlocProvider(
@@ -32,6 +41,9 @@ class BlocProviderInitializeWidget extends StatelessWidget {
         BlocProvider(
           create: (context) => RestaurantCubit(),
         ),
+        // BlocProvider(
+        //   create: (context) => SectionCubit()..getSections(),
+        // ),
       ],
       child: child,
     );

@@ -35,29 +35,24 @@ class DioClient {
       ..options.connectTimeout = const Duration(minutes: 1)
       ..options.receiveTimeout = const Duration(minutes: 1)
       ..options.headers = {
+        'accept': 'application/json',
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer $token',
-        'lang': countryCode == 'US' ? 'en' : countryCode?.toLowerCase() ?? 'en',
+        // 'Authorization': 'Bearer $token', //!NEW
+        // 'lang': countryCode == 'US' ? 'en' : countryCode?.toLowerCase() ?? 'en',
       };
 
     dio.interceptors.add(LoggingInterceptor());
   }
 
-  void updateHeader(String token, String? countryCode) {
+  void updateHeader(String token) {
     token = token;
-    countryCode = countryCode == null
-        ? this.countryCode == 'US'
-            ? 'en'
-            : this.countryCode!.toLowerCase()
-        : countryCode == 'US'
-            ? 'en'
-            : countryCode.toLowerCase();
+
     this.token = token;
-    this.countryCode = countryCode;
+    countryCode = countryCode;
     dio.options.headers = {
+      'accept': 'application/json',
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer $token',
-      'lang': countryCode == 'US' ? 'en' : countryCode.toLowerCase(),
+      'Authorization': 'Bearer $token', //!NEW COMMENTED
     };
   }
 
@@ -178,6 +173,33 @@ class DioClient {
     APosLogger.instance!.info(tag, 'uri: $uri');
     try {
       var response = await dio.delete(
+        uri,
+        data: data,
+        queryParameters: queryParameters,
+        options: options,
+        cancelToken: cancelToken,
+      );
+      return BaseResponseModel(data: response.data);
+    } on FormatException catch (e) {
+      return BaseResponseModel(
+          serverException:
+              ServerException(message: ' FormatException${e.message}', statusCode: '505'));
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<BaseResponseModel> patch(
+    String uri, {
+    data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+  }) async {
+    APosLogger.instance!.info(tag, 'PATH request');
+    APosLogger.instance!.info(tag, 'uri: $uri');
+    try {
+      var response = await dio.patch(
         uri,
         data: data,
         queryParameters: queryParameters,

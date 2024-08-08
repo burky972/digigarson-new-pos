@@ -27,7 +27,8 @@ class CaseCubit extends ICaseCubit {
   @override
   Future getCase(UserModel userModel) async {
     emit(state.copyWith(states: CaseStates.loading));
-    final response = await _caseService.getCases(userModel: userModel);
+    final response =
+        await _caseService.getCases(userModel: userModel); //todo:add page and per next to userMODEL
     response.fold((l) {
       emit(state.copyWith(states: CaseStates.error));
     }, (r) {
@@ -37,21 +38,36 @@ class CaseCubit extends ICaseCubit {
   }
 
   @override
-  Future postCase({
-    required UserModel userModel,
-    required BalanceModel balanceModel,
-    required Function callback,
-  }) async {
-    final response = await _caseService.postCases(userModel: userModel, balanceModel: balanceModel);
-    String temporaryToken = '';
-    String token = '';
-    String message = '';
+  Future<bool> getOpenCase() async {
+    bool result = false;
+    emit(state.copyWith(states: CaseStates.loading));
+    final response = await _caseService.getOpenCases();
     response.fold((l) {
+      result = false;
       emit(state.copyWith(states: CaseStates.error));
     }, (r) {
-      CaseModel cases = CaseModel().fromJson(r.data);
-      callback(true, token, temporaryToken, message);
+      result = true;
+      CaseModel cases = CaseModel.fromJson(r.data);
       emit(state.copyWith(cases: cases, states: CaseStates.completed));
+      return true;
     });
+    return result;
+  }
+
+  @override
+  Future<bool> postCase({
+    required BalanceModel balanceModel,
+  }) async {
+    final response = await _caseService.postCases(balanceModel: balanceModel);
+
+    response.fold((l) {
+      emit(state.copyWith(states: CaseStates.error));
+      return false;
+    }, (r) {
+      CaseModel cases = CaseModel().fromJson(r.data);
+      emit(state.copyWith(cases: cases, states: CaseStates.completed));
+      return true;
+    });
+    return false;
   }
 }

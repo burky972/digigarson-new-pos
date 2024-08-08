@@ -19,7 +19,6 @@ class TableService extends ITableService {
   DefaultServiceResponse getTable({required UserModel userModel}) async {
     BaseResponseModel response = await DioClient.instance.get(
       NetworkConstants.tables,
-      queryParameters: QueryParams.dioQueryParams(userModel),
     );
     APosLogger.instance!.info('Table SERVICE GET TABLE', response.data.toString());
     return ApiResponseHandler.handleResponse(response);
@@ -203,5 +202,89 @@ class TableService extends ITableService {
     } catch (e) {
       return Left(ServerException(message: e.toString(), statusCode: '505'));
     }
+  }
+
+  /// PUT Table Product Catering
+  @override
+  DefaultServiceResponse putProductCatering(
+      {required UserModel userModel,
+      required CateringProduct cateringModel,
+      required String tableId}) async {
+    BaseResponseModel response = await DioClient.instance.put(
+      '${NetworkConstants.cateringProductPut}$tableId/${cateringModel.orderNum}/${cateringModel.orderId}',
+      queryParameters: QueryParams.dioQueryParams(userModel),
+      data: cateringModel.toJson(),
+    );
+    APosLogger.instance!.info('Table SERVICE PUT PRODUCT CATERING', response.data.toString());
+    return ApiResponseHandler.handleResponse(response);
+  }
+
+  /// Cancel  Table Product Catering
+  @override
+  DefaultServiceResponse cancelProductCatering(
+      {required UserModel userModel,
+      required CateringProduct cateringModel,
+      required String tableId}) async {
+    BaseResponseModel response = await DioClient.instance.put(
+      '${NetworkConstants.cateringProductPut}$tableId/cancel',
+      queryParameters: QueryParams.dioQueryParams(userModel),
+      data: cateringModel.toJson(),
+    );
+    APosLogger.instance!
+        .info('Table SERVICE PUT CANCEL PRODUCT CATERING', response.data.toString());
+    return ApiResponseHandler.handleResponse(response);
+  }
+
+  /// Move Table Product
+  @override
+  DefaultServiceResponse moveTableProduct(
+      {required UserModel userModel, required MoveProduct moveProductModel}) async {
+    BaseResponseModel response = await DioClient.instance.put(
+      '${NetworkConstants.moveProductPut}${moveProductModel.currentTable}/${moveProductModel.targetTable}',
+      queryParameters: QueryParams.dioQueryParams(userModel),
+      data: moveProductModel.toJson(),
+    );
+    APosLogger.instance!.info('Table SERVICE PUT Move PRODUCT Table', response.data.toString());
+    return ApiResponseHandler.handleResponse(response);
+  }
+
+  /// Move Table Order
+  @override
+  DefaultServiceResponse moveTableOrder(
+      {required UserModel userModel, required MoveProduct moveProductModel}) async {
+    BaseResponseModel response = await DioClient.instance.put(
+      '${NetworkConstants.moveOrderPut}${moveProductModel.currentTable}/${moveProductModel.targetTable}',
+      queryParameters: QueryParams.dioQueryParams(userModel),
+      data: moveProductModel.toJson(),
+    );
+    APosLogger.instance!.info('Table SERVICE PUT Move Order Table', response.data.toString());
+    return ApiResponseHandler.handleResponse(response);
+  }
+
+  /// PUT Table Qr Order Approve
+  @override
+  DefaultServiceResponse tableQrOrderApprove(
+      {required UserModel userModel, required QrProduct qrProductModel}) async {
+    BaseResponseModel response = await DioClient.instance.put(
+      '${NetworkConstants.qrOrderPut}${qrProductModel.tableId}/approve',
+      queryParameters: QueryParams.dioQueryParams(userModel),
+      data: qrProductModel.toJson(),
+    );
+    APosLogger.instance!.info('Table SERVICE PUT Table Qr Order Approve', response.data.toString());
+    return ApiResponseHandler.handleResponse(response);
+  }
+
+  /// PUT Cancel Table Qr Order Approve
+  @override
+  DefaultServiceResponse tableQrOrderCancel(
+      {required UserModel userModel, required QrProduct qrProductModel}) async {
+    BaseResponseModel response = await DioClient.instance.put(
+      '${NetworkConstants.qrOrderPut}${qrProductModel.tableId}/cancel',
+      queryParameters: QueryParams.dioQueryParams(userModel),
+      data: qrProductModel.toJson(),
+    );
+    APosLogger.instance!
+        .info('Table SERVICE PUT CANCEL Table Qr Order Approve', response.data.toString());
+    return ApiResponseHandler.handleResponse(response);
   }
 }

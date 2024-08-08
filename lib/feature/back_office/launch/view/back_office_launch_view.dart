@@ -1,5 +1,6 @@
 import 'package:a_pos_flutter/feature/back_office/menu/view/menu_view.dart';
 import 'package:a_pos_flutter/feature/back_office/restaurant/view/restaurant_dialog_view.dart';
+import 'package:a_pos_flutter/feature/back_office/table_layout/view/new_table_layout.view.dart';
 import 'package:a_pos_flutter/feature/back_office/table_layout/view/table_layout_view.dart';
 import 'package:a_pos_flutter/feature/home/main/view/main_view.dart';
 import 'package:a_pos_flutter/gen/assets.gen.dart';

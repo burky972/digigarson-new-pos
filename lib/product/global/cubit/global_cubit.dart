@@ -20,4 +20,14 @@ class GlobalCubit extends IGlobalCubit {
   /// getter for user
   @override
   UserModel get user => state.user ?? UserModel(accessToken: '', refreshToken: '', user: User());
+
+  /// setter for selected table name
+  @override
+  void setSelectedTableName(String selectedTableName) {
+    emit(state.copyWith(selectedTableName: selectedTableName));
+  }
+
+  /// get selected table name
+  @override
+  String get selectedTableName => state.selectedTableName ?? '';
 }

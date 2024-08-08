@@ -1,13 +1,18 @@
 import 'dart:convert';
 import 'package:a_pos_flutter/feature/home/main/view/widget/main_right_widget.dart';
+import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
+import 'package:a_pos_flutter/feature/home/table/cubit/table_state.dart';
 import 'package:a_pos_flutter/feature/home/table/view/table_view.dart';
+import 'package:a_pos_flutter/feature/home/table/widget/timer_widget.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
+import 'package:a_pos_flutter/product/global/cubit/global_cubit.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
 import 'package:flutter/material.dart';
 import 'package:a_pos_flutter/feature/back_office/table_layout/model/table_layout_model.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:core/cache/shared_manager.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MainView extends StatefulWidget {
   const MainView({super.key});
@@ -98,16 +103,60 @@ class _MainSavedTableViewState extends State<MainSavedTableView>
         return Positioned(
           left: table.position.dx,
           top: table.position.dy,
-          child: Padding(
-            padding: const AppPadding.extraMinAll(),
-            child: InkWell(
-                //! selected table onTap
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const TableView()));
-                  debugPrint(table.name.toString() + table.id.toString());
-                },
-                child: table.buildTable()),
-          ),
+          child: InkWell(
+              // TODO:THINK ABOUT HERE FOR FIRST CLICK SHOW AMOUNT AND DURATION, onDoubleClick OPEN THE SELECTED TABLE!
+              //! selected table onTap
+              onTap: table.id > 44
+                  ? null
+                  : () async {
+                      context.read<GlobalCubit>().setSelectedTableName(table.name.toString());
+                      await context
+                          .read<TableCubit>()
+                          .setSelectedTable(context.read<TableCubit>().tableModel[table.id])
+                          .then(
+                        (value) {
+                          Navigator.push(
+                              context, MaterialPageRoute(builder: (_) => const TableView()));
+                          debugPrint(table.name.toString() + table.id.toString());
+                        },
+                      );
+                    },
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                    color: context.colorScheme.primary, borderRadius: BorderRadius.circular(8.0)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    table.buildTable(),
+                    //TODO: CHECK HERE FOR TOTAL AMOUNT AND LAST OPENED ORDER DATE !!
+                    table.id < 44
+                        ? Text('24€',
+                            style: CustomFontStyle.generalTextStyle
+                                .copyWith(color: context.colorScheme.surface))
+                        : const SizedBox(),
+                    table.id < 44
+                        ? BlocSelector<TableCubit, TableState, DateTime?>(
+                            selector: (state) {
+                              return
+                                  //  state.tableModel.isNotEmpty
+                                  //TODO: add this later!
+                                  // ? state.tableModel.first.lastOrderDate
+                                  // :
+                                  DateTime(1);
+                            },
+                            builder: (context, lastOrderDate) {
+                              return lastOrderDate != null
+                                  ? TimerWidget(
+                                      lastOrderTime: lastOrderDate,
+                                      color: context.colorScheme.surface,
+                                    )
+                                  : const SizedBox();
+                            },
+                          )
+                        : const SizedBox()
+                  ],
+                ),
+              )),
         );
       }).toList(),
     );

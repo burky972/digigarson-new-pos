@@ -51,7 +51,7 @@ class PrinterWidget {
           }
         }
       }
-      for (var serviceFree in selectedTable.serviceFee) {
+      for (var serviceFree in selectedTable.serviceFee!) {
         service.add(ServicePrinter(
             amount: double.parse(DoubleConvert().formatPriceDouble(serviceFree.amount!)),
             percentile: double.parse(DoubleConvert().formatDouble(serviceFree.percentile!)),

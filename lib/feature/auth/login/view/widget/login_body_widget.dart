@@ -118,50 +118,45 @@ class _SignInWidgetState extends State<LoginBodyWidget> with LoginMixin {
                                 ),
 
                                 /// Login Button
-                                BlocBuilder<LoginCubit, LoginState>(builder: (context, state) {
-                                  return Expanded(
-                                    flex: 2,
-                                    child: Container(
-                                      margin: const EdgeInsets.only(
-                                          left: 20, right: 20, bottom: 1, top: 30),
-                                      child: state.isLoading
-                                          ? Center(
-                                              child: CircularProgressIndicator(
-                                                valueColor: AlwaysStoppedAnimation<Color>(
-                                                  context.colorScheme.surface,
-                                                ),
-                                              ),
-                                            )
-                                          : BlocConsumer<LoginCubit, LoginState>(
-                                              listener: (context, state) async {
-                                                if (state.states == LoginStates.error) {
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(SnackBar(
-                                                    content: const Text(
-                                                            'Please check your username and password')
-                                                        .tr(),
-                                                    backgroundColor: Colors.red,
-                                                  ));
-                                                }
-                                                if (state.states != LoginStates.error) {
-                                                  await route(state: state);
-                                                }
-                                              },
-                                              listenWhen: (previous, current) =>
-                                                  previous.states != current.states,
-                                              builder: (context, state) {
-                                                return CustomButton(
-                                                  onTap: () async {
-                                                    debugPrint(state.states.toString());
-                                                    await loginUser(state);
-                                                  },
-                                                  buttonText: LocaleKeys.LOGIN.tr(),
-                                                );
-                                              },
-                                            ),
-                                    ),
-                                  );
-                                }),
+                                BlocConsumer<LoginCubit, LoginState>(
+                                    listener: (context, state) async {
+                                      if (state.states == LoginStates.error) {
+                                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                          content:
+                                              const Text('Please check your username and password')
+                                                  .tr(),
+                                          backgroundColor: Colors.red,
+                                        ));
+                                      }
+                                      if (state.states == LoginStates.completed && mounted) {
+                                        await route(state: state);
+                                      }
+                                    },
+                                    listenWhen: (previous, current) =>
+                                        previous.states != current.states &&
+                                        current.states == LoginStates.completed,
+                                    builder: (context, state) {
+                                      return Expanded(
+                                        flex: 2,
+                                        child: Container(
+                                            margin: const EdgeInsets.only(
+                                                left: 20, right: 20, bottom: 1, top: 30),
+                                            child: state.isLoading
+                                                ? Center(
+                                                    child: CircularProgressIndicator(
+                                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                                        context.colorScheme.surface,
+                                                      ),
+                                                    ),
+                                                  )
+                                                : CustomButton(
+                                                    onTap: () async {
+                                                      await loginUser(state);
+                                                    },
+                                                    buttonText: LocaleKeys.LOGIN.tr(),
+                                                  )),
+                                      );
+                                    }),
                               ],
                             ),
                           ),

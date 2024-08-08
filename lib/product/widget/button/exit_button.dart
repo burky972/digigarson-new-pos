@@ -5,8 +5,9 @@ import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:flutter/material.dart';
 
 class ExitButton extends StatelessWidget {
-  const ExitButton({super.key, required this.onPressed});
+  const ExitButton({super.key, required this.onPressed, this.buttonColor});
   final VoidCallback onPressed;
+  final Color? buttonColor;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,8 @@ class ExitButton extends StatelessWidget {
             width: context.dynamicWidth(0.1),
             padding: const AppPadding.xLargeAll(),
             decoration: BoxDecoration(
-                color: context.colorScheme.tertiary, borderRadius: BorderRadius.circular(24)),
+                color: buttonColor ?? context.colorScheme.tertiary,
+                borderRadius: BorderRadius.circular(24)),
             child: Center(
               child: Text(
                 'EXIT',

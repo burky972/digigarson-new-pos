@@ -1,6 +1,7 @@
 import 'package:a_pos_flutter/feature/auth/login/view/login_view.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
+import 'package:a_pos_flutter/product/responsive/border.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/widget/button/custom_yes_no_button.dart';
 import 'package:flutter/material.dart';
@@ -33,14 +34,10 @@ class MainRightBottomExitButton extends StatelessWidget {
         child: Container(
           width: context.dynamicWidth(.15),
           decoration: BoxDecoration(
-            color: context.colorScheme.onSurface,
-            borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(40), topRight: Radius.circular(40)),
-            border: Border.all(
-              color: Colors.black,
-              width: 1.0,
-            ),
-          ),
+              color: context.colorScheme.onSurface,
+              borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(40), topRight: Radius.circular(40)),
+              border: BorderConstants.borderAllSmall),
           child: Center(
             child: Text(
               "EXIT",

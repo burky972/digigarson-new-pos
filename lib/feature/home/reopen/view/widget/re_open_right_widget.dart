@@ -6,6 +6,7 @@ import 'package:a_pos_flutter/feature/home/reopen/model/chek_old_model.dart';
 import 'package:a_pos_flutter/feature/home/reopen/model/re_open_model.dart';
 import 'package:a_pos_flutter/product/global/model/branch/branch_model.dart';
 import 'package:a_pos_flutter/product/global/model/print/print_invoice_model.dart';
+import 'package:a_pos_flutter/product/responsive/border.dart';
 import 'package:a_pos_flutter/product/utils/helper/format_double.dart';
 import 'package:a_pos_flutter/product/widget/dialog/old_checkout_dialog.dart';
 import 'package:a_pos_flutter/product/widget/invoices/invoice_widget.dart';
@@ -136,12 +137,7 @@ class _ReOpenRightWidgetState extends State<ReOpenRightWidget> with _ReopenRight
           Container(
             height: MediaQuery.of(context).size.height * .18,
             constraints: const BoxConstraints(minHeight: 120, maxHeight: 130),
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: Colors.black26,
-                width: 1.0,
-              ),
-            ),
+            decoration: BoxDecoration(border: BorderConstants.borderAllSmall),
             padding: const EdgeInsets.all(5),
             child: BlocSelector<ReopenCubit, ReopenState, OrderModel?>(
                 selector: (state) => state.selectOrder,

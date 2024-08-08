@@ -1,7 +1,6 @@
-import 'package:a_pos_flutter/feature/back_office/menu/mixin/menu_mixin.dart';
-import 'package:a_pos_flutter/feature/back_office/menu/sub_view/menu_group/view/menu_group_view.dart';
-import 'package:a_pos_flutter/feature/back_office/menu/sub_view/menu_items/view/menu_items_view.dart';
-import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/view/menu_option_view.dart';
+import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/view/category_view.dart';
+import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/view/product_view.dart';
+import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/view/option_view.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option_group/view/option_group_view.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
@@ -15,7 +14,15 @@ class MenuView extends StatefulWidget {
   State<MenuView> createState() => _MenuViewState();
 }
 
-class _MenuViewState extends State<MenuView> with SingleTickerProviderStateMixin, MenuViewMixin {
+class _MenuViewState extends State<MenuView> with SingleTickerProviderStateMixin {
+  late TabController tabController;
+
+  @override
+  void dispose() {
+    tabController.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -43,24 +50,11 @@ class _MenuViewState extends State<MenuView> with SingleTickerProviderStateMixin
             Expanded(
               child: TabBarView(
                 controller: tabController,
-                children: [
-                  MenuGroupView(
-                    data: data,
-                    selectedRowIndex: selectedRowIndex,
-                    onRowTap: (index) {
-                      setState(() {
-                        if (selectedRowIndex == index) {
-                          return;
-                        } else {
-                          selectedRowIndex = index;
-                        }
-                      });
-                    },
-                    onCheckboxChanged: onCheckboxChanged,
-                  ),
-                  const MenuItemsView(),
-                  const OptionGroupsView(),
-                  const MenuOptionsView(),
+                children: const [
+                  CategoryView(),
+                  ProductView(),
+                  OptionGroupsView(),
+                  OptionsView(),
                 ],
               ),
             ),

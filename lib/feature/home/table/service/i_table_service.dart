@@ -40,6 +40,32 @@ abstract class ITableService {
     required List<Product> products,
     required String tableId,
   });
+  DefaultServiceResponse putProductCatering({
+    required UserModel userModel,
+    required CateringProduct cateringModel,
+    required String tableId,
+  });
+  DefaultServiceResponse cancelProductCatering({
+    required UserModel userModel,
+    required CateringProduct cateringModel,
+    required String tableId,
+  });
+  DefaultServiceResponse moveTableProduct({
+    required UserModel userModel,
+    required MoveProduct moveProductModel,
+  });
+  DefaultServiceResponse moveTableOrder({
+    required UserModel userModel,
+    required MoveProduct moveProductModel,
+  });
+  DefaultServiceResponse tableQrOrderApprove({
+    required UserModel userModel,
+    required QrProduct qrProductModel,
+  });
+  DefaultServiceResponse tableQrOrderCancel({
+    required UserModel userModel,
+    required QrProduct qrProductModel,
+  });
 
   List<OrderProduct> convertProductsToOrderProducts(List<Product> products);
 }

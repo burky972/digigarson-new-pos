@@ -1,6 +1,7 @@
 import 'package:a_pos_flutter/feature/home/branch/cubit/branch_cubit.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
+import 'package:a_pos_flutter/product/responsive/border.dart';
 import 'package:a_pos_flutter/product/widget/keyboard/custom_search_keyboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -74,13 +75,9 @@ class CustomSearchTextfield extends StatelessWidget {
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: Colors.blueGrey.shade50,
-        borderRadius: const BorderRadius.all(Radius.circular(5)),
-        border: Border.all(
-          color: Colors.black,
-          width: 1.0,
-        ),
-      ),
+          color: Colors.blueGrey.shade50,
+          borderRadius: const BorderRadius.all(Radius.circular(5)),
+          border: BorderConstants.borderAllSmall),
       child: TextField(
         onChanged: onChanged,
         onTap: () {

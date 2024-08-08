@@ -23,20 +23,24 @@ class ReopenCubit extends IReopenCubit {
   }
 
   @override
-  Future oldCheckGet({required UserModel userModel, required String id}) async {
+  Future getAllCheck({
+    required UserModel userModel,
+    required String id,
+  }) async {
     reOpenModel.clear();
     emit(state.copyWith(states: ReopenStates.loading, reOpenModel: reOpenModel));
-    final response = await _reopenService.getOldCheck(userModel: userModel);
+    final response = await _reopenService.getAllCheck(userModel: userModel, orderType: '');
     response.fold((l) {
       emit(state.copyWith(states: ReopenStates.error));
     }, (r) {
-      r.data.forEach((reOpen) {
-        OldCheckModel oldCheckModel_ = OldCheckModel.fromJson(reOpen);
-        oldCheckModel_.caseId != id ? reOpenModel.add(oldCheckModel_) : null;
-      });
-      reOpenModel.sort((p1, p2) {
-        return p2.updatedAt!.compareTo(p1.updatedAt!);
-      });
+      //TODO: CHECK LATER!!
+      // r.data.forEach((reOpen) {
+      //   OldCheckModel oldCheckModel_ = OldCheckModel.fromJson(reOpen);
+      //   oldCheckModel_.caseId != id ? reOpenModel.add(oldCheckModel_) : null;
+      // });
+      // reOpenModel.sort((p1, p2) {
+      //   return p2.updatedAt!.compareTo(p1.updatedAt!);
+      // });
 
       emit(state.copyWith(reOpenModel: reOpenModel, states: ReopenStates.completed));
     });

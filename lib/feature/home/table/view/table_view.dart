@@ -1,7 +1,12 @@
+import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
+import 'package:a_pos_flutter/feature/home/table/cubit/table_state.dart';
 import 'package:a_pos_flutter/feature/home/table/widget/table_header_widget.dart';
+import 'package:a_pos_flutter/feature/home/table/widget/table_left_widget.dart';
+import 'package:a_pos_flutter/feature/home/table/widget/table_right_widget.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TableView extends StatefulWidget {
   const TableView({super.key});
@@ -27,19 +32,23 @@ class _TableViewState extends State<TableView> with _TableMixin {
             ),
             SizedBox(
               height: context.height - 60,
-              child: const Row(
+              child: Row(
                 children: [
-                  // SizedBox(
-                  //   width: context.dynamicWidth(.38),
-                  //   height: context.height - 60,
-                  //   child: TableLeftWidget(
-                  //     tableModel: widget.tableModel,
-                  //   ),
-                  // ),
-                  // SizedBox(
-                  //     width: context.dynamicWidth(.62),
-                  //     height: context.height - 60,
-                  //     child: TableRightWidget())
+                  BlocBuilder<TableCubit, TableState>(
+                    builder: (context, state) {
+                      return SizedBox(
+                        width: context.dynamicWidth(.38),
+                        height: context.height - 60,
+                        child: TableLeftWidget(
+                          tableModel: state.selectedTable!, //TODO: CHECK HERE LATER
+                        ),
+                      );
+                    },
+                  ),
+                  SizedBox(
+                      width: context.dynamicWidth(.62),
+                      height: context.height - 60,
+                      child: const TableRightWidget())
                 ],
               ),
             ),

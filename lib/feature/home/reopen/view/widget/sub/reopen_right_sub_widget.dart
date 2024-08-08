@@ -13,14 +13,10 @@ class _ReOpenButton extends StatelessWidget {
       ),
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-        color: Colors.black12,
-        borderRadius:
-            const BorderRadius.only(topLeft: Radius.circular(5), topRight: Radius.circular(5)),
-        border: Border.all(
-          color: Colors.black,
-          width: 1.0,
-        ),
-      ),
+          color: Colors.black12,
+          borderRadius:
+              const BorderRadius.only(topLeft: Radius.circular(5), topRight: Radius.circular(5)),
+          border: BorderConstants.borderAllSmall),
       child: Center(
         child: Text(
           buttonText,

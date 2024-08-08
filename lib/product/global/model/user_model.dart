@@ -30,27 +30,17 @@ class UserModel extends BaseModel<UserModel> {
 @JsonSerializable()
 class User extends BaseModel<User> {
   User({
-    this.permissions,
     this.id,
     this.role,
-    this.branchId,
     this.lastName,
-    this.password,
     this.name,
-    this.branchCustomId,
-    this.branchTitle,
   });
 
-  final List<int>? permissions;
   final String? id;
-  final String? role;
-  final String? branchId;
-  final String? password;
+  final String? name;
+  final Role? role;
   @JsonKey(name: 'lastname')
   final String? lastName;
-  final String? name;
-  final int? branchCustomId;
-  final String? branchTitle;
 
   @override
   Map<String, dynamic> toJson() => _$UserToJson(this);
@@ -61,11 +51,36 @@ class User extends BaseModel<User> {
   }
 
   @override
-  List<Object?> get props =>
-      [permissions, id, role, branchId, password, lastName, name, branchCustomId, branchTitle];
+  List<Object?> get props => [id, name, lastName, role];
 
   @override
   User fromJson(Map<String, dynamic> json) {
     return fromJson(json);
   }
+}
+
+@JsonSerializable()
+class Role extends BaseModel<Role> {
+  final List<int> permissions;
+  final String? roleId;
+  final String? roleName;
+
+  Role({
+    required this.permissions,
+    required this.roleId,
+    required this.roleName,
+  });
+
+  factory Role.fromJson(Map<String, dynamic> json) => _$RoleFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$RoleToJson(this);
+
+  @override
+  Role fromJson(Map<String, dynamic> json) {
+    return fromJson(json);
+  }
+
+  @override
+  List<Object?> get props => [permissions, roleId, roleName];
 }

@@ -49,7 +49,7 @@ final ThemeData APosTheme = ThemeData(
   primaryColorDark: Colors.black,
   scaffoldBackgroundColor: const Color(0xfffafafa),
   cardColor: const Color(0xffffffff),
-  dividerColor: const Color(0xFFB4B4B4),
+  dividerColor: const Color.fromARGB(255, 0, 0, 0),
   highlightColor: const Color(0x66bcbcbc),
   splashColor: const Color(0x66c8c8c8),
   unselectedWidgetColor: const Color(0xffffffff),
