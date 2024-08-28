@@ -1,5 +1,7 @@
+import 'package:a_pos_flutter/feature/back_office/sections/cubit/section_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/table_layout/model/table_layout_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RightTableLayoutView extends StatefulWidget {
   final String keyName;
@@ -60,8 +62,6 @@ class _RightTableLayoutViewState extends State<RightTableLayoutView>
             _setTableName(selectedTable);
           },
           onPanUpdate: (details) {
-            debugPrint('selectedTable is onPanUpdate!!');
-
             if (selectedTable != null) {
               setState(() {
                 selectedTable!.position += details.delta;
@@ -111,7 +111,7 @@ class _RightTableLayoutViewState extends State<RightTableLayoutView>
       for (var table in placedTables.reversed) {
         if (_isPositionInsideTable(localPosition, table)) {
           selectedTable = table;
-          debugPrint('selectedTable is position');
+          debugPrint('selectedTable is ${selectedTable?.name ?? ''}');
           break;
         }
       }
@@ -145,13 +145,19 @@ class _RightTableLayoutViewState extends State<RightTableLayoutView>
   }
 
   Future<void> loadPlacedTables() async {
+    bool isContains = false;
+    for (var element in context.read<SectionCubit>().originalSections) {
+      if (element.title == widget.keyName) {
+        isContains = true;
+      }
+    }
     setState(() {
-      if (widget.initialTables != null) {
+      if (widget.initialTables != null && isContains) {
         setState(() {
           placedTables = widget.initialTables!;
         });
       } else {
-        placedTables = [];
+        // placedTables = [];
       }
     });
   }

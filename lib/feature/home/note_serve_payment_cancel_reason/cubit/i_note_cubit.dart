@@ -15,7 +15,7 @@ abstract class INoteServePaymentCancelReasonCubit
   /// getters
   Future getServe({required UserModel userModel});
   Future getNote({required UserModel userModel});
-  Future getCancelReason({required UserModel userModel});
+  Future getCancelReason();
   Future getPaymentMethods({required UserModel userModel});
 
   /// setters

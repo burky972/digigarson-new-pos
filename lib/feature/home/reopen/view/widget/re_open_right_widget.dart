@@ -1,3 +1,4 @@
+import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/model/option_model.dart';
 import 'package:a_pos_flutter/feature/home/branch/cubit/branch_cubit.dart';
 import 'package:a_pos_flutter/feature/home/printer/cubit/printer_cubit.dart';
 import 'package:a_pos_flutter/feature/home/reopen/cubit/reopen_cubit.dart';
@@ -84,13 +85,13 @@ class _ReOpenRightWidgetState extends State<ReOpenRightWidget> with _ReopenRight
                               children: List.generate(
                                 selectOrder != null ? selectOrder.item.length : 0,
                                 (rowIndex) {
-                                  List<ItemModel> order = selectOrder!.item;
+                                  List<Item> order = selectOrder!.item;
                                   List<String> data = [
-                                    order[rowIndex].statusType.toString(),
+                                    // order[rowIndex].statusType.toString(),
                                     order[rowIndex].itemName.toString(),
                                     order[rowIndex].price.toString(),
                                     DoubleConvert()
-                                        .formatDouble(order[rowIndex].quantitty)
+                                        .formatDouble(order[rowIndex].amount?.toDouble() ?? 0)
                                         .toString()
                                   ];
                                   return Row(
@@ -216,7 +217,7 @@ class _ReOpenRightWidgetState extends State<ReOpenRightWidget> with _ReopenRight
                                       .fold(
                                           0.0,
                                           (previousValue, element) =>
-                                              element.price.toDouble() + previousValue)
+                                              element.price?.toDouble() ?? 0 + previousValue)
                                       .toString()
                                   : "")
                         ],
@@ -230,7 +231,7 @@ class _ReOpenRightWidgetState extends State<ReOpenRightWidget> with _ReopenRight
                           const _ReOpenLeftTextWidget(text: "Tax:"),
                           _ReOpenRightText(
                               text: state.selectOrder != null
-                                  ? state.selectOrder!.Tax.toString()
+                                  ? state.selectOrder!.tax.toString()
                                   : "")
                         ],
                       ),

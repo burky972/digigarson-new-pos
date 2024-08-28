@@ -1,3 +1,6 @@
+/// This enum is used for handling server button actions after user clicks on it
+library;
+
 enum ButtonAction {
   cancelProduct(0),
   moveProduct(1),
@@ -20,7 +23,8 @@ enum ButtonAction {
   reSend(18),
   service(19),
   discount(20),
-  catering(21);
+  catering(21),
+  moveTable(22);
 
   final int value;
   const ButtonAction(this.value);
@@ -48,5 +52,42 @@ enum ButtonAction {
     ButtonAction.service: "Service",
     ButtonAction.discount: "Discount",
     ButtonAction.catering: "Catering",
+    ButtonAction.moveTable: "Move Table",
   };
+
+  /// Returns a success message based on the current ResponseAction.
+  String getSuccessMessage() {
+    switch (this) {
+      case ButtonAction.newSale:
+        return 'Order created successfully';
+      case ButtonAction.moveTable:
+        return 'Table transferred successfully';
+      case ButtonAction.cancelProduct:
+        return 'Product cancelled successfully';
+      case ButtonAction.moveProduct:
+        return 'Product moved successfully';
+      case ButtonAction.checkout:
+        return 'Product Paid successfully';
+      default:
+        return 'Action completed successfully';
+    }
+  }
+
+  /// Returns a error message based on the current ResponseAction.
+  String getErrorMessage() {
+    switch (this) {
+      case ButtonAction.newSale:
+        return 'Order could not created successfully';
+      case ButtonAction.moveTable:
+        return 'Table could not transferred successfully';
+      case ButtonAction.cancelProduct:
+        return 'Product could not cancelled successfully';
+      case ButtonAction.moveProduct:
+        return 'Product could not moved successfully';
+      case ButtonAction.checkout:
+        return 'Pay Error!';
+      default:
+        return 'Action completed successfully';
+    }
+  }
 }

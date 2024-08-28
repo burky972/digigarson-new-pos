@@ -626,7 +626,7 @@ class InvoiceWidget {
                                       padding: const pw.EdgeInsetsDirectional.only(
                                           top: 3.0, start: 2.0, bottom: 3.0),
                                       child: pw.Text(
-                                        '${o.nameOption}: ${getOptionString(o.items)}',
+                                        '${o.name}: ${getOptionString(o.items)}',
                                         style: pw.TextStyle(
                                             fontSize: printer.optionFontSize,
                                             font: ttf,
@@ -728,7 +728,7 @@ class InvoiceWidget {
                                       padding: const pw.EdgeInsetsDirectional.only(
                                           top: 3.0, start: 2.0, bottom: 3.0),
                                       child: pw.Text(
-                                        '${o.nameOption}: ${getOptionString(o.items)}',
+                                        '${o.name}: ${getOptionString(o.items)}',
                                         style: pw.TextStyle(
                                             fontSize: printer.optionFontSize,
                                             font: ttf,

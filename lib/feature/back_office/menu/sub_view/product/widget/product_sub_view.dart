@@ -173,9 +173,10 @@ class _MiddleProductTableWidget extends StatelessWidget {
                                           ),
                                           _MiddleTableCellTextWidget(
                                             product: product,
-                                            text: product.prices!.isNotEmpty
-                                                ? product.prices!.first.amount.toString()
-                                                : '',
+                                            text: '0',
+                                            // text: product.prices!.isNotEmpty
+                                            //     ? product.prices!.first.amount.toString()
+                                            //     : '',
                                           ),
                                         ],
                                       );
@@ -562,13 +563,10 @@ class _BottomWidgets extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              InkWell(
-                                  onTap: () {
-                                    context.read<ProductCubit>().getProductImage();
-                                  },
-                                  child: const LightBlueButton(
-                                    buttonText: 'Browse',
-                                  )),
+                              LightBlueButton(
+                                buttonText: 'Browse',
+                                onTap: () => context.read<ProductCubit>().getProductImage(),
+                              ),
                               InkWell(
                                   onTap: () {
                                     showDialog(

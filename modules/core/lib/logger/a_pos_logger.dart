@@ -5,15 +5,15 @@ import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 
 class APosLogger implements IAPosLogger {
-  late Logger _logger;
+  late final Logger _logger;
   bool _isCacheLog = false;
   static APosLogger? _instance;
-  static APosLogger? get instance {
-    _instance ??= APosLogger._init();
-    return _instance!;
+  APosLogger._init();
+
+  static APosLogger get instance {
+    return _instance ??= APosLogger._init();
   }
 
-  APosLogger._init();
   init({required bool isCacheLog}) {
     _logger = Logger();
     _isCacheLog = isCacheLog;

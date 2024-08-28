@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/model/option_model.dart';
+import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
+
 class BranchModel {
   late List<CategoriesModel>? categories = [];
   late List<ProductsModel>? products = [];
@@ -181,25 +184,6 @@ class ProductsModel {
   }
 }
 
-class Options {
-  late String optionId;
-  late bool isForcedChoice;
-
-  Options({required this.optionId, required this.isForcedChoice});
-
-  Options.fromJson(Map<String, dynamic> json) {
-    optionId = json['option_id'] ?? "";
-    isForcedChoice = json['is_forced_choice'] ?? false;
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['option_id'] = optionId;
-    data['is_forced_choice'] = isForcedChoice;
-    return data;
-  }
-}
-
 class Prices {
   late List<int> orderType;
   late String sId;
@@ -352,38 +336,38 @@ class OptionsModel {
   }
 }
 
-class Item {
-  late String price;
-  late double amount;
-  late String sId;
-  late String itemName;
-  late String? ingredientId;
+// class Item {
+//   late String price;
+//   late double amount;
+//   late String sId;
+//   late String itemName;
+//   late String? ingredientId;
 
-  Item(
-      {required this.price,
-      required this.amount,
-      required this.sId,
-      required this.itemName,
-      required this.ingredientId});
+//   Item(
+//       {required this.price,
+//       required this.amount,
+//       required this.sId,
+//       required this.itemName,
+//       required this.ingredientId});
 
-  Item.fromJson(Map<String, dynamic> json) {
-    price = json['price'].toString();
-    amount = double.parse(json['amount'].toString());
-    sId = json['_id'].toString();
-    itemName = json['item_name'].toString();
-    ingredientId = json['ingredient_id'];
-  }
+//   Item.fromJson(Map<String, dynamic> json) {
+//     price = json['price'].toString();
+//     amount = double.parse(json['amount'].toString());
+//     sId = json['_id'].toString();
+//     itemName = json['item_name'].toString();
+//     ingredientId = json['ingredient_id'];
+//   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['price'] = sId;
-    data['amount'] = price;
-    data['_id'] = amount;
-    data['item_name'] = itemName;
-    data['ingredient_id'] = ingredientId;
-    return data;
-  }
-}
+//   Map<String, dynamic> toJson() {
+//     final Map<String, dynamic> data = <String, dynamic>{};
+//     data['price'] = sId;
+//     data['amount'] = price;
+//     data['_id'] = amount;
+//     data['item_name'] = itemName;
+//     data['ingredient_id'] = ingredientId;
+//     return data;
+//   }
+// }
 
 class CurrencySettingsModel {
   String? defaultCurrency;

@@ -9,6 +9,13 @@ class BlocProviderInitializeWidget extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
+          create: (_) {
+            final cubit = TokenCubit();
+            cubit.init();
+            return cubit;
+          },
+        ),
+        BlocProvider(
           create: (_) => GlobalCubit(),
         ),
         BlocProvider(
@@ -16,6 +23,9 @@ class BlocProviderInitializeWidget extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => BranchCubit(),
+        ),
+        BlocProvider(
+          create: (context) => OrderCubit(),
         ),
         BlocProvider(
           create: (context) => CategoryCubit(),
@@ -41,9 +51,9 @@ class BlocProviderInitializeWidget extends StatelessWidget {
         BlocProvider(
           create: (context) => RestaurantCubit(),
         ),
-        // BlocProvider(
-        //   create: (context) => SectionCubit()..getSections(),
-        // ),
+        BlocProvider(
+          create: (context) => SectionCubit()..getSections(),
+        ),
       ],
       child: child,
     );

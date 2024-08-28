@@ -11,11 +11,13 @@ class NoteServePaymentCancelReasonState extends BaseState {
     required this.serveModel,
     required this.cancelReasonsModel,
     required this.paymentMethodModel,
+    required this.selectedCancelReason,
   });
 
   factory NoteServePaymentCancelReasonState.initial() {
     return const NoteServePaymentCancelReasonState(
       states: NoteServePaymentCancelReasonStates.initial,
+      selectedCancelReason: null,
       noteModel: [],
       serveModel: [],
       cancelReasonsModel: [],
@@ -26,11 +28,12 @@ class NoteServePaymentCancelReasonState extends BaseState {
   final List<NoteModel> noteModel;
   final List<ServeModel> serveModel;
   final List<CancelReasonsModel> cancelReasonsModel;
+  final String? selectedCancelReason;
   final List<PaymentMethodModel> paymentMethodModel;
 
   @override
   List<Object?> get props =>
-      [states, noteModel, serveModel, paymentMethodModel, cancelReasonsModel];
+      [states, noteModel, serveModel, selectedCancelReason, paymentMethodModel, cancelReasonsModel];
 
   NoteServePaymentCancelReasonState copyWith({
     NoteServePaymentCancelReasonStates? states,
@@ -39,11 +42,13 @@ class NoteServePaymentCancelReasonState extends BaseState {
     List<ServeModel>? serveModel,
     List<CancelReasonsModel>? cancelReasonsModel,
     List<PaymentMethodModel>? paymentMethodModel,
+    String? selectedCancelReason,
   }) {
     return NoteServePaymentCancelReasonState(
       states: states ?? this.states,
       noteModel: noteModel ?? this.noteModel,
       serveModel: serveModel ?? this.serveModel,
+      selectedCancelReason: selectedCancelReason ?? this.selectedCancelReason,
       cancelReasonsModel: cancelReasonsModel ?? this.cancelReasonsModel,
       paymentMethodModel: paymentMethodModel ?? this.paymentMethodModel,
     );

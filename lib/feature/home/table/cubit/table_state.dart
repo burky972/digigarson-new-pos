@@ -1,4 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/model/option_model.dart';
+import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/model/product_model.dart';
 import 'package:core/core.dart';
 
 import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
@@ -18,13 +20,18 @@ class TableState extends BaseState {
     required this.optionItem,
     required this.prices,
     required this.newOrderProduct,
+    required this.newOrderProducts,
     required this.newOrderProductEdit,
     required this.originalOrderProduct,
     required this.newOrderProductAmount,
     required this.newOrderProductQuantity,
     required this.selectedProductItemsTotalPrice,
-    required this.optionsList,
     required this.selectProducts,
+    required this.tablesBySectionList,
+    required this.isTableSaving,
+    required this.isDeleteSuccess,
+    required this.totalPrice,
+    required this.subPrice,
   });
 
   factory TableState.initial() {
@@ -33,20 +40,25 @@ class TableState extends BaseState {
       tableModel: const [],
       selectedTable: null,
       selectedMoveTable: null,
-      newProducts: NewOrderModel(tableId: "", products: []),
+      newProducts: NewOrderModel(tableId: "", products: const [], totalTax: 0, totalPrice: 0),
       newProduct: null,
+      subPrice: 0.0,
       optionSelectedId: '',
       optionSelected: null,
       optionItem: const [],
       prices: null,
       newOrderProduct: null,
+      newOrderProducts: const [],
       newOrderProductEdit: null,
       originalOrderProduct: null,
       newOrderProductAmount: 1.0,
       newOrderProductQuantity: 1.0,
       selectedProductItemsTotalPrice: 0.0,
-      optionsList: const [],
       selectProducts: const [],
+      tablesBySectionList: const {},
+      isTableSaving: false,
+      isDeleteSuccess: false,
+      totalPrice: 0.0,
     );
   }
 
@@ -60,14 +72,19 @@ class TableState extends BaseState {
   final OptionsModel? optionSelected;
   final List<Item> optionItem;
   final Prices? prices;
-  final NewOrderProduct? newOrderProduct;
-  final NewOrderProduct? newOrderProductEdit;
-  final NewOrderProduct? originalOrderProduct;
+  final double totalPrice;
+  final double subPrice;
+  final OrderProductModel? newOrderProduct;
+  final OrderProductModel? newOrderProductEdit;
+  final OrderProductModel? originalOrderProduct;
+  final List<OrderProductModel> newOrderProducts;
   final double newOrderProductAmount;
   final double newOrderProductQuantity;
   final double selectedProductItemsTotalPrice;
-  final List<NewOrderOption> optionsList;
-  final List<Product> selectProducts;
+  final List<ProductModel> selectProducts;
+  final Map<String, List<TableModel>>? tablesBySectionList;
+  final bool? isTableSaving;
+  final bool? isDeleteSuccess;
 
   @override
   List<Object?> get props => [
@@ -79,15 +96,20 @@ class TableState extends BaseState {
         newProduct,
         optionSelectedId,
         optionSelected,
+        totalPrice,
+        subPrice,
         optionItem,
         prices,
         newOrderProduct,
+        newOrderProducts,
         originalOrderProduct,
         newOrderProductAmount,
         newOrderProductQuantity,
         selectedProductItemsTotalPrice,
-        optionsList,
         selectProducts,
+        tablesBySectionList,
+        isTableSaving,
+        isDeleteSuccess,
       ];
 
   TableState copyWith({
@@ -101,14 +123,19 @@ class TableState extends BaseState {
     OptionsModel? optionSelected,
     List<Item>? optionItem,
     Prices? prices,
-    NewOrderProduct? newOrderProduct,
-    NewOrderProduct? newOrderProductEdit,
-    NewOrderProduct? originalOrderProduct,
+    double? totalPrice,
+    double? subPrice,
+    OrderProductModel? Function()? newOrderProduct,
+    List<OrderProductModel>? newOrderProducts,
+    OrderProductModel? newOrderProductEdit,
+    OrderProductModel? originalOrderProduct,
     double? newOrderProductAmount,
     double? newOrderProductQuantity,
     double? selectedProductItemsTotalPrice,
-    List<NewOrderOption>? optionsList,
-    List<Product>? selectProducts,
+    List<ProductModel>? selectProducts,
+    Map<String, List<TableModel>>? Function()? tablesBySectionList,
+    bool? isTableSaving,
+    bool? isDeleteSuccess,
   }) {
     return TableState(
       states: states ?? this.states,
@@ -120,16 +147,22 @@ class TableState extends BaseState {
       optionSelectedId: optionSelectedId ?? this.optionSelectedId,
       optionSelected: optionSelected ?? this.optionSelected,
       optionItem: optionItem ?? this.optionItem,
+      totalPrice: totalPrice ?? this.totalPrice,
+      subPrice: subPrice ?? this.subPrice,
       prices: prices ?? this.prices,
-      newOrderProduct: newOrderProduct ?? this.newOrderProduct,
+      newOrderProduct: newOrderProduct != null ? newOrderProduct() : this.newOrderProduct,
+      newOrderProducts: newOrderProducts ?? this.newOrderProducts,
       newOrderProductEdit: newOrderProductEdit ?? this.newOrderProductEdit,
       originalOrderProduct: originalOrderProduct ?? this.originalOrderProduct,
       newOrderProductAmount: newOrderProductAmount ?? this.newOrderProductAmount,
       newOrderProductQuantity: newOrderProductQuantity ?? this.newOrderProductQuantity,
       selectedProductItemsTotalPrice:
           selectedProductItemsTotalPrice ?? this.selectedProductItemsTotalPrice,
-      optionsList: optionsList ?? this.optionsList,
       selectProducts: selectProducts ?? this.selectProducts,
+      tablesBySectionList:
+          tablesBySectionList != null ? tablesBySectionList() : this.tablesBySectionList,
+      isTableSaving: isTableSaving ?? this.isTableSaving,
+      isDeleteSuccess: isDeleteSuccess ?? this.isDeleteSuccess,
     );
   }
 }

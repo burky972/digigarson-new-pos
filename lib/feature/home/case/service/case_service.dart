@@ -1,7 +1,7 @@
 import 'package:a_pos_flutter/product/constant/string/query_params.dart';
 import 'package:a_pos_flutter/product/utils/helper/api_response_handler.dart';
 import 'package:core/base/model/base_response_model.dart';
-import 'package:core/logger/a_pos_logger.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:core/network/dio_client.dart';
 import 'package:core/network/network_constants.dart';
 import 'package:a_pos_flutter/feature/home/case/model/case_model.dart';
@@ -18,7 +18,7 @@ class CaseService extends ICaseService {
       NetworkConstants.cases,
       queryParameters: QueryParams.getCasesQueries(page: page, per: per),
     );
-    APosLogger.instance!.info('CASE SERVICE', response.data.toString());
+    appLogger.info('CASE SERVICE', response.data.toString());
 
     return ApiResponseHandler.handleResponse(response);
   }
@@ -27,7 +27,7 @@ class CaseService extends ICaseService {
   BaseResponseData<BaseResponseModel> getOpenCases() async {
     // DioClient.instance.updateHeader(userModel.accessToken!);
     BaseResponseModel response = await DioClient.instance.get(NetworkConstants.openCases);
-    APosLogger.instance!.info('CASE SERVICE', response.data.toString());
+    appLogger.info('CASE SERVICE', response.data.toString());
     return ApiResponseHandler.handleResponse(response);
   }
 

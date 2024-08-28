@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-final class AppBlocObserver extends BlocObserver {
+class AppBlocObserver extends BlocObserver {
   const AppBlocObserver();
   @override
   void onCreate(BlocBase<dynamic> bloc) {

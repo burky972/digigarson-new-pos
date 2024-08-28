@@ -1,7 +1,7 @@
 import 'package:a_pos_flutter/product/constant/theme_types/theme_types.dart';
 import 'package:flutter/material.dart';
 
-final class CustomFontStyle {
+class CustomFontStyle {
   const CustomFontStyle._();
 
   /// poppins button's text style
@@ -9,6 +9,13 @@ final class CustomFontStyle {
 
   /// montserrat title text style
   static const titlesTextStyle = TextStyle(fontFamily: FontTypes.montserrat);
+
+  /// montserrat title lineThrough text style
+  static const titleErrorTextStyle = TextStyle(
+      fontFamily: FontTypes.montserrat,
+      color: Color(0xff7a0000),
+      decoration: TextDecoration.lineThrough,
+      decorationThickness: 3.0);
 
   /// general roboto  text style
   static const generalTextStyle =

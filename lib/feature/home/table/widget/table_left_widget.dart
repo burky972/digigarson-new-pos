@@ -1,18 +1,22 @@
+import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/model/option_model.dart';
 import 'package:a_pos_flutter/feature/home/reopen/model/re_open_model.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_state.dart';
 import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
+import 'package:a_pos_flutter/feature/home/table/widget/new_order_products_list_widget.dart';
 import 'package:a_pos_flutter/feature/home/table/widget/table_button_widget.dart';
-import 'package:a_pos_flutter/language/locale_keys.g.dart';
-import 'package:a_pos_flutter/product/constant/app/app_constant.dart';
 import 'package:a_pos_flutter/product/enums/button_action/button_action_enum.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
+import 'package:a_pos_flutter/product/global/cubit/global_cubit.dart';
+import 'package:a_pos_flutter/product/global/model/order/new_order_model.dart';
+import 'package:a_pos_flutter/product/global/model/user_model.dart';
+import 'package:a_pos_flutter/product/global/service/response_action_service.dart';
 import 'package:a_pos_flutter/product/responsive/border.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/utils/helper/format_double.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:a_pos_flutter/product/widget/dialog/move_table_product_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -26,14 +30,17 @@ class TableLeftWidget extends StatefulWidget {
 
 class _TableLeftWidgetState extends State<TableLeftWidget> {
   final ScrollController _scrollController = ScrollController();
-  late TextEditingController _branch_custom_idController; //TODO: check here later!!
-  final FocusNode _branch_custom_idNode = FocusNode();
   String printer = "Print";
   final List<ReOpenModel> headTitle = [
     const ReOpenModel(text: 'Item Name', width: 0.16),
     const ReOpenModel(text: 'Qty', width: 0.06),
     const ReOpenModel(text: 'Price', width: 0.05)
   ];
+  @override
+  void initState() {
+    setInitialSelectedEditProduct(context.read<TableCubit>().state, 0, 0, context);
+    super.initState();
+  }
 
   isOpenTable(TableModel? tableModel) {
     if (tableModel != null) {
@@ -47,485 +54,398 @@ class _TableLeftWidgetState extends State<TableLeftWidget> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    _branch_custom_idController = TextEditingController();
-  }
-
-  @override
   Widget build(BuildContext context) {
     List<MapEntry<ButtonAction, String>> leftWrapButtonList =
-        ButtonAction.buttonLabels.entries.toList().sublist(10);
+        ButtonAction.buttonLabels.entries.toList().sublist(11);
     bool isSales = false;
 
-    return Container(
-      height: context.height,
-      margin: const EdgeInsets.all(0),
-      child: Padding(
-        padding: const EdgeInsets.all(1.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const AppPadding.extraLowVertical(),
-              width: context.dynamicWidth(.32) + (context.dynamicWidth(.06) - 55),
-              height: context.height - 60,
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    return BlocBuilder<TableCubit, TableState>(
+      builder: (context, state) {
+        return Container(
+          height: context.height,
+          margin: const EdgeInsets.all(0),
+          child: Padding(
+            padding: const EdgeInsets.all(1.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Container(
-                  height: context.height - 350,
-                  width: context.dynamicWidth(.31) + (context.dynamicWidth(.06) - 60),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(
-                      color: Colors.black,
-                      width: 2.0,
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(3.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: List.generate(
-                            headTitle.length,
-                            (index) => Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                SizedBox(
-                                  width: context.width * headTitle[index].width,
-                                  child: Text(headTitle[index].text,
-                                      style: const TextStyle(
-                                          fontSize: 16, fontWeight: FontWeight.bold)),
-                                ),
-                                index < headTitle.length - 1
-                                    ? const SizedBox(
-                                        width: 1,
-                                        child: Text("|", style: TextStyle(fontSize: 20)),
-                                      )
-                                    : Container(),
-                              ],
-                            ),
-                          ),
+                  padding: const AppPadding.extraLowVertical(),
+                  width: context.dynamicWidth(.32) + (context.dynamicWidth(.06) - 55),
+                  height: context.height - 60,
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Container(
+                      height: context.height - 350,
+                      width: context.dynamicWidth(.31) + (context.dynamicWidth(.06) - 60),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(
+                          color: Colors.black,
+                          width: 2.0,
                         ),
                       ),
-                      Expanded(
-                          child: Padding(
-                        padding: const EdgeInsets.all(3.0),
-                        child: BlocBuilder<TableCubit, TableState>(builder: ((context, state) {
-                          if (state.newProducts.products.isNotEmpty) {
-                            _scrollController.animateTo(
-                              _scrollController.position.maxScrollExtent + 200,
-                              duration: const Duration(milliseconds: 500),
-                              curve: Curves.ease,
-                            );
-                          }
-                          return Container(
-                            child: ListView(
-                              controller: _scrollController,
-                              scrollDirection: Axis.vertical,
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(3.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: List.generate(
-                                state.selectedTable != null
-                                    ? state.selectedTable!.orders.isNotEmpty
-                                        ? state.selectedTable!.orders.length
-                                        : state.newProducts.products.isNotEmpty
-                                            ? kOne
-                                            : kZero
-                                    : kZero,
-                                (rowIndex) {
-                                  return (state.selectedTable!.orders.isEmpty)
-                                      ? const SizedBox.shrink()
-                                      //  NewOrderProductListWidget()//!TODO: CHECK THIS WIDGET LATER AND CREATE IT IN DIFFERENT FILE
-                                      : Container(
-                                          child: Column(
-                                          children: [
-                                            SizedBox(
-                                              width: context.dynamicWidth(.32) +
-                                                  (context.dynamicWidth(.06) - 100),
-                                              child: Text(
-                                                'Order No: ${state.selectedTable!.orders[rowIndex].orderNum}',
-                                                style: const TextStyle(
-                                                    fontSize: 17, fontWeight: FontWeight.w600),
-                                                textAlign: TextAlign.start,
+                                headTitle.length,
+                                (index) => Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  children: [
+                                    SizedBox(
+                                      width: context.width * headTitle[index].width,
+                                      child: Text(headTitle[index].text,
+                                          style: const TextStyle(
+                                              fontSize: 16, fontWeight: FontWeight.bold)),
+                                    ),
+                                    index < headTitle.length - 1
+                                        ? const SizedBox(
+                                            width: 1,
+                                            child: Text("|", style: TextStyle(fontSize: 20)),
+                                          )
+                                        : Container(),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(3.0),
+                              child: ListView(
+                                controller: _scrollController,
+                                scrollDirection: Axis.vertical,
+                                children: List.generate(
+                                  state.selectedTable != null &&
+                                          state.selectedTable!.orders.isNotEmpty
+                                      ? state.selectedTable!.orders.length
+                                      : state.newProducts.products.isNotEmpty
+                                          ? 1
+                                          : 0,
+                                  (rowIndex) {
+                                    return (state.selectedTable!.orders.isEmpty)
+                                        ? NewOrderProductListWidget()
+                                        : Column(
+                                            children: [
+                                              SizedBox(
+                                                width: context.dynamicWidth(.32) +
+                                                    (context.dynamicWidth(.06) - 100),
+                                                child: Text(
+                                                  'Order No: ${state.selectedTable!.orders[rowIndex].orderNum}',
+                                                  style: const TextStyle(
+                                                      fontSize: 17, fontWeight: FontWeight.w600),
+                                                  textAlign: TextAlign.start,
+                                                ),
                                               ),
-                                            ),
-                                            const Divider(thickness: 3),
-                                            const SizedBox(height: 5),
-                                            for (var i = 0;
-                                                i <
-                                                    state.selectedTable!.orders[rowIndex].products
-                                                        .length;
-                                                i++)
-                                              Container(
-                                                // color: state.SelectProducts.indexOf(state
-                                                //             .selectedTable!
-                                                //             .orders[rowIndex]
-                                                //             .products[i]!) >=
-                                                //         0
-                                                //     ? Colors.green
-                                                //     : state.selectedTable!.orders[rowIndex].user !=
-                                                //             null
-                                                //         ? state.selectedTable!.orders[rowIndex]
-                                                //                     .products[i]!.status ==
-                                                //                 1
-                                                //             ? Colors.yellow
-                                                //             : Colors.white
-                                                //         : Colors.white,
-                                                child: Row(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                  children: [
-                                                    InkWell(
-                                                      onTap: () {
-                                                        // debugPrint('SELECTED ON pREssed!!!');
-                                                        // state.selectedTable!.orders[rowIndex]
-                                                        //         .products[i]!.orderNum =
-                                                        //     state.selectedTable!.orders[rowIndex]
-                                                        //         .orderNum;
-                                                        // int indexOf = state.SelectProducts.indexOf(
-                                                        //     state.selectedTable!.orders[rowIndex]
-                                                        //         .products[i]!);
-                                                        // state.setSelectProduct(
-                                                        //     state.selectedTable!.orders[rowIndex],
-                                                        //     state.selectedTable!.orders[rowIndex]
-                                                        //         .products[i]!,
-                                                        //     del: indexOf >= 0 ? indexOf : null);
-                                                      },
-                                                      child: Container(
-                                                        constraints: const BoxConstraints(
-                                                          minHeight: 32,
-                                                        ),
-                                                        padding: const EdgeInsets.only(
-                                                            left: 3, right: 3),
-                                                        width: context.width * headTitle[0].width,
-                                                        child: Text.rich(TextSpan(children: [
-                                                          state.selectedTable!.orders[rowIndex]
-                                                                  .products[i]!.isFirst!
-                                                              ? const TextSpan(
-                                                                  text: "** ",
-                                                                  style: TextStyle(
-                                                                      fontSize: 12,
-                                                                      color: Colors.green,
-                                                                      fontWeight: FontWeight.bold))
-                                                              : TextSpan(
-                                                                  text: state
-                                                                              .selectedTable!
-                                                                              .orders[rowIndex]
-                                                                              .products[i]!
-                                                                              .note
-                                                                              .toString()
-                                                                              .isNotEmpty ||
-                                                                          state
-                                                                              .selectedTable!
-                                                                              .orders[rowIndex]
-                                                                              .products[i]!
-                                                                              .optionsString
-                                                                              .toString()
-                                                                              .isNotEmpty
-                                                                      ? "++ "
-                                                                      : "",
-                                                                  style: const TextStyle(
-                                                                      fontSize: 11,
-                                                                      color: Colors.red,
-                                                                      fontWeight: FontWeight.bold)),
-                                                          TextSpan(
-                                                              text:
-                                                                  '${state.selectedTable!.orders[rowIndex].products[i]!.productName}',
-                                                              style: const TextStyle(fontSize: 17))
-                                                        ])),
-                                                      ),
-                                                    ),
-                                                    InkWell(
-                                                      onTap: () {
-                                                        //TODO: CHECK THIS LATER
-                                                        // state
-                                                        //             .selectedTable!
-                                                        //             .orders[rowIndex]
-                                                        //             .products[i]!
-                                                        //             .note
-                                                        //             .toString()
-                                                        //             .isNotEmpty ||
-                                                        //         state
-                                                        //             .selectedTable!
-                                                        //             .orders[rowIndex]
-                                                        //             .products[i]!
-                                                        //             .optionsString
-                                                        //             .toString()
-                                                        //             .isNotEmpty
-                                                        //     ? CheckDetailDialog().showCheckDialog(
-                                                        //         context,
-                                                        //         tableListProvider.selectedTable!
-                                                        //             .orders[rowIndex].products[i]!)
-                                                        //     : null;
-                                                      },
-                                                      child: Container(
-                                                        padding: const EdgeInsets.only(
-                                                            left: 3, right: 3),
-                                                        width: context.width * headTitle[2].width,
-                                                        child: Text(
-                                                          DoubleConvert().formatDouble(state
-                                                                  .selectedTable!
-                                                                  .orders[rowIndex]
-                                                                  .products[i]!
-                                                                  .quantity ??
-                                                              0.0),
-                                                          style: const TextStyle(fontSize: 17),
-                                                          textAlign: TextAlign.end,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    InkWell(
-                                                      onTap: () {
-                                                        //TODO: CHECK THIS LATER !
-                                                        // tableListProvider
-                                                        //             .selectedTable!
-                                                        //             .orders[rowIndex]
-                                                        //             .products[i]!
-                                                        //             .note
-                                                        //             .toString()
-                                                        //             .isNotEmpty ||
-                                                        //         tableListProvider
-                                                        //             .selectedTable!
-                                                        //             .orders[rowIndex]
-                                                        //             .products[i]!
-                                                        //             .optionsString
-                                                        //             .toString()
-                                                        //             .isNotEmpty
-                                                        //     ? CheckDetailDialog().showCheckDialog(
-                                                        //         context,
-                                                        //         tableListProvider.selectedTable!
-                                                        //             .orders[rowIndex].products[i]!)
-                                                        //     : null;
-                                                      },
-                                                      child: BlocBuilder<TableCubit, TableState>(
-                                                        builder: (context, state) {
-                                                          return Container(
-                                                            padding: const EdgeInsets.only(
-                                                                left: 3, right: 3),
-                                                            width: context
-                                                                .dynamicWidth(headTitle[1].width),
-                                                            child: Text(
-                                                              //! product's price
-                                                              state.selectedTable!.orders[rowIndex]
-                                                                          .products[i]!.status ==
-                                                                      0
-                                                                  ? LocaleKeys.CANCEL.tr()
-                                                                  : state
+                                              const Divider(thickness: 3),
+                                              for (var i = 0;
+                                                  i <
+                                                      state.selectedTable!.orders[rowIndex].products
+                                                          .length;
+                                                  i++)
+                                                Container(
+                                                  color: context.colorScheme.onSecondary,
+                                                  padding: const AppPadding.extraMinAll(),
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      if (state.selectedTable?.orders.isEmpty ??
+                                                          true) return;
+                                                      setSelectedEditProduct(
+                                                          state.selectedTable?.orders[rowIndex]
+                                                                  .products[i] ??
+                                                              Product.empty(),
+                                                          context);
+                                                    },
+                                                    child: Column(
+                                                      children: [
+                                                        Container(
+                                                          padding: const EdgeInsets.only(top: 2),
+                                                          decoration: BoxDecoration(
+                                                              color: state
                                                                           .selectedTable!
                                                                           .orders[rowIndex]
                                                                           .products[i]!
-                                                                          .isServe!
-                                                                      ? LocaleKeys.catering.tr()
-                                                                      : DoubleConvert()
-                                                                          .formatPriceDouble(state
+                                                                          .id ==
+                                                                      state.newOrderProduct?.product
+                                                                  ? context.colorScheme.tertiary
+                                                                  : Colors.transparent,
+                                                              borderRadius: const BorderRadius.only(
+                                                                topLeft: Radius.circular(4),
+                                                              )),
+                                                          child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment.spaceEvenly,
+                                                            children: [
+                                                              Container(
+                                                                  constraints: const BoxConstraints(
+                                                                    minHeight: 24,
+                                                                  ),
+                                                                  width: context.width *
+                                                                      headTitle[0].width,
+                                                                  child: Text(
+                                                                      '${state.selectedTable!.orders[rowIndex].products[i]!.productName?.toUpperCase()}',
+                                                                      style: state
                                                                                   .selectedTable!
                                                                                   .orders[rowIndex]
                                                                                   .products[i]!
-                                                                                  .price ??
-                                                                              0.0),
-                                                              style: const TextStyle(fontSize: 17),
-                                                              textAlign: TextAlign.end,
-                                                            ),
-                                                          );
-                                                        },
-                                                      ),
+                                                                                  .cancelStatus
+                                                                                  ?.isCancelled ??
+                                                                              false
+                                                                          ? CustomFontStyle
+                                                                              .titleErrorTextStyle
+                                                                          : CustomFontStyle
+                                                                              .titlesTextStyle)),
+                                                              Container(
+                                                                padding: const EdgeInsets.only(
+                                                                    left: 3, right: 3),
+                                                                width: context.width *
+                                                                    headTitle[2].width,
+                                                                child: Text(
+                                                                  DoubleConvert().formatDouble(state
+                                                                          .selectedTable!
+                                                                          .orders[rowIndex]
+                                                                          .products[i]!
+                                                                          .quantity ??
+                                                                      0.0),
+                                                                  style: state
+                                                                              .selectedTable!
+                                                                              .orders[rowIndex]
+                                                                              .products[i]!
+                                                                              .cancelStatus
+                                                                              ?.isCancelled ??
+                                                                          false
+                                                                      ? CustomFontStyle
+                                                                          .titleErrorTextStyle
+                                                                      : CustomFontStyle
+                                                                          .titlesTextStyle,
+                                                                  textAlign: TextAlign.end,
+                                                                ),
+                                                              ),
+                                                              InkWell(
+                                                                onTap: () {},
+                                                                child: BlocBuilder<TableCubit,
+                                                                    TableState>(
+                                                                  builder: (context, state) {
+                                                                    return Container(
+                                                                      padding:
+                                                                          const EdgeInsets.only(
+                                                                        left: 3,
+                                                                        right: 3,
+                                                                      ),
+                                                                      width: context.dynamicWidth(
+                                                                          headTitle[1].width),
+                                                                      child: Text(
+                                                                        DoubleConvert()
+                                                                            .formatPriceDouble(state
+                                                                                    .selectedTable!
+                                                                                    .orders[
+                                                                                        rowIndex]
+                                                                                    .products[i]!
+                                                                                    .price ??
+                                                                                0.0),
+                                                                        style: state
+                                                                                    .selectedTable!
+                                                                                    .orders[
+                                                                                        rowIndex]
+                                                                                    .products[i]!
+                                                                                    .cancelStatus
+                                                                                    ?.isCancelled ??
+                                                                                false
+                                                                            ? CustomFontStyle
+                                                                                .titleErrorTextStyle
+                                                                            : CustomFontStyle
+                                                                                .titlesTextStyle,
+                                                                        textAlign: TextAlign.end,
+                                                                      ),
+                                                                    );
+                                                                  },
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        state.selectedTable!.orders[rowIndex]
+                                                                .products[i]!.options.isEmpty
+                                                            ? const SizedBox()
+                                                            : _ProductItemsList(
+                                                                i: i,
+                                                                headTitle: headTitle,
+                                                                state: state,
+                                                                rowIndex: rowIndex),
+                                                      ],
                                                     ),
-                                                  ],
+                                                  ),
                                                 ),
-                                              ),
-                                            (state.selectedTable!.orders.length == rowIndex + 1 &&
-                                                    state.newProducts.products.isNotEmpty)
-                                                ? const SizedBox.shrink()
-                                                //TODO: CHECK THIS LATER
-                                                // NewOrderProductListWidget()
-                                                : Container()
-                                          ],
-                                        ));
-                                },
+                                              (state.selectedTable!.orders.length == rowIndex + 1 &&
+                                                      state.newProducts.products.isNotEmpty)
+                                                  ? NewOrderProductListWidget()
+                                                  : const SizedBox.shrink()
+                                            ],
+                                          );
+                                  },
+                                ),
                               ),
                             ),
+                          ),
+                          Container(
+                            child: isOpenTable(state.selectedTable)
+                                ? Container(
+                                    color: context.colorScheme.tertiary,
+                                    child: Column(
+                                      children: [
+                                        state.selectedTable!.serviceFee.isNotEmpty
+                                            ? _DiscountCoverServiceContainer(
+                                                leftText: 'Service',
+                                                rightText: DoubleConvert().formatPriceDouble(
+                                                    state.selectedTable!.serviceFee.fold(
+                                                        0.0,
+                                                        (previousValue, service) =>
+                                                            service.amount! + previousValue)),
+                                              )
+                                            : Container(),
+                                        state.selectedTable!.cover.isNotEmpty
+                                            ? _DiscountCoverServiceContainer(
+                                                leftText: 'Cover',
+                                                rightText: DoubleConvert().formatPriceDouble(
+                                                    state.selectedTable!.cover.fold(
+                                                        0.0,
+                                                        (previousValue, cover) =>
+                                                            cover.price! + previousValue)),
+                                              )
+                                            : Container(),
+                                        state.selectedTable!.discount.isNotEmpty
+                                            ? _DiscountCoverServiceContainer(
+                                                leftText: 'Discount',
+                                                rightText: DoubleConvert().formatPriceDouble(
+                                                    state.selectedTable!.discount.fold(
+                                                        0.0,
+                                                        (previousValue, discount) =>
+                                                            discount.amount! + previousValue)),
+                                              )
+                                            : Container(),
+                                      ],
+                                    ),
+                                  )
+                                : Container(),
+                          )
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+
+                    //! SubTotal - Total - Tax
+                    Container(
+                      color: context.colorScheme.primary,
+                      width: context.dynamicWidth(.32) + (context.dynamicWidth(.06) - 60),
+                      height: 75,
+                      child: BlocBuilder<TableCubit, TableState>(
+                        builder: (context, state) {
+                          return Column(
+                            children: [
+                              _SubTotalTaxTotalWidget(
+                                  leftText: 'Sub Total',
+                                  rightText: DoubleConvert().formatPriceDouble(state.subPrice)),
+                              _SubTotalTaxTotalWidget(
+                                  leftText: 'Tax',
+                                  rightText: DoubleConvert().formatPriceDouble(
+                                      context.read<TableCubit>().calculateTotalTax())),
+                              _SubTotalTaxTotalWidget(
+                                  leftText: 'Total',
+                                  rightText: DoubleConvert().formatPriceDouble(state.totalPrice)),
+                            ],
                           );
-                        })),
-                      )),
-                      BlocBuilder<TableCubit, TableState>(
-                          builder: ((context, state) => Container(
-                                child: isOpenTable(state.selectedTable)
-                                    ? Container(
-                                        color: context.colorScheme.tertiary,
-                                        child: Column(
-                                          children: [
-                                            state.selectedTable!.serviceFee.isNotEmpty
-                                                ? _DiscountCoverServiceContainer(
-                                                    leftText: 'Service',
-                                                    rightText: DoubleConvert().formatPriceDouble(
-                                                        state.selectedTable!.serviceFee.fold(
-                                                            0.0,
-                                                            (previousValue, service) =>
-                                                                service.amount! + previousValue)),
-                                                  )
-                                                : Container(),
-                                            state.selectedTable!.cover.isNotEmpty
-                                                ? _DiscountCoverServiceContainer(
-                                                    leftText: 'Cover',
-                                                    rightText: DoubleConvert().formatPriceDouble(
-                                                        state.selectedTable!.cover.fold(
-                                                            0.0,
-                                                            (previousValue, cover) =>
-                                                                cover.price! + previousValue)),
-                                                  )
-                                                : Container(),
-                                            state.selectedTable!.discount.isNotEmpty
-                                                ? _DiscountCoverServiceContainer(
-                                                    leftText: 'Discount',
-                                                    rightText: DoubleConvert().formatPriceDouble(
-                                                        state.selectedTable!.discount.fold(
-                                                            0.0,
-                                                            (previousValue, discount) =>
-                                                                discount.amount! + previousValue)),
-                                                  )
-                                                : Container(),
-                                          ],
+                        },
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 2,
+                    ),
+                    SingleChildScrollView(
+                      child: SizedBox(
+                        width: context.dynamicWidth(.32) + (context.dynamicWidth(.06) - 60),
+                        child: Wrap(
+                          alignment: WrapAlignment.spaceBetween,
+                          runSpacing: 4,
+                          children: leftWrapButtonList.map((button) {
+                            final action = button.key;
+                            final label = button.value;
+                            return action.name == ButtonAction.sales.name
+                                ? isSales
+                                    ? //TODO!: IN SOME SITUATION SALES BUTTON WON'T BE SHOWING IN THE TABLE SCREEN
+                                    //TODO:CHECK HERE LATER!
+                                    TableButtonWidget(label)
+                                    : Container(
+                                        width: (context.dynamicWidth(.32) +
+                                                (context.dynamicWidth(.06) - 60)) /
+                                            4,
+                                        constraints: const BoxConstraints(
+                                          minWidth: 60,
+                                          maxWidth: 110,
+                                          minHeight: 55,
                                         ),
                                       )
-                                    : Container(),
-                              )))
+                                : BlocBuilder<TableCubit, TableState>(
+                                    builder: (context, state) {
+                                      return InkWell(
+                                        onTap: () async {
+                                          await handleButtonAction(action, context, state);
+                                        },
+                                        child: TableButtonWidget(label),
+                                      );
+                                    },
+                                  );
+                          }).toList(),
+                        ),
+                      ),
+                    )
+                  ]),
+                ),
+                Container(
+                  width: 50,
+                  constraints: const BoxConstraints(minWidth: 40, maxWidth: 50),
+                  child: ListView(
+                    children: [
+                      for (int i = 1; i <= 9; i++)
+                        Padding(
+                          padding: const EdgeInsets.all(2.0),
+                          child: NumberButton(txt: "$i", color: Colors.indigo),
+                        ),
+                      const Padding(
+                          padding: EdgeInsets.all(2.0),
+                          child: NumberButton(txt: "0", color: Colors.indigo)),
+                      const Padding(
+                        padding: EdgeInsets.all(2.0),
+                        child: NumberButton(txt: "C", color: Colors.red),
+                      ),
+                      // Padding(
+                      //   padding: const EdgeInsets.all(2.0),
+                      //   child: BlocBuilder<TableCubit,TableState>(
+                      //     builder: ((context, state) =>
+                      //         TableLeftNumberContainerWidget(
+                      //             text: DoubleConvert()
+                      //                 .formatDouble(tableListProvider.NewOrderProductAmount))),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 4),
-
-                //! SubTotal - Total - Tax
-                Container(
-                  color: context.colorScheme.primary,
-                  width: context.dynamicWidth(.32) + (context.dynamicWidth(.06) - 60),
-                  height: 75,
-                  child: BlocBuilder<TableCubit, TableState>(
-                    builder: (context, state) {
-                      return Column(
-                        children: [
-                          _SubTotalTaxTotalWidget(
-                              leftText: 'Sub Total',
-                              rightText: DoubleConvert().formatPriceDouble(subTotal(state))),
-                          _SubTotalTaxTotalWidget(
-                              leftText: 'Tax',
-                              rightText: DoubleConvert().formatPriceDouble(taxTotal(state))),
-                          _SubTotalTaxTotalWidget(
-                              leftText: 'Total',
-                              rightText: DoubleConvert()
-                                  .formatPriceDouble(state.selectedTable!.remainingPrice ?? 0.0)),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(
-                  height: 2,
-                ),
-                SingleChildScrollView(
-                  child: SizedBox(
-                    width: context.dynamicWidth(.32) + (context.dynamicWidth(.06) - 60),
-                    child: Wrap(
-                      alignment: WrapAlignment.spaceBetween,
-                      runSpacing: 4,
-                      children: leftWrapButtonList.map((button) {
-                        final action = button.key;
-                        final label = button.value;
-                        return action.name == ButtonAction.sales.name
-                            ? isSales
-                                ? //TODO!: IN SOME SITUATION SALES BUTTON WON'T BE SHOWING IN THE TABLE SCREEN
-                                //TODO:CHECK HERE LATER!
-                                TableButtonWidget(label)
-                                : Container(
-                                    width: (context.dynamicWidth(.32) +
-                                            (context.dynamicWidth(.06) - 60)) /
-                                        4,
-                                    constraints: const BoxConstraints(
-                                      minWidth: 60,
-                                      maxWidth: 110,
-                                      minHeight: 55,
-                                    ),
-                                  )
-                            : InkWell(
-                                onTap: () async {
-                                  await handleButtonAction(action, context);
-                                },
-                                child: TableButtonWidget(label),
-                              );
-                      }).toList(),
-                    ),
-                  ),
-                )
-              ]),
+              ],
             ),
-            Container(
-              width: 50,
-              constraints: const BoxConstraints(minWidth: 40, maxWidth: 50),
-              child: ListView(
-                children: [
-                  for (int i = 1; i <= 9; i++)
-                    Padding(
-                      padding: const EdgeInsets.all(2.0),
-                      child: NumberButton(txt: "$i", color: Colors.indigo),
-                    ),
-                  const Padding(
-                      padding: EdgeInsets.all(2.0),
-                      child: NumberButton(txt: "0", color: Colors.indigo)),
-                  const Padding(
-                    padding: EdgeInsets.all(2.0),
-                    child: NumberButton(txt: "C", color: Colors.red),
-                  ),
-                  // Padding(
-                  //   padding: const EdgeInsets.all(2.0),
-                  //   child: BlocBuilder<TableCubit,TableState>(
-                  //     builder: ((context, state) =>
-                  //         TableLeftNumberContainerWidget(
-                  //             text: DoubleConvert()
-                  //                 .formatDouble(tableListProvider.NewOrderProductAmount))),
-                  //   ),
-                  // ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
-  subTotal(TableState state) {
-    double subTot = 0.0;
+  Future<void> handleButtonAction(
+      ButtonAction action, BuildContext context, TableState state) async {
+    UserModel userModel = context.read<GlobalCubit>().user;
+    TableCubit tableCubit = context.read<TableCubit>();
 
-    ///  creating new order's sub total price
-    if (state.selectedTable!.orders.isEmpty) {
-      for (var product in state.newProducts.products) {
-        subTot += (product.price * product.quantity);
-      }
-    }
-
-    /// created order's sub total price
-    for (var order in state.selectedTable!.orders) {
-      for (var product in order.products) {
-        if (product!.status != 0 || !product.isServe!) {
-          subTot += product.price!;
-        }
-      }
-    }
-    return subTot;
-  }
-
-  taxTotal(TableState state) {
-    double subTot = 0.0;
-    for (var order in state.selectedTable!.orders) {
-      for (var product in order.products) {
-        if (product!.status != 0 || !product.isServe!) {
-          subTot += (product.price! * 08) / 100;
-        }
-      }
-    }
-    return subTot;
-  }
-
-  Future<void> handleButtonAction(ButtonAction action, BuildContext context) async {
     switch (action.index) {
       case 8:
         // Close Table
@@ -538,6 +458,17 @@ class _TableLeftWidgetState extends State<TableLeftWidget> {
         break;
       case 11:
         // New Sale
+        if (state.newProducts.products.isEmpty) return;
+
+        final response = await context.read<TableCubit>().postTableNewOrder(context, userModel);
+        ResponseActionService.getTableAndNavigate(
+          context: context,
+          response: response,
+          tableCubit: tableCubit,
+          userModel: userModel,
+          action: ButtonAction.newSale,
+        );
+
         break;
       case 12:
         // Split
@@ -570,9 +501,189 @@ class _TableLeftWidgetState extends State<TableLeftWidget> {
         // Catering
 
         break;
+      case 22:
+        // Move Table
+        if (state.newOrderProduct == null) return;
+        tableCubit.setSelectedMoveTable(state.selectedTable!);
+        if (state.selectedTable?.orders == null || state.selectedTable?.orders.isEmpty == true) {
+          return;
+        }
+        showDialog(
+          context: context,
+          builder: (context) => const MoveTableProductDialog(isTransfer: true),
+        );
+        break;
       default:
         break;
     }
+  }
+
+  /// set selected product in table's order
+  void setSelectedEditProduct(Product product, BuildContext context) {
+    if (product.cancelStatus?.isCancelled == false) {
+      context.read<TableCubit>().setSelectedEditProduct(
+            OrderProductModel(
+              id: product.id ?? '',
+              isFirst: product.isFirst ?? false,
+              product: product.id ?? '',
+              productName: product.productName ?? '',
+              quantity: product.quantity ?? 1,
+              categoryId: product.id ?? "", // TODO: Kontrol edilmeli
+              tax: product.tax ?? 0,
+              price: product.price ?? 1,
+              priceId: product.priceId ?? '',
+              cancelStatus: CancelStatus.empty(),
+              priceName: '', // TODO: Kontrol edilmeli
+              priceType: 'REGULAR',
+              note: product.note ?? '',
+              options: buildOptions(product),
+            ),
+          );
+    }
+  }
+
+  /// set selected product in table's order
+  void setInitialSelectedEditProduct(TableState state, int rowIndex, int i, BuildContext context) {
+    if (state.selectedTable?.orders.isEmpty ?? true) return;
+
+    for (var order in state.selectedTable!.orders) {
+      for (var pro in order.products) {
+        if (pro?.cancelStatus?.isCancelled == false) {
+          Product product = pro ?? Product.empty();
+          context.read<TableCubit>().setSelectedEditProduct(
+                OrderProductModel(
+                  id: product.id ?? '',
+                  isFirst: product.isFirst ?? false,
+                  product: product.id ?? '',
+                  productName: product.productName ?? '',
+                  quantity: product.quantity ?? 1,
+                  categoryId: product.id ?? "", // TODO: Kontrol edilmeli
+                  tax: product.tax ?? 0,
+                  price: product.price ?? 1,
+                  priceId: product.priceId ?? '',
+                  cancelStatus: CancelStatus.empty(),
+                  priceName: '', // TODO: Kontrol edilmeli
+                  priceType: 'REGULAR',
+                  note: product.note ?? '',
+                  options: buildOptions(product),
+                ),
+              );
+          return; // İlk iptal edilmemiş ürünü bulduktan sonra fonksiyondan çık
+        }
+      }
+    }
+  }
+
+  List<Options> buildOptions(Product product) {
+    if (product.options.isEmpty) {
+      return [Options.empty()];
+    }
+
+    var firstOption = product.options.first;
+    return [
+      Options(
+        name: firstOption.name ?? '',
+        optionId: firstOption.optionId ?? '',
+        items: buildItems(firstOption),
+      ),
+    ];
+  }
+
+  List<Item> buildItems(Options option) {
+    if (option.items.isEmpty) {
+      return [Item.empty()];
+    }
+
+    var firstItem = option.items.first;
+    return [
+      Item(
+        itemId: firstItem.id ?? '',
+        itemName: firstItem.itemName ?? '',
+        id: firstItem.id ?? '',
+        vatRate: firstItem.vatRate ?? 0,
+        priceType: "REGULAR",
+        price: firstItem.price ?? 1,
+      ),
+    ];
+  }
+}
+
+class _ProductItemsList extends StatelessWidget {
+  const _ProductItemsList({
+    required this.i,
+    required this.rowIndex,
+    required this.headTitle,
+    required this.state,
+  });
+
+  final int i;
+  final int rowIndex;
+  final List<ReOpenModel> headTitle;
+  final TableState state;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+        decoration: BoxDecoration(
+            color: state.selectedTable!.orders[rowIndex].products[i]!.id ==
+                    state.newOrderProduct?.product
+                ? context.colorScheme.tertiary
+                : Colors.transparent,
+            borderRadius: const BorderRadius.only(
+                bottomRight: Radius.circular(4), bottomLeft: Radius.circular(4))),
+        child: state.selectedTable?.orders[rowIndex].products[i]?.options.isNotEmpty == false
+            ? const SizedBox()
+            : Column(
+                children: state.selectedTable!.orders[rowIndex].products[i]!.options.map((option) {
+                return option.items.isEmpty == true
+                    ? const SizedBox.shrink()
+                    : Column(
+                        children: option.items.map((item) {
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              InkWell(
+                                child: Container(
+                                    constraints: const BoxConstraints(
+                                      minHeight: 24,
+                                    ),
+                                    width: context.width * headTitle[0].width,
+                                    child: Text('++${item.itemName}',
+                                        style: CustomFontStyle.titlesTextStyle)),
+                              ),
+                              InkWell(
+                                onTap: () {},
+                                child: Container(
+                                  padding: const EdgeInsets.only(left: 3, right: 3),
+                                  width: context.width * headTitle[2].width,
+                                  child: Text(
+                                    DoubleConvert().formatDouble(item.amount?.toDouble() ?? 1.0),
+                                    style: CustomFontStyle.titlesTextStyle,
+                                    textAlign: TextAlign.end,
+                                  ),
+                                ),
+                              ),
+                              InkWell(
+                                onTap: () {},
+                                child: BlocBuilder<TableCubit, TableState>(
+                                  builder: (context, state) {
+                                    return Container(
+                                      padding: const EdgeInsets.only(left: 3, right: 3),
+                                      width: context.dynamicWidth(headTitle[1].width),
+                                      child: Text(
+                                        DoubleConvert().formatPriceDouble(item.price ?? 0.0),
+                                        style: CustomFontStyle.titlesTextStyle,
+                                        textAlign: TextAlign.end,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          );
+                        }).toList(),
+                      );
+              }).toList()));
   }
 }
 

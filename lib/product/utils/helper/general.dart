@@ -1,6 +1,6 @@
-import 'package:a_pos_flutter/product/global/model/order/new_order_model.dart';
+import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/model/option_model.dart';
 
-getOptionString(List<NewOrderItem> items) {
+getOptionString(List<Item> items) {
   if (items.isEmpty) {
     return "";
   }
@@ -8,9 +8,9 @@ getOptionString(List<NewOrderItem> items) {
   StringBuffer buffer = StringBuffer();
 
   for (int i = 0; i < items.length; i++) {
-    NewOrderItem item = items[i];
+    Item item = items[i];
 
-    buffer.write(item.name.toString());
+    buffer.write(item.itemName.toString());
 
     if (i < items.length - 1) {
       buffer.write(", ");

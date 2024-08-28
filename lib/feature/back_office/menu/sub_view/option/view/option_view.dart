@@ -253,9 +253,11 @@ class _MenuOptionsViewState extends State<OptionsView> with AutomaticKeepAliveCl
                                                         flex: 2,
                                                         child: CustomBorderAllTextfield(
                                                           isReadOnly: isItemReadOnly,
-                                                          // controller: _taxController,
-                                                          controller: TextEditingController(),
-                                                          onChanged: (value) {},
+                                                          controller: optionCubit.itemTaxController,
+                                                          onChanged: (value) {
+                                                            optionCubit.updateSelectedItemValue(
+                                                                UpdatedItemValue.vatRate, value);
+                                                          },
                                                         ),
                                                       ),
                                                     ],
@@ -288,11 +290,9 @@ class _MenuOptionsViewState extends State<OptionsView> with AutomaticKeepAliveCl
                                                 child: Row(
                                                   mainAxisAlignment: MainAxisAlignment.center,
                                                   children: [
-                                                    InkWell(
-                                                        onTap: () {},
-                                                        child: const LightBlueButton(
-                                                          buttonText: 'Browse',
-                                                        )),
+                                                    const LightBlueButton(
+                                                      buttonText: 'Browse',
+                                                    ),
                                                     InkWell(
                                                         onTap: () {
                                                           showDialog(

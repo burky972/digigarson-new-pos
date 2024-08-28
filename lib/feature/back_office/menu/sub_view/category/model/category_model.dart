@@ -26,6 +26,14 @@ class CategoryModel extends BaseModel<CategoryModel> {
   });
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) => _$CategoryModelFromJson(json);
+  factory CategoryModel.empty() => CategoryModel(
+        id: '',
+        title: '',
+        image: '',
+        isSubCategory: false,
+        parentCategory: '',
+        activeList: const [],
+      );
   @override
   Map<String, dynamic> toJson() => _$CategoryModelToJson(this);
 
@@ -36,7 +44,7 @@ class CategoryModel extends BaseModel<CategoryModel> {
   List<Object?> get props => [id, title, image, isSubCategory, parentCategory, activeList];
 
   CategoryModel copyWith({
-    String? id,
+    String? Function()? id,
     String? title,
     String? image,
     bool? isSubCategory,
@@ -44,7 +52,7 @@ class CategoryModel extends BaseModel<CategoryModel> {
     List<int>? activeList,
   }) {
     return CategoryModel(
-      id: id ?? this.id,
+      id: id != null ? id() : this.id,
       title: title ?? this.title,
       image: image ?? this.image,
       isSubCategory: isSubCategory ?? this.isSubCategory,

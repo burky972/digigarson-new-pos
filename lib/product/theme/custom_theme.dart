@@ -31,7 +31,7 @@ const _colorScheme = ColorScheme(
   surface: _surfaceColor,
   surfaceVariant: _surfaceVariant,
   background: _surfaceColor,
-  error: Color.fromARGB(255, 255, 0, 0),
+  error: Color.fromARGB(255, 120, 14, 14),
   errorContainer: Color(0XFFe78b8b),
   onPrimary: _surfaceColor,
   onSecondary: _onSecondary,
@@ -364,6 +364,6 @@ final ThemeData APosTheme = ThemeData(
       return null;
     }),
   ),
-  colorScheme: _colorScheme.copyWith(error: _primaryColor),
+  colorScheme: _colorScheme,
   bottomAppBarTheme: const BottomAppBarTheme(color: _primaryColor),
 );

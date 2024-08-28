@@ -1,7 +1,7 @@
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/model/option_model.dart';
 import 'package:core/base/cubit/base_cubit.dart';
 
-final class OptionState extends BaseState {
+class OptionState extends BaseState {
   const OptionState({
     required this.states,
     required this.option,

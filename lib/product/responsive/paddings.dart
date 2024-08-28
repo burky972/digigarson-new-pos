@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 @immutable
-final class AppPadding extends EdgeInsets {
+class AppPadding extends EdgeInsets {
   const AppPadding() : super.all(0);
 
   /// [AppPadding.extraMinAll] is 4

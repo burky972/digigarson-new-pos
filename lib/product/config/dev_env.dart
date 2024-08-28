@@ -1,10 +1,12 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:a_pos_flutter/product/config/i_app_env.dart';
 import 'package:envied/envied.dart';
 
 part 'dev_env.g.dart';
 
 @Envied(path: 'assets/env/.dev.env', obfuscate: true)
-final class DevEnv implements AppEnvConfigure {
+class DevEnv implements AppEnvConfigure {
   @EnviedField(varName: 'BASE_URL')
   static final String _BASE_URL = _DevEnv._BASE_URL;
 

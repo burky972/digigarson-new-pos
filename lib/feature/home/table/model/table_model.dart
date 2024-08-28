@@ -1,6 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/model/option_model.dart';
+import 'package:a_pos_flutter/product/global/model/order/new_order_model.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
@@ -12,24 +14,27 @@ part 'table_model.g.dart';
 
 @JsonSerializable()
 class TableModel extends BaseModel<TableModel> {
+  @JsonKey(name: '_id')
+  final String? id;
   int? checkNo;
   final String? title;
   final bool? isPrinted;
   final String? branch;
   final String? section;
+  @JsonKey(name: 'table_type')
   final int? tableType;
   final LocationModel? location;
   final double? totalPrice;
   final double? totalTax;
   final double? remainingPrice;
-  @JsonKey(name: '_id')
-  final String? id;
+
   final List<OrderModel> orders;
   final List<PaidOrderModel>? paidOrders;
+  final List<CoverModel> cover; //X
   final List<DiscountModel> discount;
-  final List<CoverModel> cover;
   final List<Payment> payments;
-  final List<ServiceModel> serviceFee;
+  final List<ServiceFeeModel> serviceFee;
+  final int? customerCount;
   @JsonKey(name: 'createdAt')
   final DateTime? createdAt;
   @JsonKey(name: 'updatedAt')
@@ -37,6 +42,7 @@ class TableModel extends BaseModel<TableModel> {
   final String? url;
   @JsonKey(name: '__v')
   final int? version;
+  final DateTime? lastOrderDate;
 
   TableModel({
     this.checkNo,
@@ -60,6 +66,8 @@ class TableModel extends BaseModel<TableModel> {
     this.updatedAt,
     this.url,
     this.version,
+    this.customerCount,
+    this.lastOrderDate,
   });
 
   factory TableModel.fromJson(Map<String, dynamic> json) => _$TableModelFromJson(json);
@@ -91,7 +99,9 @@ class TableModel extends BaseModel<TableModel> {
         createdAt,
         updatedAt,
         url,
-        version
+        customerCount,
+        version,
+        lastOrderDate,
       ];
 
   TableModel copyWith({
@@ -111,11 +121,13 @@ class TableModel extends BaseModel<TableModel> {
     List<DiscountModel>? discount,
     List<CoverModel>? cover,
     List<Payment>? payments,
-    List<ServiceModel>? serviceFee,
+    List<ServiceFeeModel>? serviceFee,
     DateTime? createdAt,
     DateTime? updatedAt,
     String? url,
     int? version,
+    int? customerCount,
+    DateTime? lastOrderDate,
   }) {
     return TableModel(
       checkNo: checkNo ?? this.checkNo,
@@ -133,12 +145,14 @@ class TableModel extends BaseModel<TableModel> {
       paidOrders: paidOrders ?? this.paidOrders,
       discount: discount ?? this.discount,
       cover: cover ?? this.cover,
+      customerCount: customerCount ?? this.customerCount,
       payments: payments ?? this.payments,
       serviceFee: serviceFee ?? this.serviceFee,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       url: url ?? this.url,
       version: version ?? this.version,
+      lastOrderDate: lastOrderDate ?? this.lastOrderDate,
     );
   }
 
@@ -162,30 +176,46 @@ class TableModel extends BaseModel<TableModel> {
 
 class CoverModel {
   CoverModel({
-    required this.isPaid,
     required this.id,
+    required this.type,
     required this.title,
     required this.quantity,
     required this.price,
+    required this.percentile,
+    required this.totalPrice,
+    required this.user,
+    required this.isPaid,
   });
 
-  bool? isPaid;
   String? id;
+  String? type;
   String? title;
   double? quantity;
   double? price;
+  double? percentile;
+  double? totalPrice;
+  String? user;
+  bool? isPaid;
 
   CoverModel.fromJson(Map<String, dynamic> json) {
-    isPaid = json["is_paid"];
     id = json["_id"]?.toString();
+    type = json["type"]?.toString();
     title = json["title"]?.toString();
     quantity = json["quantity"] == null ? null : double.tryParse(json["quantity"].toString());
     price = json["price"] == null ? null : double.tryParse(json["price"].toString());
+    percentile = json["percentile"] == null ? null : double.tryParse(json["percentile"].toString());
+    totalPrice = json["totalPrice"] == null ? null : double.tryParse(json["totalPrice"].toString());
+    user = json["user"]?.toString();
+    isPaid = json["is_paid"];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['_id'] = id;
+    data['type'] = type;
+    data['user'] = user;
+    data['percentile'] = percentile;
+    data['totalPrice'] = totalPrice;
     data['is_paid'] = isPaid;
     data['title'] = title;
     data['quantity'] = quantity;
@@ -199,6 +229,10 @@ class CoverModel {
     title = other.title;
     quantity = other.quantity;
     price = other.price;
+    type = other.type;
+    user = other.user;
+    percentile = other.percentile;
+    totalPrice = other.totalPrice;
   }
 }
 
@@ -209,6 +243,7 @@ class DiscountModel {
     required this.amount,
     required this.type,
     required this.user,
+    required this.percentile,
   });
 
   String? id;
@@ -216,6 +251,7 @@ class DiscountModel {
   double? amount;
   int? type;
   String? user;
+  double? percentile;
 
   DiscountModel.fromJson(Map<String, dynamic> json) {
     id = json["_id"]?.toString();
@@ -223,6 +259,7 @@ class DiscountModel {
     amount = double.tryParse(json["amount"].toString());
     type = json["type"];
     user = json["user"]?.toString();
+    percentile = double.tryParse(json["percentile"].toString());
   }
 
   Map<String, dynamic> toJson() {
@@ -233,6 +270,7 @@ class DiscountModel {
       data['amount'] = amount;
       data['type'] = type;
       data['user'] = user;
+      data['percentile'] = percentile;
     } catch (e) {
       print(e);
     }
@@ -240,8 +278,8 @@ class DiscountModel {
   }
 }
 
-class ServiceModel {
-  ServiceModel({
+class ServiceFeeModel {
+  ServiceFeeModel({
     required this.id,
     required this.amount,
     required this.percentile,
@@ -255,7 +293,7 @@ class ServiceModel {
   int? type;
   String? user;
 
-  ServiceModel.fromJson(Map<String, dynamic> json) {
+  ServiceFeeModel.fromJson(Map<String, dynamic> json) {
     id = json["_id"]?.toString();
     amount = double.tryParse(json["amount"].toString());
     percentile = double.tryParse(json["percentile"].toString());
@@ -273,7 +311,7 @@ class ServiceModel {
     return data;
   }
 
-  ServiceModel.copy(ServiceModel other) {
+  ServiceFeeModel.copy(ServiceFeeModel other) {
     id = other.id;
     amount = other.amount;
     user = other.user;
@@ -300,12 +338,12 @@ class TableListModel {
 }
 
 class PaidOrderModel {
-  late String id;
+  late String? id;
   late int orderNum;
   late List<PaidProductModel> products;
 
   PaidOrderModel({
-    required this.id,
+    this.id,
     required this.orderNum,
     required this.products,
   });
@@ -345,13 +383,13 @@ class PaidProductModel {
 
   PaidProductModel.fromJson(Map<String, dynamic> json) {
     price = double.tryParse(json["price"].toString()) ?? 0;
-    id = json["_id"].toString();
+    id = json["id"].toString();
     quantity = double.tryParse(json["quantity"].toString()) ?? 0;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['_id'] = id;
+    data['id'] = id;
     data['quantity'] = quantity;
     data['price'] = price;
     return data;
@@ -366,60 +404,19 @@ class PaidProductModel {
 
 class OrderModel {
   OrderModel({
-    required this.isPrint,
-    required this.checkNo,
-    required this.transferred,
-    required this.orderType,
-    required this.orderStatus,
-    required this.totalPrice,
-    required this.remainingPrice,
-    required this.status,
-    required this.isCancelled,
-    required this.id,
     required this.orderNum,
     required this.products,
-    required this.waiterId,
     required this.updatedAt,
     required this.createdAt,
-    required this.transferredDate,
-    required this.transferredFrom,
-    required this.customer,
-    required this.user,
-    required this.address,
   });
 
-  late IsPrint? isPrint;
-  late int? checkNo;
-  late bool? transferred;
-  late int? orderType;
-  late int? orderStatus;
-  late double? totalPrice;
-  late double? remainingPrice;
-  late int? status;
-  late bool? isCancelled;
-  late String? id;
   late int? orderNum;
   late List<Product?> products;
-  late String? waiterId;
+
   late DateTime? updatedAt;
   late DateTime? createdAt;
-  late DateTime? transferredDate;
-  late String? transferredFrom;
-  late CustomerModel? customer;
-  late User? user;
-  late String? address;
 
   OrderModel.fromJson(Map<String, dynamic> json) {
-    isPrint = json['isPrint'] != null ? IsPrint.fromJson(json['isPrint']) : null;
-    checkNo = json['checkNo'];
-    transferred = json['transferred'];
-    orderType = json['order_type'];
-    orderStatus = json['order_status'];
-    totalPrice = double.tryParse(json['totalPrice'].toString());
-    remainingPrice = double.tryParse(json['remainingPrice'].toString());
-    status = json['status'];
-    isCancelled = json['isCancelled'];
-    id = json['_id'];
     orderNum = json['orderNum'];
     if (json['products'] != null) {
       products = <Product>[];
@@ -427,30 +424,15 @@ class OrderModel {
         products.add(Product.fromJson(v));
       });
     }
-    waiterId = json['waiterId'];
     createdAt = DateTime.tryParse(json["createdAt"] ?? "");
     updatedAt = DateTime.tryParse(json["updatedAt"] ?? "");
-    user = null;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     try {
-      if (isPrint != null) {
-        data['isPrint'] = isPrint!.toJson();
-      }
-      data['checkNo'] = checkNo;
-      data['transferred'] = transferred;
-      data['order_type'] = orderType;
-      data['order_status'] = orderStatus;
-      data['totalPrice'] = totalPrice;
-      data['remainingPrice'] = remainingPrice;
-      data['status'] = status;
-      data['isCancelled'] = isCancelled;
-      data['_id'] = id;
       data['orderNum'] = orderNum;
       data['products'] = products.map((v) => v!.toJson()).toList();
-      data['waiterId'] = waiterId;
       data['updatedAt'] = updatedAt.toString();
       data['createdAt'] = createdAt.toString();
     } catch (e) {
@@ -460,21 +442,10 @@ class OrderModel {
   }
 
   OrderModel.copy(OrderModel other) {
-    id = other.id;
     products = other.products.map((product) => Product.copy(product!)).toList();
-    waiterId = other.waiterId;
-    checkNo = other.checkNo;
-    status = other.status;
     updatedAt = other.updatedAt;
     createdAt = other.createdAt;
-    orderStatus = other.orderStatus;
-    isPrint = other.isPrint;
-    isCancelled = other.isCancelled;
     orderNum = other.orderNum;
-    orderType = other.orderType;
-    checkNo = other.checkNo;
-    remainingPrice = other.remainingPrice;
-    totalPrice = other.totalPrice;
   }
 }
 
@@ -533,36 +504,6 @@ class CustomerModel {
     data['branch'] = branch;
     data['createdAt'] = createdAt.toString();
     data['updatedAt'] = updatedAt.toString();
-    return data;
-  }
-}
-
-class User {
-  User({
-    required this.email,
-    required this.id,
-    required this.name,
-    required this.lastname,
-  });
-
-  String? email;
-  String? id;
-  String? lastname;
-  String? name;
-
-  User.fromJson(Map<String, dynamic> json) {
-    email = json["email"].toString();
-    id = json["_id"].toString();
-    name = json["name"].toString();
-    lastname = json["lastname"].toString();
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['_id'] = id;
-    data['email'] = email;
-    data['name'] = name;
-    data['lastname'] = lastname;
     return data;
   }
 }
@@ -642,92 +583,70 @@ class Payment {
 }
 
 class Product {
-  Product(
-      {required this.isFirst,
-      required this.isDeleted,
-      required this.isPrint,
-      required this.optionsString,
-      required this.options,
-      required this.discount,
-      required this.status,
-      required this.orderNum,
-      required this.note,
-      required this.id,
-      required this.product,
-      required this.productName,
-      required this.quantity,
-      required this.priceId,
-      required this.price,
-      required this.priceName,
-      required this.isServe,
-      required this.serveId,
-      required this.createdAt,
-      required this.cancelReason,
-      required this.cancelledBy,
-      required this.cancelledDate,
-      required this.serveDate,
-      required this.servedBy,
-      required this.updatedAt,
-      required this.user});
+  Product({
+    required this.isFirst,
+    required this.options,
+    required this.tax,
+    required this.note,
+    required this.id,
+    required this.product,
+    required this.productName,
+    required this.quantity,
+    required this.price,
+    required this.priceId,
+    required this.cancelStatus,
+    required this.createdAt,
+    required this.updatedAt,
+  });
 
   bool? isFirst;
-  bool? isDeleted;
-  bool? isPrint;
-  String? optionsString;
-  late List<Options> options;
-  late List<DiscountModel> discount;
-  int? status;
-  int? orderNum;
-  String? note;
-  String? id;
   String? product;
   String? productName;
-  String? priceName;
   double? quantity;
-  String? priceId;
   double? price;
-  bool? isServe;
-  String? serveId;
-  String? cancelReason;
-  String? cancelledBy;
-  String? cancelledDate;
-  String? serveDate;
-  String? servedBy;
+  String? priceId;
+  late List<Options> options;
+  String? note;
+  String? id;
+  double? tax;
+  CancelStatus? cancelStatus;
   DateTime? createdAt;
   DateTime? updatedAt;
-  User? user;
+
+  factory Product.empty() {
+    return Product(
+      isFirst: false,
+      options: [],
+      tax: 0.0,
+      note: '',
+      id: '',
+      product: '',
+      productName: '',
+      quantity: 0.0,
+      priceId: '',
+      price: 0.0,
+      cancelStatus: CancelStatus.empty(),
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+  }
 
   Product.fromJson(Map<String, dynamic> json) {
     isFirst = json["isFirst"];
-    isDeleted = json["isDeleted"];
-    isPrint = json["isPrint"];
-    optionsString = json["optionsString"];
     options = json["options"] == null
         ? []
         : List<Options>.from(json["options"]!.map((x) => Options.fromJson(x)));
-    discount = json["discount"] == null
-        ? []
-        : List<DiscountModel>.from(json["discount"]!.map((x) => DiscountModel.fromJson(x)));
-    status = json["status"];
-    orderNum = json["orderNum"];
     note = json["note"].toString();
     id = json["_id"].toString();
     product = json["product"].toString();
     productName = json["productName"].toString();
-    priceName = json["priceName"].toString();
     quantity = double.tryParse(json["quantity"].toString());
+    tax = (json['tax'] as num?)?.toDouble();
     priceId = json["priceId"].toString();
+    cancelStatus = CancelStatus.fromJson(json["cancelStatus"]);
     price = double.tryParse(json["price"].toString());
-    isServe = json["isServe"];
-    serveId = json["serveId"].toString();
     createdAt = DateTime.tryParse(json["createdAt"] ?? "");
     updatedAt = DateTime.tryParse(json["updatedAt"] ?? "");
-    user = json["customer"] == null ? null : User.fromJson(json["user"]);
-    cancelReason = json['cancelReason'];
-    cancelledBy = json['cancelledBy'];
-    cancelledDate = json['cancelledDate'].toString();
-    serveDate = json['serveDate'].toString();
-    servedBy = json['servedBy'];
   }
 
   Map<String, dynamic> toJson() {
@@ -737,28 +656,19 @@ class Product {
       if (product != null) data['product'] = product;
       if (isFirst != null) data['isFirst'] = isFirst;
       if (productName != null) data['productName'] = productName;
-      if (isDeleted != null) data['isDeleted'] = isDeleted;
-      if (priceName != null) data['priceName'] = priceName;
+      if (cancelStatus != null) {
+        data["cancelStatus"] = cancelStatus;
+      }
+
       if (quantity != null) data['quantity'] = quantity;
       if (priceId != null) data['priceId'] = priceId;
       if (price != null) data['price'] = price;
+      if (price != null) data['tax'] = tax;
       if (note != null) data['note'] = note;
-      if (status != null) data['status'] = status;
-      if (isPrint != null) data['isPrint'] = isPrint;
-      if (isServe != null) data['isServe'] = isServe;
-      if (serveId != null) data['serveId'] = serveId;
-      if (optionsString != null) data['optionsString'] = optionsString;
-      data['discount'] = discount.map((discount) => discount.toJson()).toList();
+
       data['options'] = options.map((options) => options.toJson()).toList();
-      if (user != null) data['customer'] = user!.toJson();
       if (updatedAt != null) data['updatedAt'] = updatedAt.toString();
       if (createdAt != null) data['createdAt'] = createdAt.toString();
-      if (orderNum != null) data['orderNum'] = orderNum;
-      if (cancelReason != null) data['cancelReason'] = cancelReason;
-      if (cancelledBy != null) data['cancelledBy'] = cancelledBy;
-      if (cancelledDate != null) data['cancelledDate'] = cancelledDate;
-      if (serveDate != null) data['serveDate'] = serveDate;
-      if (servedBy != null) data['servedBy'] = servedBy;
     } catch (e) {
       print('Error OrderModel-Product: $e');
     }
@@ -767,13 +677,7 @@ class Product {
 
   Map<String, dynamic> toMap() => {
         "isFirst": isFirst,
-        "isDeleted": isDeleted,
-        "isPrint": isPrint,
-        "optionsString": optionsString,
         "options": List<dynamic>.from(options.map((x) => x.toMap())),
-        "discount": List<dynamic>.from(discount.map((x) => x)),
-        "status": status,
-        "orderNum": orderNum,
         "note": note,
         "_id": id,
         "product": product,
@@ -781,33 +685,21 @@ class Product {
         "quantity": quantity,
         "priceId": priceId,
         "price": price,
-        "isServe": isServe,
-        "serveId": serveId,
         "createdAt": createdAt!.toIso8601String(),
-        "user": user,
       };
 
   Product.copy(Product other) {
     id = other.id;
     isFirst = other.isFirst;
-    isDeleted = other.isDeleted;
-    isPrint = other.isPrint;
-    status = other.status;
     updatedAt = other.updatedAt;
     createdAt = other.createdAt;
-    optionsString = other.optionsString;
-    discount = other.discount;
     options = other.options;
-    orderNum = other.orderNum;
     note = other.note;
     product = other.product;
     productName = other.productName;
     quantity = other.quantity;
     priceId = other.priceId;
     price = other.price;
-    isServe = other.isServe;
-    serveId = other.serveId;
-    user = other.user;
   }
 }
 
@@ -820,13 +712,23 @@ class Options {
 
   String? optionId;
   String? name;
-  late List<Items> items;
+  late List<Item> items;
+  factory Options.empty() {
+    return Options(
+      optionId: '',
+      name: '',
+      items: [],
+    );
+  }
 
   Options.fromJson(Map<String, dynamic> json) {
     optionId = json["option_id"].toString();
     name = json["nameOption"].toString();
-    items =
-        json["items"] == null ? [] : List<Items>.from(json["items"]!.map((x) => Items.fromJson(x)));
+    items = json["items"] == null
+        ? []
+        : List<Item>.from(json["items"]
+            .map((x) => x == null ? null : Item.fromJson(x))
+            .where((item) => item != null));
   }
 
   Map<String, dynamic> toJson() {
@@ -845,74 +747,53 @@ class Options {
   Map<String, dynamic> toMap() => {
         "name": name,
         "option_id": optionId,
-        "items": List<dynamic>.from(items.map((x) => x.toMap())),
+        "items": List<dynamic>.from(items.map((x) => x.toJson())),
       };
-}
 
-class Items {
-  Items({
-    required this.itemId,
-    required this.price,
-    required this.name,
-  });
-
-  String? itemId;
-  double? price;
-  String? name;
-
-  Items.fromJson(Map<String, dynamic> json) {
-    itemId = json["item_id"].toString();
-    price = double.tryParse(json["price"].toString());
-    name = json["name"].toString();
+  Options copyWith({
+    String? optionId,
+    String? name,
+    List<Item>? items,
+  }) {
+    return Options(
+      optionId: optionId ?? this.optionId,
+      name: name ?? this.name,
+      items: items ?? this.items,
+    );
   }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    try {
-      data['item_id'] = itemId;
-      data['name'] = name;
-      data['price'] = price;
-    } catch (e) {
-      print('Error item: $e');
-    }
-
-    return data;
-  }
-
-  Map<String, dynamic> toMap() => {
-        "name": name,
-        "item_id": itemId,
-        "price": price,
-      };
 }
 
 class CancelProduct {
   String tableId;
-  List<Product> products;
+  List<OrderProductModel> products;
   String cancelReason;
+  String cancelNote;
 
   CancelProduct({
     required this.tableId,
     required this.products,
     required this.cancelReason,
+    required this.cancelNote,
   });
 
   factory CancelProduct.fromJson(String str) => CancelProduct.fromMap(json.decode(str));
 
   Map<String, dynamic> toMap() => {
         "cancelReason": cancelReason,
+        "cancelNote": cancelNote,
         "tableId": tableId,
-        "products": List<dynamic>.from(products.map((x) => x.toMap())),
+        "products": List<dynamic>.from(products.map((x) => x.toJson())),
       };
 
   String toJson() => json.encode(toMap());
 
   factory CancelProduct.fromMap(Map<String, dynamic> json) => CancelProduct(
       cancelReason: json["cancelReason"].toString(),
+      cancelNote: json["cancelNote"].toString(),
       tableId: json["tableId"].toString(),
       products: json["products"] == null
           ? []
-          : List<Product>.from(json["products"]!.map((x) => Product.fromJson(x))));
+          : List<OrderProductModel>.from(json["products"]!.map((x) => Product.fromJson(x))));
 }
 
 class CateringProduct {
@@ -960,13 +841,9 @@ class CateringCancelProduct {
 }
 
 class MoveProduct {
-  String currentTable;
-  String targetTable;
   List<String> orderIds;
 
   MoveProduct({
-    required this.currentTable,
-    required this.targetTable,
     required this.orderIds,
   });
 
@@ -974,8 +851,6 @@ class MoveProduct {
 
   Map<String, dynamic> toMap() => {
         "orderIds": List<dynamic>.from(orderIds.map((x) => x)),
-        "targetTable": targetTable,
-        "currentTable": currentTable,
       };
 }
 

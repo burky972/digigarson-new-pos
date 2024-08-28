@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/model/option_model.dart';
+
 class OldCheckModel {
   String? sId;
   bool? isItPaid;
@@ -421,7 +423,7 @@ class OldProducts {
 class Options {
   String? optionId;
   String? name;
-  List<Items>? items;
+  List<Item>? items;
 
   Options({this.optionId, this.name, this.items});
 
@@ -429,9 +431,9 @@ class Options {
     optionId = json['option_id'] != null ? json['option_id'].toString() : "";
     name = json['name'] != null ? json['name'].toString() : "";
     if (json['items'] != null) {
-      items = <Items>[];
+      items = <Item>[];
       json['items'].forEach((v) {
-        items!.add(Items.fromJson(v));
+        items!.add(Item.fromJson(v));
       });
     }
   }
@@ -443,28 +445,6 @@ class Options {
     if (items != null) {
       data['items'] = items!.map((v) => v.toJson()).toList();
     }
-    return data;
-  }
-}
-
-class Items {
-  String? itemId;
-  String? price;
-  String? name;
-
-  Items({this.itemId, this.price, this.name});
-
-  Items.fromJson(Map<String, dynamic> json) {
-    itemId = json['item_id'] != null ? json['item_id'].toString() : "";
-    price = json['price'] != null ? json['price'].toString() : "";
-    name = json['name'] != null ? json['name'].toString() : "";
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['item_id'] = itemId.toString();
-    data['price'] = price.toString();
-    data['name'] = name.toString();
     return data;
   }
 }
@@ -606,7 +586,6 @@ class Payment {
   int? type;
   double? amount;
   String? currency;
-
   Payment({this.type, this.amount, this.currency});
 
   Map<String, dynamic> toJson() {

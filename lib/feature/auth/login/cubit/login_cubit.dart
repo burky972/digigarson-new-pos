@@ -4,7 +4,7 @@ import 'package:a_pos_flutter/feature/auth/login/model/login_model.dart';
 import 'package:a_pos_flutter/feature/auth/login/service/i_login_service.dart';
 import 'package:a_pos_flutter/feature/auth/login/service/login_service.dart';
 import 'package:a_pos_flutter/product/global/model/user_model.dart';
-import 'package:core/cache/shared_manager.dart';
+import 'package:a_pos_flutter/product/global/service/global_service.dart';
 import 'package:core/network/dio_client.dart';
 
 class LoginCubit extends ILoginCubit {
@@ -27,11 +27,12 @@ class LoginCubit extends ILoginCubit {
     response.fold((l) {
       emit(state.copyWith(states: LoginStates.error, isLoading: false));
     }, (r) async {
-      final token = r.data['accessToken'];
+      final token = r.data[
+          'accessToken']; //todo: check if no problem inside Global Service saveAccessToken function delete here!
       DioClient.instance.updateHeader(token);
       UserModel user = UserModel().fromJson(r.data);
-      await SharedManager.instance.setStringValue(CacheKeys.token, user.accessToken!);
-      // await SharedManager.instance.removeValue(CacheKeys.token);
+      GlobalService.saveAccessToken(user.accessToken!);
+      GlobalService.saveRefreshToken(user.refreshToken!);
       emit(state.copyWith(userModel: user, states: LoginStates.completed));
     });
   }

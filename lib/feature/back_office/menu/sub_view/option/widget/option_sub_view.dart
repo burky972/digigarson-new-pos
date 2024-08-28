@@ -152,11 +152,12 @@ class _MiddleOptionsTable extends StatelessWidget {
                       ),
                       _TableCellTextWidget(
                         item: item,
-                        text: item.amount.toString(),
+                        text: item.vatRate.toString(),
                       ),
                       _TableCellTextWidget(
                         item: item,
-                        text: item.amount.toString(),
+                        // text: item.amount.toString(),
+                        text: '0',
                       ),
                     ],
                   );

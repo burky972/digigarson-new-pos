@@ -94,7 +94,7 @@ class _MiddleTableCellTextWidget extends StatelessWidget {
       child: GestureDetector(
         onTap: () => context
             .read<ProductCubit>()
-            .setSelectedProduct(product, product.prices?.first ?? PriceModel()),
+            .setSelectedProduct(product, product.prices?.first ?? const PriceModel()),
         child: Padding(
           padding: const AppPadding.minAll(),
           child: Center(

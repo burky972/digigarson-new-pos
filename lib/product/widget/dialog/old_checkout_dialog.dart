@@ -3,7 +3,7 @@ import 'package:a_pos_flutter/feature/home/reopen/cubit/reopen_cubit.dart';
 import 'package:a_pos_flutter/feature/home/reopen/cubit/reopen_state.dart';
 import 'package:a_pos_flutter/feature/home/reopen/model/chek_old_model.dart';
 import 'package:a_pos_flutter/product/constant/app/app_constant.dart';
-import 'package:a_pos_flutter/product/global/cubit/global_cubit.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/responsive/border.dart';
 import 'package:a_pos_flutter/product/widget/keyboard/re_open_custom_keyboard.dart';
 import 'package:a_pos_flutter/product/widget/pop_up/pop_up.dart';
@@ -68,7 +68,7 @@ class OldCheckDialog {
               }
               enterPress!.call(double.parse(controller.text.isNotEmpty ? controller.text : "0.0"));
             } catch (e) {
-              print(e);
+              appLogger.error("oldCheckOut:", e.toString());
             }
           },
         ),
@@ -217,16 +217,17 @@ class OldCheckDialog {
                             PutPaymentModel paymentPut = PutPaymentModel(payments: payments);
                             showOrderWarningDialog(context, 'Order is being updated...');
                             bool return_ = await context.read<ReopenCubit>().oldCheckPut(
-                                userModel: context.read<GlobalCubit>().user,
+                                // userModel: context.read<GlobalCubit>().user,
                                 id: state.selectOrder!.orderId.toString(),
                                 paymentPut: paymentPut);
 
                             if (return_) {
                               Navigator.of(context).pop();
                               await context.read<ReopenCubit>().getAllCheck(
-                                  userModel: context.read<GlobalCubit>().user,
+                                  // userModel: context.read<GlobalCubit>().user,
                                   id: context.read<CaseCubit>().cases!.id.toString());
-                              showOrderSuccesDialog(context, "Order has been updated successfully.",
+                              showOrderSuccessDialog(
+                                  context, "Order has been updated successfully.",
                                   secondClose: true);
                             } else {
                               Navigator.of(context).pop();
@@ -296,11 +297,15 @@ class OldCheckDialog {
     for (var txt in amountControllers) {
       try {
         total_ += double.parse(double.parse(txt.text).toStringAsFixed(2));
-      } catch (e) {}
+      } catch (e) {
+        appLogger.error("remainingTotal: ", e.toString());
+      }
     }
     try {
       remaining = double.parse((total - total_).toStringAsFixed(2));
-    } catch (e) {}
+    } catch (e) {
+      appLogger.error("remainingTotal: ", e.toString());
+    }
     return remaining;
   }
 }

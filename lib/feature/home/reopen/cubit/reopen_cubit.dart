@@ -1,10 +1,10 @@
+import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/model/option_model.dart';
 import 'package:a_pos_flutter/feature/home/reopen/cubit/i_reopen_cubit.dart';
 import 'package:a_pos_flutter/feature/home/reopen/cubit/reopen_state.dart';
 import 'package:a_pos_flutter/feature/home/reopen/model/chek_old_model.dart';
 import 'package:a_pos_flutter/feature/home/reopen/model/re_open_model.dart';
 import 'package:a_pos_flutter/feature/home/reopen/service/i_reopen_service.dart';
 import 'package:a_pos_flutter/feature/home/reopen/service/reopen_service.dart';
-import 'package:a_pos_flutter/product/global/model/user_model.dart';
 
 class ReopenCubit extends IReopenCubit {
   ReopenCubit() : super(ReopenState.initial()) {
@@ -24,12 +24,11 @@ class ReopenCubit extends IReopenCubit {
 
   @override
   Future getAllCheck({
-    required UserModel userModel,
     required String id,
   }) async {
     reOpenModel.clear();
     emit(state.copyWith(states: ReopenStates.loading, reOpenModel: reOpenModel));
-    final response = await _reopenService.getAllCheck(userModel: userModel, orderType: '');
+    final response = await _reopenService.getAllCheck(orderType: '');
     response.fold((l) {
       emit(state.copyWith(states: ReopenStates.error));
     }, (r) {
@@ -47,21 +46,15 @@ class ReopenCubit extends IReopenCubit {
   }
 
   @override
-  Future<bool> oldCheckPut(
-      {required UserModel userModel,
-      required String id,
-      required PutPaymentModel paymentPut}) async {
+  Future<bool> oldCheckPut({required String id, required PutPaymentModel paymentPut}) async {
     emit(state.copyWith(states: ReopenStates.loading));
-    final response =
-        await _reopenService.putOldCheck(userModel: userModel, id: id, data: paymentPut.toJson());
-    bool isSuccess = response.fold((_) {
+    final response = await _reopenService.putOldCheck(id: id, data: paymentPut.toJson());
+    response.fold((_) {
       emit(state.copyWith(states: ReopenStates.error));
-      return false;
     }, (r) {
       emit(state.copyWith(states: ReopenStates.completed));
-      return true;
     });
-    return isSuccess;
+    return response.isRight();
   }
 
   @override
@@ -78,13 +71,13 @@ class ReopenCubit extends IReopenCubit {
   @override
   void setSelectedOrder(
       {required String id, required List<OldProducts> listProduct, required String table}) {
-    List<ItemModel> list = [];
+    List<Item> list = [];
     for (var pro in listProduct) {
-      list.add(ItemModel(
-          statusType: pro.isServe! ? 99 : pro.status!,
+      list.add(Item(
+          // statusType: pro.isServe! ? 99 : pro.status!,
           itemName: pro.productName.toString(),
           price: pro.price!,
-          quantitty: pro.quantity!));
+          amount: pro.quantity?.toInt()));
     }
     Iterable<OldCheckModel> order = reOpenModel.where((element) => element.sId == id);
     if (order.isNotEmpty) {
@@ -116,7 +109,7 @@ class ReopenCubit extends IReopenCubit {
               .fold<double>(0, (previousValue, payment) => previousValue + payment.amount!),
           cover: order.first.covers!
               .fold<double>(0, (previousValue, payment) => previousValue + payment.price!),
-          Tax: 0);
+          tax: 0);
 
       emit(state.copyWith(selectOrder: selectOrder));
     }

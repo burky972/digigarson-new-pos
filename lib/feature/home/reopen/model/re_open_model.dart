@@ -1,3 +1,5 @@
+import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/model/option_model.dart';
+
 class ReOpenModel {
   final String text;
   final double width;
@@ -9,7 +11,7 @@ class OrderModel {
   late String table;
   late double gratuity;
   late int gst;
-  late List<ItemModel> item;
+  late List<Item> item;
   late double cash;
   late double card;
   late double total;
@@ -19,7 +21,7 @@ class OrderModel {
   late double discount;
   late double service;
   late double cover;
-  late double Tax;
+  late double tax;
 
   OrderModel(
       {required this.orderId,
@@ -36,17 +38,5 @@ class OrderModel {
       required this.discount,
       required this.service,
       required this.cover,
-      required this.Tax});
-}
-
-class ItemModel {
-  late int statusType;
-  late double price;
-  late double quantitty;
-  late String itemName;
-  ItemModel(
-      {required this.statusType,
-      required this.itemName,
-      required this.price,
-      required this.quantitty});
+      required this.tax});
 }

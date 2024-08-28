@@ -47,7 +47,7 @@ class LoginService extends ILoginService {
   BaseResponseData<BaseResponseModel> login({LoginModel? loginModel}) async {
     BaseResponseModel response = await DioClient.instance.post(
       NetworkConstants.login,
-      data: loginModel!.toJson(),
+      data: loginModel?.toJson(),
     );
 
     if (response.serverException != null) {

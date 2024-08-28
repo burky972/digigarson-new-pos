@@ -9,7 +9,6 @@ import 'package:a_pos_flutter/product/responsive/border.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
 import 'package:a_pos_flutter/product/widget/button/light_blue_button.dart';
 import 'package:a_pos_flutter/product/widget/pop_up/pop_up.dart';
-import 'package:core/logger/a_pos_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -324,7 +323,7 @@ class _MenuGroupViewState extends State<CategoryView> with AutomaticKeepAliveCli
                                     children: [
                                       // BlocBuilder<CategoryCubit, CategoryState>(
                                       //   builder: (context, state) {
-                                      //     APosLogger.instance!.warning(
+                                      //     appLogger.warning(
                                       //         'TAG', 'image: ${state.selectedCategory?.image}');
                                       //     return Container(
                                       //       height: context.dynamicHeight(0.1),
@@ -360,21 +359,18 @@ class _MenuGroupViewState extends State<CategoryView> with AutomaticKeepAliveCli
                                         child: Row(
                                           mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
-                                            InkWell(
-                                                onTap: () {
-                                                  context.read<CategoryCubit>().getCategoryImage();
-                                                },
-                                                child: const LightBlueButton(
-                                                  buttonText: 'Browse',
-                                                )),
+                                            LightBlueButton(
+                                              buttonText: 'Browse',
+                                              onTap: () =>
+                                                  context.read<CategoryCubit>().getCategoryImage(),
+                                            ),
                                             const SizedBox(width: 4),
-                                            InkWell(
-                                                onTap: () {
-                                                  context
-                                                      .read<CategoryCubit>()
-                                                      .cleanCategoryImage();
-                                                },
-                                                child: const LightBlueButton(buttonText: 'Clean')),
+                                            LightBlueButton(
+                                              buttonText: 'Clean',
+                                              onTap: () => context
+                                                  .read<CategoryCubit>()
+                                                  .cleanCategoryImage(),
+                                            ),
                                           ],
                                         ),
                                       ),

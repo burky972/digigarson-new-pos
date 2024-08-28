@@ -6,7 +6,7 @@ import 'package:a_pos_flutter/feature/home/branch/service/branch_service.dart';
 import 'package:a_pos_flutter/feature/home/branch/service/i_branch_service.dart';
 import 'package:a_pos_flutter/product/global/model/branch/branch_model.dart';
 import 'package:a_pos_flutter/product/global/model/user_model.dart';
-import 'package:core/logger/a_pos_logger.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 
 class BranchCubit extends IBranchCubit {
   BranchCubit() : super(BranchState.initial()) {
@@ -80,7 +80,7 @@ class BranchCubit extends IBranchCubit {
       }
       return categories.where((category) => category.parentCategory == null).toList();
     } catch (e) {
-      APosLogger.instance!.error('BRANCH CUBIT', 'CREATE CATEGORY TREE ${e.toString()}');
+      appLogger.error('BRANCH CUBIT', 'CREATE CATEGORY TREE ${e.toString()}');
       emit(state.copyWith(states: BranchStates.error));
     }
     return categories;

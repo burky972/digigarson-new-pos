@@ -1,151 +1,193 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-class NewOrderModel {
-  String tableId;
-  List<NewOrderProduct> products;
+import 'package:core/base/model/base_model.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
+
+part 'new_order_model.g.dart';
+
+@JsonSerializable()
+class NewOrderModel extends BaseModel<NewOrderModel> {
   NewOrderModel({
     required this.tableId,
     required this.products,
+    required this.totalTax,
+    required this.totalPrice,
   });
 
-  factory NewOrderModel.fromJson(String str) => NewOrderModel.fromMap(json.decode(str));
+  final String? tableId;
+  final List<OrderProductModel> products;
+  final int? totalTax;
+  final double? totalPrice;
 
-  Map<String, dynamic> toMap() => {
-        "products": List<dynamic>.from(products.map((x) => x.toMap())),
-      };
+  factory NewOrderModel.fromJson(Map<String, dynamic> json) => _$NewOrderModelFromJson(json);
 
-  String toJson() => json.encode(toMap());
+  @override
+  fromJson(Map<String, dynamic> json) => _$NewOrderModelFromJson(json);
 
-  factory NewOrderModel.fromMap(Map<String, dynamic> json) => NewOrderModel(
-        products:
-            List<NewOrderProduct>.from(json["products"].map((x) => NewOrderProduct.fromMap(x))),
+  @override
+  Map<String, dynamic> toJson() => _$NewOrderModelToJson(this);
+
+  @override
+  List<Object?> get props => [tableId, products, totalTax, totalPrice];
+
+  factory NewOrderModel.empty() => NewOrderModel(
+        products: const [],
         tableId: '',
+        totalTax: 0,
+        totalPrice: 0,
       );
-}
 
-class NewOrderProduct {
-  bool isFirst;
-  String product;
-  String productName;
-  double quantity;
-  String categoryId;
-  double price;
-  String priceId;
-  String priceName;
-  String note;
-  List<NewOrderOption> options;
-
-  NewOrderProduct({
-    required this.isFirst,
-    required this.product,
-    required this.productName,
-    required this.quantity,
-    required this.categoryId,
-    required this.price,
-    required this.priceId,
-    required this.priceName,
-    required this.note,
-    required this.options,
-  });
-
-  NewOrderProduct clone() {
-    return NewOrderProduct(
-      price: price,
-      isFirst: isFirst,
-      note: note,
-      options: List.from(options),
-      priceId: priceId,
-      categoryId: categoryId,
-      priceName: priceName,
-      product: product,
-      productName: productName,
-      quantity: quantity,
+  NewOrderModel copyWith({
+    String? tableId,
+    List<OrderProductModel>? products,
+    int? totalTax,
+    double? totalPrice,
+  }) {
+    return NewOrderModel(
+      tableId: tableId ?? this.tableId,
+      products: products ?? this.products,
+      totalTax: totalTax ?? this.totalTax,
+      totalPrice: totalPrice ?? this.totalPrice,
     );
   }
-
-  factory NewOrderProduct.fromJson(String str) => NewOrderProduct.fromMap(json.decode(str));
-
-  String toJson() => json.encode(toMap());
-
-  factory NewOrderProduct.fromMap(Map<String, dynamic> json) => NewOrderProduct(
-        product: json["product"],
-        productName: json["productName"],
-        isFirst: json["isFirst"],
-        quantity: json["quantity"],
-        categoryId: json["categoryId"],
-        price: json["price"],
-        priceId: json["priceId"],
-        priceName: json["priceName"],
-        note: "",
-        options: List<NewOrderOption>.from(json["options"].map((x) => NewOrderOption.fromMap(x))),
-      );
-
-  Map<String, dynamic> toMap() => {
-        "product": product,
-        "isFirst": isFirst,
-        "categoryId": categoryId,
-        "quantity": quantity,
-        "price": priceId,
-        "note": note,
-        "options": List<dynamic>.from(options.map((x) => x.toMap())),
-      };
 }
 
-class NewOrderOption {
-  String nameOption;
-  String optionId;
-  List<NewOrderItem> items;
+@JsonSerializable(includeIfNull: false)
+class OrderProductModel extends BaseModel<OrderProductModel> {
+  final String? uniqueTimestamp;
+  @JsonKey(name: '_id')
+  final String? id;
+  final String? product;
+  final bool? isFirst;
+  final String? categoryId;
+  final double? tax;
+  final String? productName;
+  final String? priceType;
+  final String? priceName;
+  final double? quantity;
+  final double? price;
+  final String? priceId;
+  final String? note;
+  final List<Options> options;
+  final CancelStatus cancelStatus;
 
-  NewOrderOption({
-    required this.nameOption,
-    required this.optionId,
-    required this.items,
+  OrderProductModel({
+    this.uniqueTimestamp,
+    this.id,
+    this.isFirst,
+    this.product,
+    this.productName,
+    this.quantity,
+    this.categoryId,
+    this.tax,
+    this.price,
+    this.priceId,
+    this.priceName,
+    this.priceType,
+    this.note,
+    required this.options,
+    required this.cancelStatus,
   });
 
-  factory NewOrderOption.fromJson(String str) => NewOrderOption.fromMap(json.decode(str));
+  factory OrderProductModel.fromJson(Map<String, dynamic> json) =>
+      _$OrderProductModelFromJson(json);
+  @override
+  OrderProductModel fromJson(Map<String, dynamic> json) => _$OrderProductModelFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => _$OrderProductModelToJson(this);
+  @override
+  List<Object?> get props => [
+        id,
+        isFirst,
+        product,
+        productName,
+        quantity,
+        categoryId,
+        tax,
+        price,
+        priceId,
+        priceName,
+        priceType,
+        note,
+        options
+      ];
 
-  String toJson() => json.encode(toMap());
-
-  factory NewOrderOption.fromMap(Map<String, dynamic> json) => NewOrderOption(
-        nameOption: json["nameOption"],
-        optionId: json["optionId"],
-        items: List<NewOrderItem>.from(json["items"].map((x) => NewOrderItem.fromMap(x))),
-      );
-
-  Map<String, dynamic> toMap() => {
-        "nameOption": nameOption,
-        "option_id": optionId,
-        "items": List<dynamic>.from(items.map((x) => x.toMap())),
-      };
+  OrderProductModel copyWith({
+    String? uniqueTimestamp,
+    String? id,
+    bool? isFirst,
+    String? product,
+    String? productName,
+    double? quantity,
+    String? categoryId,
+    double? tax,
+    double? price,
+    String? priceId,
+    String? priceName,
+    String? priceType,
+    String? note,
+    List<Options>? options,
+    CancelStatus? cancelStatus,
+  }) {
+    return OrderProductModel(
+      uniqueTimestamp: uniqueTimestamp ?? this.uniqueTimestamp,
+      id: id ?? this.id,
+      isFirst: isFirst ?? this.isFirst,
+      product: product ?? this.product,
+      productName: productName ?? this.productName,
+      quantity: quantity ?? this.quantity,
+      categoryId: categoryId ?? this.categoryId,
+      tax: tax ?? this.tax,
+      price: price ?? this.price,
+      priceId: priceId ?? this.priceId,
+      priceName: priceName ?? this.priceName,
+      priceType: priceType ?? this.priceType,
+      note: note ?? this.note,
+      options: options ?? this.options,
+      cancelStatus: cancelStatus ?? this.cancelStatus,
+    );
+  }
 }
 
-class NewOrderItem {
-  String name;
-  String itemId;
-  double price;
+@JsonSerializable(includeIfNull: false)
+class CancelStatus {
+  final bool? isCancelled;
+  final String? cancelledBy;
+  final String? cancelReason;
+  final DateTime? cancelledDate;
 
-  NewOrderItem({
-    required this.name,
-    required this.itemId,
-    required this.price,
+  CancelStatus({
+    this.isCancelled,
+    this.cancelledBy,
+    this.cancelReason,
+    this.cancelledDate,
   });
 
-  factory NewOrderItem.fromJson(String str) => NewOrderItem.fromMap(json.decode(str));
+  factory CancelStatus.fromJson(Map<String, dynamic> json) => _$CancelStatusFromJson(json);
+  Map<String, dynamic> toJson() => _$CancelStatusToJson(this);
 
-  String toJson() => json.encode(toMap());
+  CancelStatus.empty()
+      : isCancelled = false,
+        cancelledBy = '',
+        cancelReason = '',
+        cancelledDate = DateTime.now();
 
-  factory NewOrderItem.fromMap(Map<String, dynamic> json) => NewOrderItem(
-        name: json["name"],
-        itemId: json["itemId"],
-        price: json["price"]?.toDouble(),
-      );
-
-  Map<String, dynamic> toMap() => {
-        "name": name,
-        "item_id": itemId,
-        "price": price,
-      };
+  CancelStatus copyWith({
+    bool? isCancelled,
+    String? cancelledBy,
+    String? cancelReason,
+    DateTime? cancelledDate,
+  }) {
+    return CancelStatus(
+      isCancelled: isCancelled ?? this.isCancelled,
+      cancelledBy: cancelledBy ?? this.cancelledBy,
+      cancelReason: cancelReason ?? this.cancelReason,
+      cancelledDate: cancelledDate ?? this.cancelledDate,
+    );
+  }
 }
 
 class NewService {

@@ -39,24 +39,32 @@ class _TableHeaderWidgetState extends State<TableHeaderWidget> {
                 width: context.dynamicWidth(.2),
                 child: Column(
                   children: [
-                    BlocSelector<TableCubit, TableState, DateTime?>(
-                      //TODO: ADD HERE LATER ->!
-                      //TODO: CHECK HERE LATER WILL BE INDEX INSTEAD OF .FIRST!!
-                      selector: (state) {
-                        return null;
-
-                        // return state.tableModel.first.lastOrderDate;
-                      },
-                      builder: (context, lastOrderTime) {
-                        return lastOrderTime != null
-                            ? TimerWidget(lastOrderTime: lastOrderTime)
-                            : const SizedBox();
-                      },
-                    ),
                     _TopRichTextWidget(
                         leftText: 'Logged',
                         rightText:
                             '${context.read<GlobalCubit>().user.user?.name} ${context.read<GlobalCubit>().user.user?.lastName}'),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text('Duration: ',
+                            style: CustomFontStyle.titlesTextStyle
+                                .copyWith(color: context.colorScheme.tertiary)),
+                        BlocSelector<TableCubit, TableState, DateTime?>(
+                          selector: (state) => state.tableModel.isNotEmpty
+                              ? state.selectedTable?.lastOrderDate
+                              : DateTime(0),
+                          builder: (context, lastOrderTime) {
+                            return lastOrderTime != null
+                                ? TimerWidget(
+                                    lastOrderTime: lastOrderTime,
+                                    color: Colors.red,
+                                  )
+                                : const SizedBox();
+                          },
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -110,19 +118,22 @@ class _TableHeaderWidgetState extends State<TableHeaderWidget> {
                       ))),
 
               /// Customer Info Button
-              InkWell(onTap: () {}, child: const LightBlueButton(buttonText: 'Customer Info')),
+              const LightBlueButton(buttonText: 'Customer Info'),
 
               /// Exit Button
-              InkWell(
-                  onTap: () {
-                    context.read<BranchCubit>().setCategorySelected(null);
-                    context.read<BranchCubit>().setSubCategorySelected(null);
-                    context.read<BranchCubit>().setMainCategorySelected(null);
-                    context.read<BranchCubit>().setFilter('');
-                    Navigator.pushAndRemoveUntil(context,
-                        MaterialPageRoute(builder: (_) => const MainView()), (route) => false);
-                  },
-                  child: const LightBlueButton(buttonText: 'Exit')),
+              LightBlueButton(
+                buttonText: 'Exit',
+                onTap: () {
+                  context.read<BranchCubit>().setCategorySelected(null);
+                  context.read<BranchCubit>().setSubCategorySelected(null);
+                  context.read<BranchCubit>().setMainCategorySelected(null);
+                  context.read<BranchCubit>().setFilter('');
+                  context.read<TableCubit>().clearNewOrderProducts();
+                  context.read<TableCubit>().setSelectedEditProduct(null);
+                  Navigator.pushAndRemoveUntil(context,
+                      MaterialPageRoute(builder: (_) => const MainView()), (route) => false);
+                },
+              ),
             ]))
       ],
     );

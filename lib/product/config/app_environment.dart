@@ -5,7 +5,7 @@ import 'package:a_pos_flutter/product/config/i_app_env.dart';
 import 'package:a_pos_flutter/product/config/prod_env.dart';
 import 'package:flutter/foundation.dart';
 
-final class AppEnvironment {
+class AppEnvironment {
   /// set up the app environment
   AppEnvironment.setup({required AppEnvConfigure config}) {
     _config = config;

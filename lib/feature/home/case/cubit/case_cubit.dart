@@ -39,19 +39,16 @@ class CaseCubit extends ICaseCubit {
 
   @override
   Future<bool> getOpenCase() async {
-    bool result = false;
     emit(state.copyWith(states: CaseStates.loading));
     final response = await _caseService.getOpenCases();
     response.fold((l) {
-      result = false;
       emit(state.copyWith(states: CaseStates.error));
     }, (r) {
-      result = true;
       CaseModel cases = CaseModel.fromJson(r.data);
       emit(state.copyWith(cases: cases, states: CaseStates.completed));
-      return true;
     });
-    return result;
+
+    return response.isRight();
   }
 
   @override

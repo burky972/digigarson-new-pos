@@ -3,7 +3,7 @@ import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/cubit/opt
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/model/option_model.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/service/i_option_service.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/service/option_service.dart';
-import 'package:core/logger/a_pos_logger.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:flutter/widgets.dart';
 
 class OptionCubit extends IOptionCubit {
@@ -18,6 +18,7 @@ class OptionCubit extends IOptionCubit {
   final TextEditingController itemHPriceController = TextEditingController();
   final TextEditingController itemDPriceController = TextEditingController();
   final TextEditingController itemTPriceController = TextEditingController();
+  final TextEditingController itemTaxController = TextEditingController();
   List<OptionModel?> originalOptionList = [];
   List<Item?> originalItemList = [];
   Map<String, List<Item>> optionItemsMap = {};
@@ -26,7 +27,7 @@ class OptionCubit extends IOptionCubit {
   /// init
   @override
   void init() {
-    APosLogger.instance?.info('OPTION CUBIT', 'INITIALIZED!!');
+    appLogger.info('OPTION CUBIT', 'INITIALIZED!!');
     getOptions();
   }
 
@@ -47,6 +48,8 @@ class OptionCubit extends IOptionCubit {
       itemHPriceController.text = option.items!.first.happyHourPrice?.toString() ?? '0.0';
       itemDPriceController.text = option.items!.first.deliveryPrice?.toString() ?? '0.0';
       itemTPriceController.text = option.items!.first.takeOutPrice?.toString() ?? '0.0';
+      itemTaxController.text = option.items!.first.vatRate?.toString() ?? '0.0';
+
       setSelectedItem(option.items!.first);
     } else {
       itemNameController.text = '';
@@ -55,11 +58,13 @@ class OptionCubit extends IOptionCubit {
       itemHPriceController.text = '0.0';
       itemDPriceController.text = '0.0';
       itemTPriceController.text = '0.0';
+      itemTaxController.text = '0.0';
     }
 
     emit(state.copyWith(selectedOption: option));
   }
 
+  /// set selected item
   @override
   setSelectedItem(Item item) {
     itemNameController.text = item.itemName ?? '';
@@ -68,6 +73,7 @@ class OptionCubit extends IOptionCubit {
     itemHPriceController.text = item.happyHourPrice.toString();
     itemDPriceController.text = item.deliveryPrice.toString();
     itemTPriceController.text = item.takeOutPrice.toString();
+    itemTaxController.text = item.vatRate.toString();
 
     emit(state.copyWith(selectedItem: item));
   }
@@ -172,7 +178,13 @@ class OptionCubit extends IOptionCubit {
           takeOutPrice: double.tryParse(value ?? items[itemIndex].takeOutPrice.toString()),
         );
         break;
-
+      case UpdatedItemValue.vatRate:
+        updatedItem = items[itemIndex].copyWith(
+          vatRate: (double.tryParse(value ?? items[itemIndex].vatRate.toString()) ??
+                  items[itemIndex].vatRate)
+              ?.toInt(),
+        );
+        break;
       default:
     }
     return updatedItem;
@@ -200,17 +212,28 @@ class OptionCubit extends IOptionCubit {
   /// add new option to table list
   @override
   Future<void> addNewOption() async {
-    //If there is a selected option or the title of the last option is empty, do not perform the operation.
-    if (state.allOptions.last?.name == null ||
-        state.allOptions.last!.name!.isEmpty ||
-        state.selectedOption == null) return;
+    // If there is a selected option or the title of the last option is empty, do not perform the operation.
+    if (state.allOptions.isNotEmpty &&
+        (state.allOptions.last?.name == null ||
+            state.allOptions.last!.name!.isEmpty ||
+            state.selectedOption == null)) {
+      return;
+    }
 
-    // clear text controllers
+    // Clear text controllers
     optionNameController.clear();
     optionDescController.clear();
 
-    // Create new option and add
-    final newOption = OptionModel.empty();
+    // Create a new option with a unique ID
+    final newOption = OptionModel(
+        id: generateUniqueId(), // Generate a unique ID
+        name: '',
+        specialName: ' ',
+        chooseLimit: 0,
+        state: 1,
+        items: const []);
+
+    // Add the new option to the list
     final updatedOptions = List<OptionModel>.from(state.allOptions)..add(newOption);
 
     emit(state.copyWith(
@@ -218,6 +241,27 @@ class OptionCubit extends IOptionCubit {
       selectedOption: newOption,
     ));
   }
+
+  // Future<void> addNewOption() async {
+  //   //If there is a selected option or the title of the last option is empty, do not perform the operation.
+  //   if (state.allOptions.isNotEmpty &&
+  //       (state.allOptions.last?.name == null ||
+  //           state.allOptions.last!.name!.isEmpty ||
+  //           state.selectedOption == null)) return;
+
+  //   // clear text controllers
+  //   optionNameController.clear();
+  //   optionDescController.clear();
+
+  //   // Create new option and add
+  //   final newOption = OptionModel.empty();
+  //   final updatedOptions = List<OptionModel>.from(state.allOptions)..add(newOption);
+
+  //   emit(state.copyWith(
+  //     allOptions: updatedOptions,
+  //     selectedOption: newOption,
+  //   ));
+  // }
 
   /// SAVE CHANGES AND REQUEST TO POST OPTION SERVICE
   @override
@@ -261,7 +305,7 @@ class OptionCubit extends IOptionCubit {
     final updatedDeletedItems = List<Item>.from(deletedItems)..add(itemToDelete);
     deletedItems = updatedDeletedItems;
     for (var deletedItem in deletedItems) {
-      APosLogger.instance?.warning('DELETED ITEM: ', deletedItem.toJson().toString());
+      appLogger.warning('DELETED ITEM: ', deletedItem.toJson().toString());
     }
     emit(state.copyWith(
       allOptions: updatedOptions,
@@ -320,8 +364,7 @@ class OptionCubit extends IOptionCubit {
 
     // send put request for deleted items
     for (var deletedItem in deletedItems) {
-      APosLogger.instance
-          ?.info('saveItemChanges', 'DELETED ITEM: ${deletedItem.toJson().toString()}');
+      appLogger.info('saveItemChanges', 'DELETED ITEM: ${deletedItem.toJson().toString()}');
 
       // updatedOptions içindeki option'ları kontrol etmek yerine, deletedItem'in orijinal item'ını bulmaya çalışıyoruz
       final originalOption = originalOptionList.firstWhere(
@@ -338,8 +381,7 @@ class OptionCubit extends IOptionCubit {
         await putOptions(optionModel: updatedOption, optionId: optionId!);
         deletedItems = [];
       } else {
-        APosLogger.instance
-            ?.error('saveItemChanges', 'Original option not found for deleted item.');
+        appLogger.error('saveItemChanges', 'Original option not found for deleted item.');
       }
     }
   }
@@ -353,7 +395,7 @@ class OptionCubit extends IOptionCubit {
     }, (r) {
       List<OptionModel?> options = (r.data as List).map((e) => OptionModel.fromJson(e)).toList();
       emit(state.copyWith(allOptions: options, states: OptionStates.completed));
-      setSelectedOption(options.first ?? OptionModel.empty());
+      options.isNotEmpty ? setSelectedOption(options.first ?? OptionModel.empty()) : null;
       originalOptionList = options;
       for (var option in options) {
         if (option != null) {
@@ -375,7 +417,8 @@ class OptionCubit extends IOptionCubit {
   /// postOptions
   @override
   Future postOptions({required OptionModel optionModel}) async {
-    final response = await _optionService.postOptions(optionModel: optionModel);
+    OptionModel newOptionModel = optionModel.copyWith(id: () => null);
+    final response = await _optionService.postOptions(optionModel: newOptionModel);
     response.fold((l) {
       emit(state.copyWith(states: OptionStates.error));
     }, (r) {
@@ -415,6 +458,7 @@ enum UpdatedItemValue {
   itemHPrice,
   itemDPrice,
   itemTPrice,
+  vatRate
 }
 
 // Extension method to compare Item objects

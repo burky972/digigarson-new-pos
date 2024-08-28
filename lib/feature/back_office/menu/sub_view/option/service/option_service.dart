@@ -6,7 +6,7 @@ import 'package:core/base/model/base_response_model.dart';
 import 'package:core/network/dio_client.dart';
 import 'package:core/network/network_constants.dart';
 
-final class OptionService implements IOptionService {
+class OptionService implements IOptionService {
   /// GET Options
   @override
   BaseResponseData<BaseResponseModel> getOptions() async {

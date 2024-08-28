@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:a_pos_flutter/product/global/model/order/new_order_model.dart';
+import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
 
 class PrinterInvoiceModel {
   HeaderData headerData;
@@ -300,7 +300,7 @@ class ItemKitchenPrinter {
   String itemName;
   String itemPriceName;
   String note;
-  List<NewOrderOption> itemOption;
+  List<Options> itemOption;
   double qty;
 
   ItemKitchenPrinter({

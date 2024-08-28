@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 @immutable
-final class AppConstants {
+class AppConstants {
   const AppConstants._();
   static const sendTimeout = 60;
   static const connectTimeout = 60;

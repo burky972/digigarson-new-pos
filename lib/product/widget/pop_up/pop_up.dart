@@ -16,7 +16,7 @@ showOrderWarningDialog(BuildContext context, String title, {bool? secondClose}) 
   ).show();
 }
 
-showOrderSuccesDialog(BuildContext context, String title, {bool? secondClose}) {
+showOrderSuccessDialog(BuildContext context, String title, {bool? secondClose}) {
   AwesomeDialog(
     dismissOnTouchOutside: false,
     width: 550,
@@ -126,6 +126,24 @@ showOrderSuccessPriceChangedDialog(BuildContext context, String title,
         onNavigate();
       }
     }
+  });
+}
+
+///SHOW ERROR DIALOG
+showErrorDialog(BuildContext context, String title, {bool? secondClose}) {
+  AwesomeDialog(
+    dismissOnTouchOutside: false,
+    width: 550,
+    context: context,
+    animType: AnimType.leftSlide,
+    headerAnimationLoop: false,
+    dialogType: DialogType.error,
+    showCloseIcon: false,
+    title: title,
+  ).show();
+  Timer(const Duration(milliseconds: 1500), () {
+    Navigator.of(context).pop();
+    secondClose != null ? Navigator.of(context).pop() : null;
   });
 }
 

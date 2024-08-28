@@ -16,24 +16,19 @@ class _BottomButtonFields extends StatelessWidget {
             const Spacer(),
             const LightBlueButton(buttonText: 'Move Up'),
             const LightBlueButton(buttonText: 'Move Down'),
-            InkWell(
-                onTap: () => optionCubit.addNewItem(),
-                child: const LightBlueButton(buttonText: 'Add')),
-            InkWell(
-                onTap: optionCubit.state.selectedItem == null
-                    ? null
-                    : () async => optionCubit.handleItemDeletion(optionCubit.state.selectedItem!),
-                // .whenComplete(() => optionCubit.getOptions()),
-                child: const LightBlueButton(buttonText: 'Delete')),
-            InkWell(
-                onTap: () async {
-                  await optionCubit.saveItemChanges();
-                },
-                child: const LightBlueButton(buttonText: 'Save')),
+            LightBlueButton(buttonText: 'Add', onTap: () => optionCubit.addNewItem()),
+            LightBlueButton(
+              buttonText: 'Delete',
+              onTap: optionCubit.state.selectedItem == null
+                  ? null
+                  : () async => optionCubit.handleItemDeletion(optionCubit.state.selectedItem!),
+            ),
+            LightBlueButton(
+              buttonText: 'Save',
+              onTap: () async => await optionCubit.saveItemChanges(),
+            ),
             const LightBlueButton(buttonText: 'Export'),
-            InkWell(
-                onTap: () => Navigator.pop(context),
-                child: const LightBlueButton(buttonText: 'Exit')),
+            LightBlueButton(buttonText: 'Exit', onTap: () => Navigator.pop(context)),
           ],
         );
       },

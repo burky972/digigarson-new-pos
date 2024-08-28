@@ -4,7 +4,7 @@ import 'package:a_pos_flutter/product/global/model/user_model.dart';
 import 'package:a_pos_flutter/product/utils/helper/api_response_handler.dart';
 import 'package:a_pos_flutter/product/utils/helper/typedef.dart';
 import 'package:core/base/model/base_response_model.dart';
-import 'package:core/logger/a_pos_logger.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:core/network/dio_client.dart';
 import 'package:core/network/network_constants.dart';
 
@@ -15,19 +15,16 @@ class NoteServePaymentCancelReasonService extends INoteServePaymentCancelReasonS
       NetworkConstants.notes,
       queryParameters: QueryParams.dioQueryParams(userModel),
     );
-    APosLogger.instance!.info('NoteServePaymentCancelReason Service', response.data.toString());
+    appLogger.info('NoteServePaymentCancelReason Service', response.data.toString());
 
     return ApiResponseHandler.handleResponse(response);
   }
 
+  /// GET CANCEL REASONS
   @override
-  BaseResponseData<BaseResponseModel> getCancelReason({required UserModel userModel}) async {
-    BaseResponseModel response = await DioClient.instance.get(
-      NetworkConstants.cancelReasons,
-      queryParameters: QueryParams.dioQueryParams(userModel),
-    );
-    APosLogger.instance!.info('NoteServePaymentCancelReason SERVICE', response.data.toString());
-
+  BaseResponseData<BaseResponseModel> getCancelReason() async {
+    BaseResponseModel response = await DioClient.instance.get(NetworkConstants.cancelReasons);
+    appLogger.info('NoteServePaymentCancelReason SERVICE', response.data.toString());
     return ApiResponseHandler.handleResponse(response);
   }
 
@@ -37,7 +34,7 @@ class NoteServePaymentCancelReasonService extends INoteServePaymentCancelReasonS
       NetworkConstants.paymentMethod,
       queryParameters: QueryParams.dioQueryParams(userModel),
     );
-    APosLogger.instance!.info('NoteServePaymentCancelReason SERVICE', response.data.toString());
+    appLogger.info('NoteServePaymentCancelReason SERVICE', response.data.toString());
 
     return ApiResponseHandler.handleResponse(response);
   }
@@ -48,7 +45,7 @@ class NoteServePaymentCancelReasonService extends INoteServePaymentCancelReasonS
       NetworkConstants.serves,
       queryParameters: QueryParams.dioQueryParams(userModel),
     );
-    APosLogger.instance!.info('NoteServePaymentCancelReason SERVICE', response.data.toString());
+    appLogger.info('NoteServePaymentCancelReason SERVICE', response.data.toString());
 
     return ApiResponseHandler.handleResponse(response);
   }

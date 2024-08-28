@@ -1,5 +1,6 @@
-final class NetworkConstants {
+class NetworkConstants {
   static const String login = 'pos/login';
+  static const String refreshToken = 'pos/refresh-token';
   static const String caseAll = 'pos/cases/all';
   static const String cases = 'pos/cases';
   static const String openCases = 'pos/cases/status/open';
@@ -22,10 +23,9 @@ final class NetworkConstants {
   static const String newServicePost = 'pos/table/service/';
   static const String newDiscountPost = 'pos/discount/';
   static const String newCoverPost = 'pos/covers/';
-  static const String cancelProductPut = 'pos/order/products/';
   static const String cateringProductPut = 'pos/catering/';
-  static const String moveProductPut = 'pos/product/move/';
   static const String moveOrderPut = 'pos/order/move/';
+  static const String orders = 'pos/orders/';
   static const String qrOrderPut = 'pos/qr/';
   static const String closeTable = 'pos/tables/close/';
   static const String editCustomerCount = 'pos/table/customer-count/';

@@ -1,4 +1,4 @@
-final class FontTypes {
+class FontTypes {
   const FontTypes._();
 
   /// menu items

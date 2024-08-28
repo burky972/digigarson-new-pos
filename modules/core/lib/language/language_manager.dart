@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 /// language singleton manager
 @immutable
-final class LanguageManager {
+class LanguageManager {
   const LanguageManager._init();
   static LanguageManager? _instance;
   static LanguageManager? get instance {

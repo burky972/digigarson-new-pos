@@ -4,7 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'option_model.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull: false)
 class OptionModel extends BaseModel<OptionModel> {
   @JsonKey(name: '_id')
   final String? id;
@@ -37,7 +37,7 @@ class OptionModel extends BaseModel<OptionModel> {
   List<Object?> get props => [id, name, specialName, chooseLimit, state, items];
 
   OptionModel copyWith({
-    String? id,
+    String? Function()? id,
     String? name,
     String? specialName,
     int? chooseLimit,
@@ -45,7 +45,7 @@ class OptionModel extends BaseModel<OptionModel> {
     List<Item>? items,
   }) {
     return OptionModel(
-      id: id ?? this.id,
+      id: id != null ? id() : this.id,
       name: name ?? this.name,
       specialName: specialName ?? this.specialName,
       chooseLimit: chooseLimit ?? this.chooseLimit,
@@ -59,8 +59,11 @@ class OptionModel extends BaseModel<OptionModel> {
 class Item extends BaseModel<Item> {
   @JsonKey(name: '_id')
   final String? id;
+  @JsonKey(name: 'item_id')
+  final String? itemId;
   @JsonKey(name: 'item_name')
   final String? itemName;
+  final String? priceType;
   final double? price;
   @JsonKey(name: 'lunch_price')
   final double? lunchPrice;
@@ -80,7 +83,9 @@ class Item extends BaseModel<Item> {
 
   Item(
       {this.id,
+      this.itemId,
       this.itemName,
+      this.priceType,
       this.lunchPrice,
       this.happyHourPrice,
       this.deliveryPrice,
@@ -92,6 +97,7 @@ class Item extends BaseModel<Item> {
 
   factory Item.empty() => Item(
       itemName: ' ',
+      priceType: 'REGULAR',
       price: 0,
       deliveryPrice: 0,
       happyHourPrice: 0,
@@ -110,7 +116,9 @@ class Item extends BaseModel<Item> {
   @override
   List<Object?> get props => [
         id,
+        itemId,
         itemName,
+        priceType,
         price,
         deliveryPrice,
         happyHourPrice,
@@ -123,7 +131,9 @@ class Item extends BaseModel<Item> {
 
   Item copyWith({
     String? Function()? id,
+    String? itemId,
     String? itemName,
+    String? priceType,
     double? price,
     double? lunchPrice,
     double? happyHourPrice,
@@ -135,7 +145,9 @@ class Item extends BaseModel<Item> {
   }) {
     return Item(
         id: id != null ? id() : this.id,
+        itemId: itemId ?? this.itemId,
         itemName: itemName ?? this.itemName,
+        priceType: priceType ?? this.priceType,
         price: price ?? this.price,
         lunchPrice: lunchPrice ?? this.lunchPrice,
         happyHourPrice: happyHourPrice ?? this.happyHourPrice,

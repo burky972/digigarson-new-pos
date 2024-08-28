@@ -8,6 +8,7 @@ part 'table_request_model.g.dart';
 class TableRequestModel extends BaseModel<TableRequestModel> {
   final String? title;
   final String? section;
+  @JsonKey(name: 'table_type')
   final int? tableType;
   final LocationModel? location;
 

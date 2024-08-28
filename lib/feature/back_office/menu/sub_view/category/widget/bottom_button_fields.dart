@@ -13,26 +13,26 @@ class _BottomButtonFields extends StatelessWidget {
         SizedBox(width: MediaQuery.of(context).size.width * 0.1),
         const LightBlueButton(buttonText: 'Move Up'),
         const LightBlueButton(buttonText: 'Move Down'),
-        InkWell(
-            onTap: () {
-              context.read<CategoryCubit>().addNewCategory();
-            },
-            child: const LightBlueButton(buttonText: 'Add')),
-        InkWell(
-            onTap: context.read<CategoryCubit>().state.selectedCategory == null
-                ? null
-                : () async {
-                    await patchCategory(context);
-                  },
-            child: const LightBlueButton(buttonText: 'Delete')),
-        InkWell(
-            onTap: () async {
-              await context.read<CategoryCubit>().saveChanges();
-            },
-            child: const LightBlueButton(buttonText: 'Save')),
+        LightBlueButton(
+          buttonText: 'Add',
+          onTap: () => context.read<CategoryCubit>().addNewCategory(),
+        ),
+        LightBlueButton(
+          buttonText: 'Delete',
+          onTap: context.read<CategoryCubit>().state.selectedCategory == null
+              ? null
+              : () async {
+                  await patchCategory(context);
+                },
+        ),
+        LightBlueButton(
+            buttonText: 'Save',
+            onTap: () async => await context.read<CategoryCubit>().saveChanges()),
         const LightBlueButton(buttonText: 'Export'),
-        InkWell(
-            onTap: () => Navigator.pop(context), child: const LightBlueButton(buttonText: 'Exit')),
+        LightBlueButton(
+          buttonText: 'Exit',
+          onTap: () => Navigator.pop(context),
+        ),
       ],
     );
   }

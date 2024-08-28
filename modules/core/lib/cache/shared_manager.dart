@@ -1,7 +1,9 @@
+import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum CacheKeys {
   token,
+  refreshToken,
   user,
   currency,
   country_code,
@@ -41,6 +43,7 @@ class SharedManager {
   }
 
   Future<bool> removeValue(String value) async {
+    debugPrint("DELETE CALLED: $value");
     return await _preferences!.remove(value);
   }
 

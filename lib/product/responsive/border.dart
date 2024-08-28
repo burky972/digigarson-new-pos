@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 @immutable
-final class BorderConstants {
+class BorderConstants {
   const BorderConstants._();
 
   /// BLACK border 1 WIDTH

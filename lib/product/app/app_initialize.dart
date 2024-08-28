@@ -3,7 +3,7 @@ import 'package:a_pos_flutter/product/config/app_environment.dart';
 import 'package:a_pos_flutter/product/utils/observer/bloc_observer.dart';
 import 'package:core/cache/shared_manager.dart';
 import 'package:core/core.dart';
-import 'package:core/logger/a_pos_logger.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,7 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 @immutable
-final class AppInitialize {
+class AppInitialize {
   Future<void> init() async {
     WidgetsFlutterBinding.ensureInitialized();
     await EasyLocalization.ensureInitialized();
@@ -25,7 +25,7 @@ final class AppInitialize {
     AppEnvironment.general();
     //initialize the shared preferences manager
     await SharedManager.preferencesInit();
-    APosLogger.instance!.init(isCacheLog: false);
+    appLogger.init(isCacheLog: false);
 
     //initialize the network manager
     await DioClient.instance.init(

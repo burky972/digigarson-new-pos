@@ -5,21 +5,23 @@ import 'package:a_pos_flutter/feature/auth/login/cubit/login_cubit.dart';
 import 'package:a_pos_flutter/feature/auth/login/cubit/login_state.dart';
 import 'package:a_pos_flutter/feature/auth/login/model/login_model.dart';
 import 'package:a_pos_flutter/feature/auth/login/view/widget/login_body_widget.dart';
+import 'package:a_pos_flutter/feature/auth/token/cubit/token_cubit.dart';
 import 'package:a_pos_flutter/feature/home/case/cubit/case_cubit.dart';
 import 'package:a_pos_flutter/feature/home/case/view/case_view.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/cubit/category_cubit.dart';
 import 'package:a_pos_flutter/feature/home/main/view/main_view.dart';
 
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/cubit/product_cubit.dart';
+import 'package:a_pos_flutter/feature/home/note_serve_payment_cancel_reason/cubit/note_cubit.dart';
 import 'package:a_pos_flutter/feature/home/reopen/cubit/reopen_cubit.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
 import 'package:a_pos_flutter/language/locale_keys.g.dart';
 import 'package:a_pos_flutter/product/global/cubit/global_cubit.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/utils/helper/network_info.dart';
 import 'package:a_pos_flutter/product/utils/helper/timer_convert.dart';
 import 'package:a_pos_flutter/product/widget/button/custom_yes_no_button.dart';
-import 'package:core/logger/a_pos_logger.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -43,7 +45,7 @@ mixin LoginMixin on State<LoginBodyWidget> {
 
   @override
   void initState() {
-    APosLogger.instance!.info('SignIn', 'Sign in widget initState run!');
+    appLogger.info('SignIn', 'Sign in widget initState run!');
 
     super.initState();
     formKeyLogin = GlobalKey<FormState>();
@@ -75,20 +77,21 @@ mixin LoginMixin on State<LoginBodyWidget> {
         socket.listen(
           (List<int> data) {
             final message = String.fromCharCodes(data);
-            APosLogger.instance!.info('load func SignIn Widget', message);
+            appLogger.info('load func SignIn Widget', message);
           },
           onError: (error) {
-            APosLogger.instance!.error('load func SignIn Widget', 'Hata: $error');
+            appLogger.error('load func SignIn Widget', 'Hata: $error');
             socket.destroy();
           },
           onDone: () {
-            APosLogger.instance!.error('load func SignIn Widget', 'Bağlantı: kesildi ');
+            appLogger.error('load func SignIn Widget', 'Bağlantı: kesildi ');
+            socket.destroy();
           },
           cancelOnError: true,
         );
       }
     } catch (e) {
-      APosLogger.instance!.error('load func SignIn Widget', 'Sunucu başlatılamadı: $e');
+      appLogger.error('load func SignIn Widget', 'Sunucu başlatılamadı: $e');
     }
   }
 
@@ -207,25 +210,29 @@ mixin LoginMixin on State<LoginBodyWidget> {
   }
 
   Future<void> callNecessaryFunctions(bool isCaseOpened, LoginState state) async {
+    appLogger.warning('callNecessaryFunctions func', 'isCaseOpened: $isCaseOpened');
     await Future.wait([
       // context.read<BranchCubit>().getBranch(
       //     userModel: state.userModel!, languageModel: LanguageManager.supportedLocales.first),
       context.read<CategoryCubit>().getCategories(),
       context.read<ProductCubit>().getProducts(),
       //TODO: OPEN THIS CODE LATER!
-      // context.read<NoteServePaymentCancelReasonCubit>().getALLFunctions(state.userModel!),
-      context.read<ReopenCubit>().getAllCheck(
-          userModel: state.userModel!, id: context.read<CaseCubit>().cases!.id.toString()),
+      context.read<NoteServePaymentCancelReasonCubit>().getALLFunctions(state.userModel!),
+      context
+          .read<ReopenCubit>()
+          .getAllCheck(id: context.read<CaseCubit>().cases?.id.toString() ?? ""),
       context.read<TableCubit>().getTable(state.userModel!),
     ]).then((_) {
       if (isCaseOpened) {
         context.read<GlobalCubit>().setUser(state.userModel!);
         context.read<LoginCubit>().updateIsLoading(false);
         //TODO: check HERE TO NAVIGATE AFTER CLICKING LOGIN BUTTON!
+        context.read<TokenCubit>().startTokenRefresh();
         Navigator.pushAndRemoveUntil(
             context, MaterialPageRoute(builder: (_) => const MainView()), (route) => false);
       } else {
         context.read<LoginCubit>().updateIsLoading(false);
+        context.read<TokenCubit>().startTokenRefresh();
         Navigator.pushAndRemoveUntil(
             context, MaterialPageRoute(builder: (_) => const CaseView()), (route) => false);
       }

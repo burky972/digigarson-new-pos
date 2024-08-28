@@ -1,47 +1,42 @@
-import 'dart:convert';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:core/core.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-class CancelReasonsModel {
-  late String id;
-  late String title;
-  late String branch;
+part 'cancel_reason_model.g.dart';
 
+@JsonSerializable()
+class CancelReasonsModel extends BaseModel<CancelReasonsModel> {
   CancelReasonsModel({
-    required this.id,
-    required this.title,
-    required this.branch,
+    this.id,
+    this.title,
+    this.branch,
   });
 
+  final String? id;
+  final String? title;
+  final String? branch;
+
   factory CancelReasonsModel.fromJson(Map<String, dynamic> json) =>
-      CancelReasonsModel.fromMap(json);
+      _$CancelReasonsModelFromJson(json);
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['_id'] = id;
-    data['title'] = title;
-    data['branch'] = branch;
-    return data;
+  @override
+  Map<String, dynamic> toJson() => _$CancelReasonsModelToJson(this);
+
+  @override
+  CancelReasonsModel fromJson(Map<String, dynamic> json) => _$CancelReasonsModelFromJson(json);
+
+  @override
+  List<Object?> get props => [id, title, branch];
+
+  CancelReasonsModel copyWith({
+    String? id,
+    String? title,
+    String? branch,
+  }) {
+    return CancelReasonsModel(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      branch: branch ?? this.branch,
+    );
   }
-
-  CancelReasonsModel.fromDbJson(Map<String, dynamic> json) {
-    id = json['_id'].toString();
-    title = json['title'].toString();
-    branch = json['branch'].toString();
-  }
-
-  factory CancelReasonsModel.fromMap(Map<String, dynamic> json) => CancelReasonsModel(
-        id: json["_id"],
-        title: json["title"],
-        branch: json["branch"],
-      );
-
-  Map<String, dynamic> toMap() => {
-        "_id": id,
-        "title": title,
-        "branch": branch,
-      };
-}
-
-List<CancelReasonsModel> cancelReasonFromJson(String jsonString) {
-  final jsonData = jsonDecode(jsonString);
-  return List<CancelReasonsModel>.from(jsonData.map((item) => CancelReasonsModel.fromDbJson(item)));
 }

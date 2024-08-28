@@ -5,10 +5,11 @@ import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/cubit/i_
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/model/product_model.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/service/i_product_service.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/service/product_service.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
+import 'package:a_pos_flutter/product/global/service/global_service.dart';
 import 'package:core/base/cubit/base_cubit.dart';
 import 'package:core/base/exception/exception.dart';
 import 'package:core/base/model/base_response_model.dart';
-import 'package:core/logger/a_pos_logger.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:image_picker/image_picker.dart';
@@ -51,6 +52,7 @@ class ProductCubit extends IProductCubit {
               prices: (pro.prices?.first.vatRate ?? 0) > 0
                   ? pro.prices?.map((price) {
                       return PriceModel(
+                          id: price.id,
                           amount: price.amount,
                           priceName: price.priceName,
                           currency: price.currency,
@@ -72,8 +74,10 @@ class ProductCubit extends IProductCubit {
 
       emit(state.copyWith(allProducts: originalProducts, states: ProductStates.completed));
       categorizeProducts();
-      setSelectedProduct(
-          state.allProducts.first ?? ProductModel(), product?.prices?.first ?? PriceModel());
+      state.allProducts.isNotEmpty
+          ? setSelectedProduct(
+              state.allProducts.first!, product?.prices?.first ?? const PriceModel())
+          : setSelectedProduct(ProductModel(), const PriceModel());
 
       firstProductsLength = originalProducts.length;
     });
@@ -96,7 +100,10 @@ class ProductCubit extends IProductCubit {
   /// POST PRODUCTS TO PRODUCT SERVICE
   @override
   Future postProducts({required ProductModel productModel}) async {
-    APosLogger.instance?.info('POST PRODUCT CALLED: ', productModel.toJson().toString());
+    productModel = productModel.copyWith(
+      id: () => null,
+    );
+    appLogger.info('POST PRODUCT CALLED: ', productModel.toJson().toString());
     emit(state.copyWith(states: ProductStates.loading));
     BaseResponseCubit response;
     if ((productModel.prices?.first.vatRate ?? 0) > 0) {
@@ -120,7 +127,7 @@ class ProductCubit extends IProductCubit {
   /// PUT PRODUCTS TO PRODUCT SERVICE
   @override
   Future putProducts({required ProductModel productModel, required String productId}) async {
-    APosLogger.instance?.info('UPDATE PRODUCT CALLED: ', productModel.toJson().toString());
+    appLogger.info('UPDATE PRODUCT CALLED: ', productModel.toJson().toString());
     emit(state.copyWith(states: ProductStates.loading));
     BaseResponseCubit response;
     if ((productModel.prices?.first.vatRate ?? 0) > 0) {
@@ -194,8 +201,12 @@ class ProductCubit extends IProductCubit {
   void updateSelectedProductName(String title, String categoryId) {
     if (state.selectedProduct == null) return;
 
-    final updatedProduct = state.selectedProduct!.copyWith(title: title);
-    APosLogger.instance!.info('UPDATED PRODUCT: ', updatedProduct.toJson().toString());
+    final updatedProduct = state.selectedProduct!.copyWith(
+        title: title,
+        id: originalProducts.contains(state.selectedProduct!)
+            ? () => state.selectedProduct!.id
+            : () => GlobalService.generateUniqueId());
+    appLogger.info('UPDATED PRODUCT: ', updatedProduct.toJson().toString());
 
     // updated products list
     final updatedAllProducts = state.allProducts
@@ -227,7 +238,7 @@ class ProductCubit extends IProductCubit {
         prices: state.selectedProduct!.prices
             ?.map((e) => e.copyWith(vatRate: double.parse(tax)))
             .toList());
-    APosLogger.instance!.info('UPDATED PRODUCT TAX: ', updatedProduct.toJson().toString());
+    appLogger.info('UPDATED PRODUCT TAX: ', updatedProduct.toJson().toString());
 
     // updated products list
     final updatedAllProducts = state.allProducts
@@ -295,8 +306,9 @@ class ProductCubit extends IProductCubit {
 
     // Yeni PriceModel oluştur
     final model = PriceModel(
-      amount: 0.0,
-      priceName: 'Custom Price',
+      amount: 1.0,
+      priceName: 'REGULAR',
+      priceType: 'REGULAR',
       currency: 'USD',
       orderType: const [],
       vatRate: state.selectedProduct?.prices?.first.vatRate ?? 0.0,
@@ -375,15 +387,14 @@ class ProductCubit extends IProductCubit {
     final updatedCategorizedProducts =
         Map<String, List<ProductModel>>.from(state.categorizedProducts ?? {});
     final categoryId = updatedProduct.category;
-    APosLogger.instance!
-        .info('updateSelectedProductImage', 'updatedProduct categoryId: $categoryId');
+    appLogger.info('updateSelectedProductImage', 'updatedProduct categoryId: $categoryId');
     final updatedCategoryProducts = updatedCategorizedProducts[categoryId]?.map((product) {
           if (product.id == state.selectedProduct!.id) {
-            APosLogger.instance!.info('updateSelectedProductImage',
+            appLogger.info('updateSelectedProductImage',
                 'updatedProduct if: ${updatedProduct.toJson().toString()}');
             return updatedProduct;
           } else {
-            APosLogger.instance!.info('updateSelectedProductImage',
+            appLogger.info('updateSelectedProductImage',
                 'updatedProduct else: ${updatedProduct.toJson().toString()}');
             return product;
           }
@@ -401,7 +412,7 @@ class ProductCubit extends IProductCubit {
     ));
   }
 
-  void saveChanges() async {
+  Future<void> saveChanges() async {
     // Yeni ürünleri bulma ve post isteği gönderme
     for (var entry
         in state.categorizedProducts?.entries ?? <MapEntry<String, List<ProductModel>>>[]) {
@@ -413,7 +424,7 @@ class ProductCubit extends IProductCubit {
         // Yeni ürün: originalProducts içinde yoksa
         if (originalProducts == null || !originalProducts.any((p) => p.id == product.id)) {
           await postProducts(productModel: product.copyWith(category: categoryId));
-          APosLogger.instance?.info('POST PRODUCT: ', product.toJson().toString());
+          appLogger.info('POST PRODUCT: ', product.toJson().toString());
         }
       }
     }

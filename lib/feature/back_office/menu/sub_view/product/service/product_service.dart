@@ -6,7 +6,7 @@ import 'package:core/base/model/base_response_model.dart';
 import 'package:core/network/dio_client.dart';
 import 'package:core/network/network_constants.dart';
 
-final class ProductService implements IProductService {
+class ProductService implements IProductService {
   /// GET Products
   @override
   BaseResponseData<BaseResponseModel> getProducts() async {

@@ -1,3 +1,4 @@
+import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/cubit/category_cubit.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_state.dart';
 import 'package:a_pos_flutter/feature/home/table/widget/table_header_widget.dart';
@@ -35,6 +36,8 @@ class _TableViewState extends State<TableView> with _TableMixin {
               child: Row(
                 children: [
                   BlocBuilder<TableCubit, TableState>(
+                    buildWhen: (previous, current) =>
+                        previous.newOrderProducts.length != current.newOrderProducts.length,
                     builder: (context, state) {
                       return SizedBox(
                         width: context.dynamicWidth(.38),
@@ -66,5 +69,11 @@ mixin _TableMixin on State<TableView> {
       isFullScreen = !isFullScreen;
       isFullScreen ? SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive) : null;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<CategoryCubit>().setSelectedCategory(null);
   }
 }

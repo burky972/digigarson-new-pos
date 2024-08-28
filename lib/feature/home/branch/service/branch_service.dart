@@ -6,7 +6,7 @@ import 'package:a_pos_flutter/product/global/model/user_model.dart';
 import 'package:a_pos_flutter/product/utils/helper/api_response_handler.dart';
 import 'package:a_pos_flutter/product/utils/helper/typedef.dart';
 import 'package:core/base/model/base_response_model.dart';
-import 'package:core/logger/a_pos_logger.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:core/network/dio_client.dart';
 import 'package:core/network/network_constants.dart';
 
@@ -18,7 +18,7 @@ class BranchService extends IBranchService {
       '${NetworkConstants.myBranch}/${languageModel.countryCode}',
       queryParameters: QueryParams.dioQueryParams(userModel),
     );
-    APosLogger.instance!.info('Branch SERVICE', response.data.toString());
+    appLogger.info('Branch SERVICE', response.data.toString());
     return ApiResponseHandler.handleResponse(response);
   }
 }

@@ -153,18 +153,14 @@ class _OptionGroupsViewState extends State<OptionGroupsView> with AutomaticKeepA
                                   decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
                                 ),
                               ),
-                              Flexible(
+                              const Flexible(
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    InkWell(
-                                        onTap: () {},
-                                        child: const LightBlueButton(
-                                          buttonText: 'Browse',
-                                        )),
-                                    InkWell(
-                                        onTap: () {},
-                                        child: const LightBlueButton(buttonText: 'Color')),
+                                    LightBlueButton(
+                                      buttonText: 'Browse',
+                                    ),
+                                    LightBlueButton(buttonText: 'Color'),
                                   ],
                                 ),
                               ),

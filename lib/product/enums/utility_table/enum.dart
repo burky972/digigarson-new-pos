@@ -1,0 +1,48 @@
+// ignore_for_file: constant_identifier_names
+
+enum EUtilityItems {
+  SHARED_RESTROOM(1),
+  SHARED_RESTROOM_ROUND(2),
+  MEN_RESTROOM(3),
+  WOMEN_RESTROOM(4),
+  MAN_RESTROOM_SQUARE(5),
+  WOMEN_RESTROOM_SQUARE(6),
+  BATHROOM(7),
+  KITCHEN_SIGN(8),
+  STAFF_ONLY_SIGN(9),
+  PARKING_SIGN(10),
+  GREEN_SIGN(11),
+  EXIT_SIGN(12),
+  FIRE_ALARM_SIGN(13),
+  BIG_FIRE_ALARM_SIGN(14),
+  FIRE_EXTINGUISHER_SIGN(15),
+  WHEEL_CHAIR_SIGN(16),
+  ELEVATOR_SIGN(17),
+  STAIR_SIGN(18),
+  BROWN_POT(19),
+  WHITE_POT(20),
+  SMALL_BLACK_POT(21),
+  SMALL_WHITE_POT(22),
+  SMALL_BROWN_POT(23),
+  GRAY_CASHIER(24),
+  BROWN_CASHIER(25),
+  RED_CASHIER(26),
+  SMALL_RED_FRIDGE(27),
+  SMALL_WHITE_FRIDGE(28),
+  RED_FRIDGE(29),
+  WHITE_FRIDGE(30),
+  BROWN_CUPBOARD(31),
+  GRAY_CUPBOARD(32),
+  WHITE_CUPBOARD(33),
+  OUTDOOR_EXIT_1(34),
+  OUTDOOR_EXIT_2(35);
+
+  const EUtilityItems(this.value);
+  final int value;
+
+  static EUtilityItems fromValue(int value) {
+    return EUtilityItems.values.firstWhere(
+      (e) => e.value == value,
+    );
+  }
+}

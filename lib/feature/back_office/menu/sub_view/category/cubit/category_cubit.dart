@@ -4,8 +4,9 @@ import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/cubit/i
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/model/category_model.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/service/category_service.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/service/i_category_service.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
+import 'package:a_pos_flutter/product/global/service/global_service.dart';
 import 'package:core/base/cubit/base_cubit.dart';
-import 'package:core/logger/a_pos_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -29,18 +30,18 @@ class CategoryCubit extends ICategoryCubit {
   /// GET CATEGORIES FROM CATEGORY SERVICE
   @override
   Future getCategories() async {
-    APosLogger.instance?.warning('TAG', 'GET OPTION CALLED@@@');
+    appLogger.warning('TAG', 'GET OPTION CALLED@@@');
     emit(state.copyWith(states: CategoryStates.loading));
     final response = await _categoryService.getCategories();
     response.fold((l) {
       emit(state.copyWith(states: CategoryStates.error));
-    }, (r) {
-      List<CategoryModel> categoryList = (r.data as List)
+    }, (response) {
+      List<CategoryModel> categoryList = (response.data as List)
           .map((category) => CategoryModel.fromJson(category as Map<String, dynamic>))
           .toList();
 
       emit(state.copyWith(allCategories: categoryList, states: CategoryStates.completed));
-      setSelectedCategory(categoryList.first);
+      categoryList.isNotEmpty ? setSelectedCategory(categoryList.first) : setSelectedCategory(null);
       firstCategoriesLength = categoryList.length;
       // Original categories are deep copied here
       originalCategories = categoryList
@@ -60,6 +61,7 @@ class CategoryCubit extends ICategoryCubit {
   @override
   Future postCategories({required CategoryModel categoryModel}) async {
     emit(state.copyWith(states: CategoryStates.loading));
+
     final response = await _categoryService.postCategories(categoriesModel: categoryModel);
     response.fold((l) {
       emit(state.copyWith(states: CategoryStates.error));
@@ -103,6 +105,7 @@ class CategoryCubit extends ICategoryCubit {
     emit(state.copyWith(
       allCategories: List.from(state.allCategories)
         ..add(CategoryModel(
+          id: '',
           title: '',
           isSubCategory: false,
           image: '',
@@ -114,15 +117,11 @@ class CategoryCubit extends ICategoryCubit {
 
   /// SAVE CHANGES AND REQUEST TO POST CATEGORY SERVICE
   Future<void> saveChanges() async {
+    List<String> postedList = [];
     for (var category in state.allCategories.sublist(firstCategoriesLength)) {
-      APosLogger.instance!.info('CATEGORY: ', category.toJson().toString());
-      await postCategories(
-          categoryModel: CategoryModel(
-        title: category.title,
-        image: category.image,
-        isSubCategory: category.isSubCategory,
-        activeList: category.activeList,
-      ));
+      CategoryModel newCategory = category.copyWith(id: () => null);
+      await postCategories(categoryModel: newCategory);
+      postedList.add(category.title ?? "");
       continue;
     }
 
@@ -135,38 +134,43 @@ class CategoryCubit extends ICategoryCubit {
       if ((originalCategory.title != category.title ||
           originalCategory.image != category.image ||
           originalCategory.isSubCategory != category.isSubCategory)) {
-        APosLogger.instance!.info('CATEGORY (PUT): ', category.toJson().toString());
-        await putCategories(
-            categoryId: category.id!,
-            categoryModel: CategoryModel(
-              id: category.id,
-              title: category.title,
-              image: category.image,
-              isSubCategory: category.isSubCategory,
-            ));
+        if (!postedList.contains(category.title ?? "")) {
+          appLogger.info('CATEGORY (PUT): ', category.toJson().toString());
+
+          await putCategories(
+            categoryId: category.id ?? "",
+            categoryModel: category,
+          );
+        }
       }
     }
   }
 
   /// UPDATE SELECTED CATEGORY TITLE
   void updateSelectedCategoryTitle(String title) {
-    final updatedCategory = state.selectedCategory!.copyWith(title: title);
-    APosLogger.instance!.info('UPDATED CATEGORY: ', updatedCategory.toJson().toString());
-    for (var cate in state.allCategories) {
-      if (cate.title == state.selectedCategory!.title) {
-        emit(state.copyWith(
-            allCategories: state.allCategories
-                .map((e) => e.title == state.selectedCategory!.title ? updatedCategory : e)
-                .toList()));
-      }
-    }
-    emit(state.copyWith(selectedCategory: () => updatedCategory));
+    final selectedCategory = state.selectedCategory;
+    if (selectedCategory == null) return;
+
+    final isNewCategory = !originalCategories.contains(selectedCategory);
+    final updatedCategory = selectedCategory.copyWith(
+      title: title,
+      id: isNewCategory ? () => GlobalService.generateUniqueId() : () => selectedCategory.id,
+    );
+
+    final updatedCategories = state.allCategories.map((category) {
+      return category.id == selectedCategory.id ? updatedCategory : category;
+    }).toList();
+
+    emit(state.copyWith(
+      allCategories: updatedCategories,
+      selectedCategory: () => updatedCategory,
+    ));
   }
 
   /// SET SELECTED CATEGORY
   @override
-  void setSelectedCategory(CategoryModel category) {
-    titleController.text = category.title ?? '';
+  void setSelectedCategory(CategoryModel? category) {
+    titleController.text = category?.title ?? '';
     emit(state.copyWith(selectedCategory: () => category));
   }
 

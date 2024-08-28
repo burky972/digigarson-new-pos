@@ -11,7 +11,7 @@ import 'package:a_pos_flutter/product/widget/button/custom_button.dart';
 import 'package:a_pos_flutter/product/widget/button/exit_button.dart';
 import 'package:a_pos_flutter/product/widget/keyboard/custom_keyboard.dart';
 import 'package:a_pos_flutter/product/widget/textfield/custom_textfield.dart';
-import 'package:core/logger/a_pos_logger.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -151,8 +151,7 @@ class _CaseViewState extends State<CaseView> {
                                       type: 2,
                                     ),
                                   );
-                              APosLogger.instance!
-                                  .info('CASE VIEW', 'token: $token , isPosted: $isPosted');
+                              appLogger.info('CASE VIEW', 'token: $token , isPosted: $isPosted');
                               if (isPosted) {
                                 if (token != null || token!.isNotEmpty) {
                                   Navigator.pushAndRemoveUntil(

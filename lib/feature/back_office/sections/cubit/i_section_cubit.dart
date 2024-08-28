@@ -11,5 +11,8 @@ abstract class ISectionCubit extends BaseCubit<SectionState> {
   Future putSections({required SectionModel sectionModel, required String sectionId});
 
   ///SETTER
-  void setSelectedSection({required String sectionTitle});
+  void setSelectedSection({required SectionModel sectionModel});
+  void addNewSection();
+  void updateSectionTitle({required String sectionTitle});
+  void saveChanges(List<SectionModel> allSections);
 }

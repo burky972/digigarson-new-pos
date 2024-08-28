@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/utils/helper/timer_convert.dart';
@@ -17,7 +16,7 @@ class TimerWidget extends StatefulWidget {
 
 class _TimerWidgetState extends State<TimerWidget> {
   late DateTime? lastOrderTime;
-  late Timer timer;
+  Timer? timer;
   Duration? elapsedTime;
 
   @override
@@ -30,12 +29,19 @@ class _TimerWidgetState extends State<TimerWidget> {
           elapsedTime = DateTime.now().difference(lastOrderTime!);
         });
       });
+    } else {
+      Text(
+        '00.00',
+        style: CustomFontStyle.generalTextStyle
+            .copyWith(color: widget.color ?? context.colorScheme.tertiary),
+      );
     }
   }
 
   @override
   void dispose() {
-    timer.cancel();
+    // Check if the timer has been initialized before canceling it
+    timer?.cancel();
     super.dispose();
   }
 
@@ -62,8 +68,8 @@ class _TimerWidgetState extends State<TimerWidget> {
       //TODO: IF WANNA SHOW THE SECONDS OPEN THE COMMENT LINE
       // '${TimerConvert().formatNumber(hours)}:${TimerConvert().formatNumber(minutes)}:${TimerConvert().formatNumber(seconds)}',
       '${TimerConvert().formatNumber(hours)}:${TimerConvert().formatNumber(minutes)}',
-      style: CustomFontStyle.generalTextStyle
-          .copyWith(color: widget.color ?? context.colorScheme.tertiary),
+      style: CustomFontStyle.popupNotificationTextStyle
+          .copyWith(color: widget.color ?? context.colorScheme.primary),
     );
   }
 }

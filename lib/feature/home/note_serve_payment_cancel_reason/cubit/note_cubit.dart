@@ -7,11 +7,10 @@ import 'package:a_pos_flutter/feature/home/note_serve_payment_cancel_reason/mode
 import 'package:a_pos_flutter/feature/home/note_serve_payment_cancel_reason/service/i_note_service.dart';
 import 'package:a_pos_flutter/feature/home/note_serve_payment_cancel_reason/service/note_service.dart';
 import 'package:a_pos_flutter/product/global/model/user_model.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 
 class NoteServePaymentCancelReasonCubit extends INoteServePaymentCancelReasonCubit {
-  NoteServePaymentCancelReasonCubit() : super(NoteServePaymentCancelReasonState.initial()) {
-    init();
-  }
+  NoteServePaymentCancelReasonCubit() : super(NoteServePaymentCancelReasonState.initial());
   final INoteServePaymentCancelReasonService _service = NoteServePaymentCancelReasonService();
   final TAG = "NoteServePaymentCancelReasonCubit";
 
@@ -23,16 +22,18 @@ class NoteServePaymentCancelReasonCubit extends INoteServePaymentCancelReasonCub
 
   /// initialize func
   @override
-  Future<void> init() async {}
+  Future<void> init() async {
+    await getCancelReason();
+  }
 
   /// call GET(note - payment method - serve - cancel reason) functions
   @override
   Future<void> getALLFunctions(UserModel userModel) async {
     await Future.wait([
-      getNote(userModel: userModel),
-      getPaymentMethods(userModel: userModel),
-      getServe(userModel: userModel),
-      getCancelReason(userModel: userModel),
+      // getNote(userModel: userModel),
+      // getPaymentMethods(userModel: userModel),
+      // getServe(userModel: userModel),
+      getCancelReason(),
     ]);
   }
 
@@ -69,21 +70,29 @@ class NoteServePaymentCancelReasonCubit extends INoteServePaymentCancelReasonCub
   }
 
   @override
-  Future getCancelReason({required UserModel userModel}) async {
-    cancelReasonsList.clear();
+  Future<void> getCancelReason() async {
+    appLogger.info('NoteServePaymentCancelReason CUBIT', 'GET CANCEL REASON');
     emit(
         state.copyWith(cancelReasonsModel: [], states: NoteServePaymentCancelReasonStates.loading));
-    final response = await _service.getCancelReason(userModel: userModel);
-    response.fold((l) {
-      emit(state.copyWith(states: NoteServePaymentCancelReasonStates.error));
-    }, (r) {
-      r.data.forEach((cancelReason) {
-        cancelReasonsList.add(CancelReasonsModel.fromJson(cancelReason));
-      });
-      emit(state.copyWith(
-          cancelReasonsModel: cancelReasonsList,
-          states: NoteServePaymentCancelReasonStates.completed));
-    });
+
+    final response = await _service.getCancelReason();
+
+    response.fold(
+      (l) => emit(state.copyWith(states: NoteServePaymentCancelReasonStates.error)),
+      (r) {
+        List<CancelReasonsModel> cancelReasons =
+            (r.data as List).map((e) => CancelReasonsModel.fromJson(e)).toList();
+        String? firstCancelReason = cancelReasons.isNotEmpty ? cancelReasons.first.title : null;
+        emit(state.copyWith(
+            cancelReasonsModel: cancelReasons,
+            selectedCancelReason: firstCancelReason,
+            states: NoteServePaymentCancelReasonStates.completed));
+      },
+    );
+  }
+
+  void setSelectedCancelReason(String cancelReason) {
+    emit(state.copyWith(selectedCancelReason: cancelReason));
   }
 
   @override
@@ -95,11 +104,10 @@ class NoteServePaymentCancelReasonCubit extends INoteServePaymentCancelReasonCub
     response.fold((l) {
       emit(state.copyWith(states: NoteServePaymentCancelReasonStates.error));
     }, (r) {
-      r.data.forEach((cancelReason) {
-        paymentMethodList.add(PaymentMethodModel.fromJson(cancelReason));
-      });
+      List<PaymentMethodModel> paymentMethods =
+          (r.data as List).map((e) => PaymentMethodModel.fromJson(e)).toList();
       emit(state.copyWith(
-          paymentMethodModel: paymentMethodList,
+          paymentMethodModel: paymentMethods,
           states: NoteServePaymentCancelReasonStates.completed));
     });
   }

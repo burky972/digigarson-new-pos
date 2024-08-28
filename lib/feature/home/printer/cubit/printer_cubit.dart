@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:a_pos_flutter/feature/home/printer/cubit/i_printer_cubit.dart';
 import 'package:a_pos_flutter/feature/home/printer/cubit/printer_state.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/global/model/print/customer_printer_model.dart';
 import 'package:core/cache/shared_manager.dart';
 import 'package:printing/printing.dart';
@@ -44,7 +45,7 @@ class PrinterCubit extends IPrinterCubit {
   @override
   Future<void> saveGeneralePrinter(CustomPrinterModel? printers) async {
     if (printers != null) {
-      print(printers.toJson());
+      appLogger.info('Printer Cubit:', printers.toJson().toString());
       String jsonString = json.encode(printers.toJson());
       await SharedManager.instance.setStringValue(CacheKeys.customPrinterList, jsonString);
     } else {

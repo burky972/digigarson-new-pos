@@ -29,29 +29,34 @@ class PrinterWidget {
       table =
           '${context.read<BranchCubit>().branchModel!.sections!.where((element) => element.sId == selectedTable.section).first.title} ${selectedTable.title}';
       for (var order in selectedTable.orders) {
-        orderNo = order.checkNo!;
+        orderNo = order.orderNum!;
         for (var product in order.products) {
-          subTotal += (product!.status! > 0
-              ? product.isServe!
-                  ? 0.0
-                  : product.price!
-              : 0.0);
-          if (product.status! != 0) {
-            ItemPrinter newItem = ItemPrinter(
-                itemId: product.product.toString(),
-                itemPriceName: product.priceName.toString(),
-                itemName: product.productName.toString().trim(),
-                itemOptionString: product.optionsString.toString().trim(),
-                itemPrice: product.price!,
-                qty: product.quantity!,
-                discountAmounte: 0,
-                status: product.isServe! ? 2 : 1,
-                discountName: "");
-            updateItemIfExist(items, newItem);
-          }
+          subTotal += (product!.price!);
+          // subTotal += (product!.status! > 0
+          //     ? product.isServe!
+          //         ? 0.0
+          //         : product.price!
+          //     : 0.0);
+
+          // if (product.status! != 0) {
+          ItemPrinter newItem = ItemPrinter(
+              itemId: product.product.toString(),
+              // itemPriceName: product.priceName.toString(),
+              itemPriceName: '', //! check here later
+              itemName: product.productName.toString().trim(),
+              // itemOptionString: product.optionsString.toString().trim(),
+              itemOptionString: product.options.toString().trim(),
+              itemPrice: product.price!,
+              qty: product.quantity!,
+              discountAmounte: 0,
+              status: 1,
+              // status: product.isServe! ? 2 : 1,
+              discountName: "");
+          updateItemIfExist(items, newItem);
+          // }
         }
       }
-      for (var serviceFree in selectedTable.serviceFee!) {
+      for (var serviceFree in selectedTable.serviceFee) {
         service.add(ServicePrinter(
             amount: double.parse(DoubleConvert().formatPriceDouble(serviceFree.amount!)),
             percentile: double.parse(DoubleConvert().formatDouble(serviceFree.percentile!)),
@@ -193,7 +198,7 @@ class PrinterWidget {
   }
 
   PrinterKitchenInvoice invoiceKitchenConvert(TableModel? selectedTable,
-      Iterable<NewOrderProduct> product, CustomPrinterModel? printer, BuildContext context) {
+      Iterable<OrderProductModel> product, CustomPrinterModel? printer, BuildContext context) {
     String table = "";
     int orderNo = 0;
     if (selectedTable != null) {
@@ -204,22 +209,22 @@ class PrinterWidget {
     List<ItemKitchenPrinter> items = [];
     List<ItemKitchenPrinter> firstItems = [];
     for (var o in product) {
-      if (o.isFirst) {
+      if (o.isFirst ?? false) {
         firstItems.add(ItemKitchenPrinter(
-            itemId: o.product,
-            itemName: o.productName,
-            itemPriceName: o.priceName,
-            note: o.note,
+            itemId: o.product!,
+            itemName: o.productName!,
+            itemPriceName: o.priceName!,
+            note: o.note!,
             itemOption: o.options,
-            qty: o.quantity));
+            qty: o.quantity!));
       } else {
         items.add(ItemKitchenPrinter(
-            itemId: o.product,
-            itemName: o.productName,
-            itemPriceName: o.priceName,
-            note: o.note,
+            itemId: o.product!,
+            itemName: o.productName!,
+            itemPriceName: o.priceName!,
+            note: o.note!,
             itemOption: o.options,
-            qty: o.quantity));
+            qty: o.quantity!));
       }
     }
     TransactionKitchenData transactionData = TransactionKitchenData(
@@ -254,9 +259,11 @@ class PrinterWidget {
       items.add(ItemKitchenCancelPrinter(
           itemId: o.product.toString(),
           itemName: o.productName.toString(),
-          itemPriceName: o.priceName.toString(),
+          // itemPriceName: o.priceName.toString(),
+          itemPriceName: '',
           note: o.note.toString(),
-          optionString: o.optionsString.toString(),
+          // optionString: o.optionsString.toString(),
+          optionString: o.options.toString(),
           qty: o.quantity!));
     }
 

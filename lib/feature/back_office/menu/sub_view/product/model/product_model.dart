@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:core/base/model/base_model.dart';
+import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'product_model.g.dart';
@@ -83,7 +84,7 @@ class ProductModel extends BaseModel<ProductModel> {
       ];
 
   ProductModel copyWith({
-    String? id,
+    String? Function()? id,
     String? title,
     String? image,
     String? category,
@@ -99,7 +100,7 @@ class ProductModel extends BaseModel<ProductModel> {
     int? rank,
   }) {
     return ProductModel(
-      id: id ?? this.id,
+      id: id != null ? id() : this.id,
       title: title ?? this.title,
       image: image ?? this.image,
       category: category ?? this.category,
@@ -117,12 +118,13 @@ class ProductModel extends BaseModel<ProductModel> {
   }
 }
 
-@JsonSerializable()
-class PriceModel extends BaseModel<PriceModel> {
+@JsonSerializable(includeIfNull: false)
+class PriceModel extends Equatable {
   @JsonKey(name: '_id')
   final String? id;
   final double? amount;
   final String? priceName;
+  final String? priceType;
   final String? currency;
   @JsonKey(name: 'order_type')
   final List<dynamic>? orderType;
@@ -130,10 +132,11 @@ class PriceModel extends BaseModel<PriceModel> {
   final double? vatRate;
   final double? price;
 
-  PriceModel({
+  const PriceModel({
     this.id,
     this.amount,
     this.priceName,
+    this.priceType,
     this.currency,
     this.orderType,
     this.vatRate,
@@ -142,30 +145,29 @@ class PriceModel extends BaseModel<PriceModel> {
 
   factory PriceModel.fromJson(Map<String, dynamic> json) => _$PriceModelFromJson(json);
 
-  @override
   Map<String, dynamic> toJson() => _$PriceModelToJson(this);
 
-  @override
-  PriceModel fromJson(Map<String, dynamic> json) => _$PriceModelFromJson(json);
-
   factory PriceModel.empty() {
-    return PriceModel(
-      id: '',
-      amount: 0.0,
-      priceName: 'Custom Price',
-      currency: '',
-      orderType: const [],
+    return const PriceModel(
+      id: null,
+      amount: 1.0,
+      priceName: 'REGULAR',
+      priceType: 'REGULAR',
+      currency: 'USD',
+      orderType: [],
       vatRate: 0.0,
       price: 0.0,
     );
   }
   @override
-  List<Object?> get props => [id, amount, priceName, currency, orderType, vatRate, price];
+  List<Object?> get props =>
+      [id, amount, priceName, priceType, currency, orderType, vatRate, price];
 
   PriceModel copyWith({
     String? id,
     double? amount,
     String? priceName,
+    String? priceType,
     String? currency,
     List<dynamic>? orderType,
     double? vatRate,
@@ -175,6 +177,7 @@ class PriceModel extends BaseModel<PriceModel> {
       id: id ?? this.id,
       amount: amount ?? this.amount,
       priceName: priceName ?? this.priceName,
+      priceType: priceType ?? this.priceType,
       currency: currency ?? this.currency,
       orderType: orderType ?? this.orderType,
       vatRate: vatRate ?? this.vatRate,

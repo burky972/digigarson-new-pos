@@ -193,7 +193,7 @@ class _SignInWidgetState extends State<LoginBodyWidget> with LoginMixin {
                       buttonText: LocaleKeys.close.tr(),
                       paddingBtn: 10,
                       heightBtn: 50,
-                      buttonColor: context.colorScheme.error,
+                      buttonColor: context.colorScheme.primary,
                       textColor: context.colorScheme.surface,
                     ),
                   ),

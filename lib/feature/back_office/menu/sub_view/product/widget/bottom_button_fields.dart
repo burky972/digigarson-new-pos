@@ -13,28 +13,33 @@ class _BottomButtonFields extends StatelessWidget {
         const Spacer(),
         const LightBlueButton(buttonText: 'Move Up'),
         const LightBlueButton(buttonText: 'Move Down'),
-        InkWell(
-            onTap: () {
-              context
+        LightBlueButton(
+          buttonText: 'Add',
+          onTap: () => context
+              .read<ProductCubit>()
+              .addNewProduct(context.read<CategoryCubit>().selectedCategory!.id!),
+        ),
+        LightBlueButton(
+          buttonText: 'Delete',
+          onTap: context.read<ProductCubit>().state.selectedProduct == null
+              ? null
+              : () async => await context
                   .read<ProductCubit>()
-                  .addNewProduct(context.read<CategoryCubit>().selectedCategory!.id!);
-            },
-            child: const LightBlueButton(buttonText: 'Add')),
-        InkWell(
-            onTap: context.read<ProductCubit>().state.selectedProduct == null
-                ? null
-                : () async => await context
-                    .read<ProductCubit>()
-                    .patchProducts(
-                        productId: context.read<ProductCubit>().state.selectedProduct!.id!)
-                    .whenComplete(() => context.read<ProductCubit>().getProducts()),
-            child: const LightBlueButton(buttonText: 'Delete')),
-        InkWell(
-            onTap: () => context.read<ProductCubit>().saveChanges(),
-            child: const LightBlueButton(buttonText: 'Save')),
+                  .patchProducts(productId: context.read<ProductCubit>().state.selectedProduct!.id!)
+                  .whenComplete(() => context.read<ProductCubit>().getProducts()),
+        ),
+        LightBlueButton(
+          buttonText: 'Save',
+          onTap: () async => await context
+              .read<ProductCubit>()
+              .saveChanges()
+              .then((value) => context.read<ProductCubit>().getProducts()),
+        ),
         const LightBlueButton(buttonText: 'Export'),
-        InkWell(
-            onTap: () => Navigator.pop(context), child: const LightBlueButton(buttonText: 'Exit')),
+        LightBlueButton(
+          buttonText: 'Exit',
+          onTap: () => Navigator.pop(context),
+        ),
       ],
     );
   }

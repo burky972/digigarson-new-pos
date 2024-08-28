@@ -45,6 +45,17 @@ class User extends BaseModel<User> {
   @override
   Map<String, dynamic> toJson() => _$UserToJson(this);
 
+  factory User.empty() => User(
+        id: "",
+        role: Role(
+          permissions: const [],
+          roleId: "",
+          roleName: "",
+        ),
+        lastName: "",
+        name: "",
+      );
+
   @override
   factory User.fromJson(Map<String, dynamic> json) {
     return _$UserFromJson(json);

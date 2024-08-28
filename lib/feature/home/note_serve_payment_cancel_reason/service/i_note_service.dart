@@ -5,6 +5,6 @@ import 'package:core/base/model/base_response_model.dart';
 abstract class INoteServePaymentCancelReasonService {
   BaseResponseData<BaseResponseModel> getNote({required UserModel userModel});
   BaseResponseData<BaseResponseModel> getServe({required UserModel userModel});
-  BaseResponseData<BaseResponseModel> getCancelReason({required UserModel userModel});
+  BaseResponseData<BaseResponseModel> getCancelReason();
   BaseResponseData<BaseResponseModel> getPaymentMethod({required UserModel userModel});
 }

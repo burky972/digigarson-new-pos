@@ -28,8 +28,8 @@ class DioClient {
   }) async {
     token = SharedManager.instance.getStringValue(CacheKeys.token.name) ?? "";
     countryCode = SharedManager.instance.getStringValue(CacheKeys.country_code.name);
-    APosLogger.instance!.info('dio Client TOKEN', '$token ');
-    APosLogger.instance!.info('dio Client TOKEN', '$countryCode ');
+    APosLogger.instance.info('dio Client TOKEN', '$token ');
+    APosLogger.instance.info('dio Client TOKEN', '$countryCode ');
     dio
       ..options.baseUrl = baseUrl
       ..options.connectTimeout = const Duration(minutes: 1)
@@ -64,8 +64,8 @@ class DioClient {
     ProgressCallback? onReceiveProgress,
   }) async {
     try {
-      APosLogger.instance!.info(tag, 'GET request');
-      APosLogger.instance!.info(tag, 'uri: $uri');
+      APosLogger.instance.info(tag, 'GET request');
+      APosLogger.instance.info(tag, 'uri: $uri');
       var response = await dio.get(
         uri,
         queryParameters: queryParameters,
@@ -73,22 +73,31 @@ class DioClient {
         cancelToken: cancelToken,
         onReceiveProgress: onReceiveProgress,
       );
-      APosLogger.instance!.info(tag, 'response: ${response.data}');
-      APosLogger.instance!.info(tag, 'response: ${response.statusMessage}');
+      APosLogger.instance.info(tag, 'response: ${response.data}');
+      APosLogger.instance.info(tag, 'response: ${response.statusMessage}');
 
       return BaseResponseModel(data: response.data);
     } on SocketException catch (e) {
-      APosLogger.instance!.error(tag, e.message.toString());
+      APosLogger.instance.error(tag, e.message.toString());
       return BaseResponseModel(
           serverException:
               ServerException(message: 'SocketException: ${e.message}', statusCode: e.toString()));
     } on FormatException catch (e) {
-      APosLogger.instance!.error(tag, e.message.toString());
+      APosLogger.instance.error(tag, e.message.toString());
       return BaseResponseModel(
           serverException:
               ServerException(message: 'FormatException: ${e.message}', statusCode: e.toString()));
+    } on DioException catch (dioError) {
+      APosLogger.instance.error('GET RESPONSE DATA:', '${dioError.response?.data.toString()}');
+      // We are adding error message and status code to BaseResponseModel.
+      return BaseResponseModel(
+        serverException: ServerException(
+          message: dioError.response?.data.toString() ?? dioError.message.toString(),
+          statusCode: dioError.response?.statusCode.toString() ?? 'unknown',
+        ),
+      );
     } catch (e) {
-      APosLogger.instance!.error(tag, e.toString());
+      APosLogger.instance.error(tag, e.toString());
       return BaseResponseModel(
         serverException: const ServerException(message: 'Unknown Error', statusCode: '505'),
       );
@@ -104,8 +113,8 @@ class DioClient {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    APosLogger.instance!.info(tag, 'POST request');
-    APosLogger.instance!.info(tag, 'uri: $uri');
+    APosLogger.instance.info(tag, 'POST request');
+    APosLogger.instance.info(tag, 'uri: $uri');
     try {
       var response = await dio.post(
         uri,
@@ -122,6 +131,15 @@ class DioClient {
       return BaseResponseModel(
           serverException:
               ServerException(message: ' FormatException${e.message}', statusCode: '505'));
+    } on DioException catch (dioError) {
+      APosLogger.instance.error('POST RESPONSE DATA:', '${dioError.response?.data.toString()}');
+      // We are adding error message and status code to BaseResponseModel.
+      return BaseResponseModel(
+        serverException: ServerException(
+          message: dioError.response?.data?.toString() ?? dioError.message ?? 'Unknown Error',
+          statusCode: dioError.response?.statusCode.toString() ?? 'unknown',
+        ),
+      );
     } catch (e) {
       return BaseResponseModel(
           serverException:
@@ -139,8 +157,8 @@ class DioClient {
     ProgressCallback? onReceiveProgress,
   }) async {
     try {
-      APosLogger.instance!.info(tag, 'PUT request');
-      APosLogger.instance!.info(tag, 'uri: $uri');
+      APosLogger.instance.info(tag, 'PUT request');
+      APosLogger.instance.info(tag, 'uri: $uri');
       var response = await dio.put(
         uri,
         data: data,
@@ -155,6 +173,17 @@ class DioClient {
       return BaseResponseModel(
           serverException:
               ServerException(message: ' FormatException${e.message}', statusCode: '505'));
+    } on DioException catch (dioError) {
+      APosLogger.instance.error('put CATCH', dioError.toString());
+      APosLogger.instance.error('put RESPONSE DATA:', '${dioError.response?.data.toString()}');
+
+      // We are adding error message and status code to BaseResponseModel.
+      return BaseResponseModel(
+        serverException: ServerException(
+          message: dioError.response?.data?['error'] ?? dioError.message,
+          statusCode: dioError.response?.statusCode.toString() ?? 'unknown',
+        ),
+      );
     } catch (e) {
       return BaseResponseModel(
           serverException:
@@ -169,8 +198,8 @@ class DioClient {
     Options? options,
     CancelToken? cancelToken,
   }) async {
-    APosLogger.instance!.info(tag, 'DELETE request');
-    APosLogger.instance!.info(tag, 'uri: $uri');
+    APosLogger.instance.info(tag, 'DELETE request');
+    APosLogger.instance.info(tag, 'uri: $uri');
     try {
       var response = await dio.delete(
         uri,
@@ -184,8 +213,19 @@ class DioClient {
       return BaseResponseModel(
           serverException:
               ServerException(message: ' FormatException${e.message}', statusCode: '505'));
+    } on DioException catch (dioError) {
+      APosLogger.instance.error('DELETE CATCH', dioError.toString());
+      APosLogger.instance.error('DELETE RESPONSE DATA:', '${dioError.response?.data.toString()}');
+
+      // We are adding error message and status code to BaseResponseModel.
+      return BaseResponseModel(
+        serverException: ServerException(
+          message: dioError.response?.data?['error'] ?? dioError.message,
+          statusCode: dioError.response?.statusCode.toString() ?? 'unknown',
+        ),
+      );
     } catch (e) {
-      rethrow;
+      return BaseResponseModel(serverException: ServerException(message: '$e', statusCode: '505'));
     }
   }
 
@@ -196,8 +236,8 @@ class DioClient {
     Options? options,
     CancelToken? cancelToken,
   }) async {
-    APosLogger.instance!.info(tag, 'PATH request');
-    APosLogger.instance!.info(tag, 'uri: $uri');
+    APosLogger.instance.info(tag, 'PATH request');
+    APosLogger.instance.info(tag, 'uri: $uri');
     try {
       var response = await dio.patch(
         uri,
