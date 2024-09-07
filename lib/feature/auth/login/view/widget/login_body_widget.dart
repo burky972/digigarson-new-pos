@@ -12,6 +12,7 @@ import 'package:a_pos_flutter/product/widget/button/custom_button.dart';
 import 'package:a_pos_flutter/product/widget/keyboard/custom_keyboard.dart';
 import 'package:a_pos_flutter/product/widget/textfield/custom_password_textfield.dart';
 import 'package:a_pos_flutter/product/widget/textfield/custom_textfield.dart';
+import 'package:core/const/space.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -244,7 +245,7 @@ class _LeftItemsWidget extends StatelessWidget {
                       style: CustomFontStyle.titlesTextStyle
                           .copyWith(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
                     ),
-                    const SizedBox(height: 5),
+                    kGap5,
                     Text(
                       timeString,
                       style: CustomFontStyle.titlesTextStyle

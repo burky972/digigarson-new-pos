@@ -291,6 +291,9 @@
   "new_password": "New Password",
   "confirm_password": "Confirm Password",
   "reset_password": "Reset Password",
+  "reset": "reset",
+  "print": "print",
+  "division": "1/person",
   "password_reset": "Password Reset",
   "enter_phone_number_for_password_reset": "Enter phone number for password reset",
   "send_otp": "Send Otp",
@@ -314,7 +317,9 @@
   "edit": "Edit",
   "delete": "Delete",
   "city": "City",
+  "remainingPrice": "Remaining Price:",
   "zip": "Zip",
+  "amountPayable": "Total Due:",
   "additional_note": "Additional note",
   "shipping_and_billing_is_same": "Shipping and Billing Address is same",
   "select_delivery_address": "Select Delivery Address",
@@ -375,6 +380,7 @@
   "permission": "Unauthorised Operation",
   "Notes": "REGISTERED NOTE",
   "clear": "Clear",
+  "isCleaningAllTable": "Are you sure you want to proceed? If you continue, all saved tables will be permanently deleted",
   "close": "Close",
   "min_screen": "Window Mode",
   "max_screen": "Full Screen",
@@ -384,5 +390,10 @@
   "serviceFeeShow": "Services",
   "income": "INCOME",
   "outcome": "EXPENSE",
-  "total": "TOTAL"
+  "total": "Total",
+  "amount": "Amount",
+  "receivables": "Receivables",
+  "payments": "Payments"
+
+
 }

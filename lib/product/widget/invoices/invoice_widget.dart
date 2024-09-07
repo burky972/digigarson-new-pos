@@ -1,7 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:a_pos_flutter/feature/home/reopen/model/re_open_model.dart';
+import 'package:a_pos_flutter/feature/home/checks/model/re_open_model.dart';
+
 import 'package:a_pos_flutter/product/constant/app/app_constant.dart';
 import 'package:a_pos_flutter/product/constant/string/incoive.dart';
 import 'package:a_pos_flutter/product/global/model/print/customer_printer_model.dart';

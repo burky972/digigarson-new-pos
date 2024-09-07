@@ -6,17 +6,21 @@ import 'package:a_pos_flutter/feature/back_office/sections/cubit/section_cubit.d
 import 'package:a_pos_flutter/feature/back_office/sections/cubit/section_state.dart';
 import 'package:a_pos_flutter/feature/back_office/sections/model/section_model.dart';
 import 'package:a_pos_flutter/feature/back_office/table_layout/model/table_layout_model.dart';
+import 'package:a_pos_flutter/feature/back_office/table_layout/utility_item/cubit/utility_item_cubit.dart';
+import 'package:a_pos_flutter/feature/back_office/table_layout/utility_item/model/utility_item_model.dart';
+import 'package:a_pos_flutter/feature/back_office/table_layout/utility_item/model/utility_item_request_model.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_state.dart';
 import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
 import 'package:a_pos_flutter/feature/home/table/model/table_request_model.dart';
+import 'package:a_pos_flutter/product/enums/utility_item/enum.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
-import 'package:a_pos_flutter/product/global/cubit/global_cubit.dart';
 import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/widget/button/light_blue_button.dart';
+import 'package:a_pos_flutter/product/widget/dialog/clean_all_tables_dialog.dart';
 import 'package:a_pos_flutter/product/widget/pop_up/pop_up.dart';
 import 'package:a_pos_flutter/product/widget/textfield/custom_border_all_textfield.dart';
 import 'package:core/cache/shared_manager.dart';
@@ -26,6 +30,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'right_table_layout_view.dart';
 part '../widget/dropdown_widget.dart';
 
+//!TODO:check table delete and utility item delete!!!!!
 class TableLayoutView extends StatefulWidget {
   const TableLayoutView({super.key});
 
@@ -38,8 +43,8 @@ class _TableLayoutViewState extends State<TableLayoutView>
   @override
   void initState() {
     super.initState();
+    context.read<SectionCubit>().getSections();
     _loadAllTableStates();
-
     _tabController = TabController(length: 2, vsync: this);
   }
 
@@ -64,6 +69,7 @@ class _TableLayoutViewState extends State<TableLayoutView>
           child: BlocBuilder<SectionCubit, SectionState>(
             builder: (context, state) {
               TableCubit tableCubit = context.read<TableCubit>();
+              UtilityItemCubit utilityItemCubit = context.read<UtilityItemCubit>();
               return Column(
                 children: [
                   Expanded(
@@ -262,38 +268,8 @@ class _TableLayoutViewState extends State<TableLayoutView>
 
                                           /// original sections dropdown button
                                           const _SectionDropDownWidget(),
-                                          // DropdownButtonFormField<String>(
-                                          //   value: state.originalSections?.any((section) =>
-                                          //               section.id == state.selectedSection?.id) ==
-                                          //           true
-                                          //       ? state.selectedSection?.id
-                                          //       : null,
-                                          //   onChanged: (newValue) {
-                                          //     final selectedSection =
-                                          //         state.originalSections?.firstWhere(
-                                          //       (section) => section.id == newValue,
-                                          //       orElse: () => SectionModel.empty(),
-                                          //     );
 
-                                          //     Random random = Random();
-                                          //     int randomNumber = random.nextInt(1000000);
-                                          //     context.read<SectionCubit>().setSelectedSection(
-                                          //           sectionTitle: selectedSection ??
-                                          //               SectionModel.empty().copyWith(
-                                          //                   id: (newValue?.length.toString() ??
-                                          //                           '0') +
-                                          //                       randomNumber.toString()),
-                                          //         );
-                                          //   },
-                                          //   items: state.originalSections
-                                          //       ?.map<DropdownMenuItem<String>>(
-                                          //           (SectionModel value) {
-                                          //     return DropdownMenuItem<String>(
-                                          //       value: value.id,
-                                          //       child: Text(value.title ?? ''),
-                                          //     );
-                                          //   }).toList(),
-                                          // ),
+                                          /// tables - utility item list
                                           Padding(
                                             padding: const AppPadding.extraMinAll(),
                                             child: Text(
@@ -336,6 +312,8 @@ class _TableLayoutViewState extends State<TableLayoutView>
                                     onStateChanged: (tables) {
                                       setState(() {
                                         tableStates[state.selectedSection?.id ?? ''] = tables;
+                                        _onSelectedTableChanged(
+                                            tableStates[state.selectedSection?.id ?? '']?.last);
                                       });
                                     },
                                     onSelectedTableChanged: _onSelectedTableChanged,
@@ -344,7 +322,7 @@ class _TableLayoutViewState extends State<TableLayoutView>
                     ),
                   ),
 
-                  ///Bottom Buttons Field
+                  ///Section Bottom Buttons Field
                   BlocBuilder<SectionCubit, SectionState>(
                     builder: (context, state) {
                       String? selectedSectionId = state.selectedSection?.id;
@@ -363,8 +341,6 @@ class _TableLayoutViewState extends State<TableLayoutView>
                                   return LightBlueButton(
                                     buttonText: 'Del',
                                     onTap: () {
-                                      appLogger.error("ERROR HERE", "CHECK HERE FIRSTLY");
-
                                       (state.tablesBySectionList?[selectedSectionId]?.length ?? 0) >
                                               0
                                           ? showOrderErrorDialog(context, 'Section has Tables!')
@@ -374,21 +350,49 @@ class _TableLayoutViewState extends State<TableLayoutView>
                                 },
                               ),
                               LightBlueButton(
-                                buttonText: 'Save',
-                                onTap: () async => await context
-                                    .read<SectionCubit>()
-                                    .saveChanges(state.allSections),
-                              ),
+                                  buttonText: 'Save',
+                                  onTap: () async => await context
+                                          .read<SectionCubit>()
+                                          .saveChanges(state.allSections)
+                                          .whenComplete(() {
+                                        tableCubit.getTable();
+                                      })),
+
+                              /// Table Bottom Buttons
                               const Spacer(),
                               InkWell(
                                   onTap: () async {
-                                    for (var element
-                                        in tableCubit.tablesBySection[state.selectedSection?.id]!) {
+                                    if (selectedTable != null) {
+                                      if (tableCubit.newAddedTableIds
+                                          .contains(selectedTable?.uniqueId)) {
+                                        _deleteSelectedNewTable(selectedSection, state);
+                                      }
+                                    }
+                                    for (UtilityItemModel element
+                                        in utilityItemCubit.sectionMap[state.selectedSection?.id] ??
+                                            []) {
+                                      if (selectedTable?.position.dx.toInt() ==
+                                              element.location?.xCoordinate &&
+                                          selectedTable?.position.dy.toInt() ==
+                                              element.location?.yCoordinate) {
+                                        utilityItemCubit
+                                            .addIdToDeletedUtilityItemIds(element.id ?? "");
+                                        _deleteSelectedTable(state.selectedSection!.id.toString());
+                                      }
+                                    }
+
+                                    for (TableModel element
+                                        in tableCubit.tablesBySection[state.selectedSection?.id] ??
+                                            []) {
                                       if (selectedTable?.name == element.title) {
                                         if (state.selectedSection == null ||
                                             state.selectedSection?.id == null) return;
-                                        tableCubit.addIdToDeletedTableIds(element.id!);
+                                        tableCubit.addIdToDeletedTableIds(
+                                          element.id!,
+                                        );
                                         _deleteSelectedTable(state.selectedSection!.id.toString());
+                                      } else {
+                                        // _deleteSelectedNewTable(selectedSection, state);
                                       }
                                     }
                                   },
@@ -407,7 +411,8 @@ class _TableLayoutViewState extends State<TableLayoutView>
                                       : LightBlueButton(
                                           buttonText: 'Save',
                                           onTap: () async => await _saveAllTableStates(
-                                              state.selectedSection!.id.toString()),
+                                              state.selectedSection!.id.toString(),
+                                              state.originalSections),
                                         );
                                 },
                               ),
@@ -415,6 +420,8 @@ class _TableLayoutViewState extends State<TableLayoutView>
                                 buttonText: 'Exit',
                                 onTap: () {
                                   tableCubit.deletedTableIds.clear();
+                                  tableCubit.newAddedTableIds.clear();
+                                  utilityItemCubit.deletedUtilityItemIds.clear();
                                   Navigator.of(context).pushReplacement(
                                       MaterialPageRoute(builder: (_) => const MenuView()));
                                   Navigator.pop(context);
@@ -484,18 +491,9 @@ mixin TableLayoutMixin on State<TableLayoutView> {
   /// clean all sections tables
   //TODO: when clean func callad ask like are you sure that all tables will be gone!
   Future<void> _cleanAllTableStates() async {
-    tableStates.forEach((key, tables) async {
-      appLogger.warning('CLEAN: ', key);
-      await SharedManager.instance.removeValue(key);
-      var savedList = SharedManager.instance.getStringListValue(key);
-      appLogger.warning('saved list : ', '${savedList?.length.toString()}');
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        backgroundColor: Colors.red,
-        content: Text('All table states cleaned!'),
-      ),
-    );
+    if (tableStates.isNotEmpty) {
+      CleanAllTablesDialog().show(context, tableStates);
+    }
   }
 
   /// load all sections table
@@ -530,9 +528,23 @@ mixin TableLayoutMixin on State<TableLayoutView> {
     TableItem newSelectedTable = selectedTable!;
     setState(() {
       List<TableItem> tables = tableStates[selectedSection] ?? [];
-      tables.removeWhere((table) => table.uniqueId == newSelectedTable.uniqueId);
+      tables.removeWhere((table) {
+        return table.uniqueId == newSelectedTable.uniqueId;
+      });
 
       tableStates[selectedSection] = tables;
+      appLogger.info('Table CUBIT DELETE TABLE', '${tables.length}');
+      selectedTable = null;
+    });
+  }
+
+  //! check this delete function
+  void _deleteSelectedNewTable(String? selectedSection, SectionState state) {
+    if (selectedTable == null) return;
+    TableItem newSelectedTable = selectedTable!;
+    List<TableItem>? table = tableStates[state.selectedSection?.id ?? ''];
+    setState(() {
+      table?.removeWhere((table) => table.uniqueId == newSelectedTable.uniqueId);
       selectedTable = null;
     });
   }
@@ -553,77 +565,125 @@ mixin TableLayoutMixin on State<TableLayoutView> {
           cover: const [],
           payments: const [],
           serviceFee: const [],
-          section: selectedSection,
-          title: table?.name,
-          tableType: table?.id));
+          section: selectedSection ?? '',
+          title: table?.name ?? '',
+          tableType: table?.id ?? -1));
     });
   }
 
-  /// save all section's  draggable tables to cache
-  Future<void> _saveAllTableStates(String selectedStateSection) async {
+  Future<void> _saveAllTableStates(
+      String selectedStateSection, List<SectionModel>? originalSections) async {
+    appLogger.info("TAG", "save initialized!");
     TableCubit tableCubit = context.read<TableCubit>();
-    GlobalCubit globalCubit = context.read<GlobalCubit>();
-    SectionCubit sectionCubit = context.read<SectionCubit>();
+    UtilityItemCubit utilityItemCubit = context.read<UtilityItemCubit>();
 
     tableCubit.changeIsTableSaving(true);
+
+    // Silme işlemlerini yapın
     for (var id in tableCubit.deletedTableIds) {
-      await tableCubit.deleteTable(
-        id.toString(),
-      );
+      bool deleteSuccess = await tableCubit.deleteTable(id.toString());
+      if (!deleteSuccess) {
+        tableCubit.changeIsTableSaving(false);
+        showErrorDialog(context, 'Failed to delete table with ID $id.');
+        return; // Silme başarısız olursa çıkış yap
+      }
     }
-    if (tableCubit.state.isDeleteSuccess == false) {
-      tableCubit.changeIsTableSaving(false);
-      tableCubit.updateDeletedSuccess = true;
-      return;
+
+    for (var id in utilityItemCubit.deletedUtilityItemIds) {
+      bool deleteSuccess = await utilityItemCubit.deleteUtilityItem(itemId: id.toString());
+      if (!deleteSuccess) {
+        tableCubit.changeIsTableSaving(false);
+        showErrorDialog(context, 'Failed to delete utility item with ID $id.');
+        return; // Silme başarısız olursa çıkış yap
+      }
     }
+
+    // Durum güncellemesi ve ekleme işlemleri
+    tableCubit.updateDeletedSuccess(true);
+    // Ensure that deletion was successful across all tables
+    // if (tableCubit.state.isDeleteSuccess == false) {
+    tableCubit.changeIsTableSaving(false);
+    tableCubit.updateDeletedSuccess(true);
+    // return;
+    // }
+
     bool hasInvalidTables = false;
-    for (SectionModel key in sectionCubit.state.allSections ?? []) {
+
+    // Iterate through all sections to check and save table states
+    for (SectionModel key in originalSections ?? []) {
+      appLogger.info('sectionzz originalLength', '${originalSections?.length}!!');
+
       List<TableItem> tables = tableStates[key.id] ?? [];
       List<String> jsonTables = tables.map((table) => json.encode(table.toJson())).toList();
+
+      // Check for invalid tables within the section
+      for (var table in tables) {
+        if (table.id < 45 && (table.name == null || table.name!.isEmpty)) {
+          hasInvalidTables = true;
+          break; // Exit loop early since we found an invalid table
+        }
+      }
+
+      // Handle invalid tables: Show error message and exit the function
+      if (hasInvalidTables) {
+        appLogger.warning('error : ', hasInvalidTables.toString());
+        tableCubit.changeIsTableSaving(false); // Ensure saving state is false
+        showErrorDialog(context, 'Be sure that all the placed tables have names!');
+        return;
+      }
+
+      appLogger.warning('SAVED: ', jsonTables.length.toString());
+      await SharedManager.instance.setStringListValue(key.id ?? '', jsonTables);
+    }
+
+    // Iterate through tables again for further operations (e.g., posting to server)
+    for (SectionModel key in originalSections ?? []) {
+      List<TableItem> tables = tableStates[key.id] ?? [];
 
       for (var table in tables) {
         var newId = table.id + 1;
         var xCoordinate = table.position.dx.toInt();
         var yCoordinate = table.position.dy.toInt();
-        await tableCubit.postTable(
-          TableRequestModel(
-            title: table.name,
-            section: key.id,
-            tableType: newId,
-            location: LocationModel(xCoordinate: xCoordinate, yCoordinate: yCoordinate),
-          ),
-          globalCubit.user,
-        );
-      }
-      for (var table in tables) {
-        if (table.id <= 45 && (table.name == null || table.name!.isEmpty)) {
-          hasInvalidTables = true;
-          break;
+
+        if (table.id > 44) {
+          // Post utility items
+          await utilityItemCubit.postUtilityItem(
+            utilityModel: UtilityItemRequestModel(
+              section: key.id,
+              type: EUtilityItems.getUtilityItemType(table.id),
+              location: LocationModel(xCoordinate: xCoordinate, yCoordinate: yCoordinate),
+            ),
+          );
+        } else {
+          // Post tables
+          await tableCubit.postTable(
+            TableRequestModel(
+              title: table.name,
+              section: key.id,
+              tableType: newId,
+              location: LocationModel(xCoordinate: xCoordinate, yCoordinate: yCoordinate),
+            ),
+          );
         }
-      }
-      if (hasInvalidTables) {
-        break;
-      } else {
-        appLogger.warning('SAVED: ', jsonTables.length.toString());
-        await SharedManager.instance.setStringListValue(key.id ?? '', jsonTables);
       }
     }
 
-    if (hasInvalidTables) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Be sure that all the placed tables have names')),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Colors.red,
-          content: Text('All table states saved!'),
-        ),
-      );
-    }
+    // Show a success message once all operations are completed
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        backgroundColor: Colors.red,
+        content: Text('All table states saved!'),
+      ),
+    );
+
+    // Reset table states and fetch updated data
+
     tableCubit.reset();
-    await tableCubit.getTable(globalCubit.user);
-    tableCubit.deletedTableIds.clear();
+    utilityItemCubit.reset();
+    await tableCubit.getTable();
+    await utilityItemCubit.getUtilityItem();
+    utilityItemCubit.deletedUtilityItemIds.clear();
+    tableCubit.changeIsTableSaving(false);
     tableCubit.changeIsTableSaving(false);
   }
 }

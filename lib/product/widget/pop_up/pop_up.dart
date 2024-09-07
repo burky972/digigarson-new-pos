@@ -14,6 +14,10 @@ showOrderWarningDialog(BuildContext context, String title, {bool? secondClose}) 
     showCloseIcon: false,
     title: title,
   ).show();
+  Timer(const Duration(milliseconds: 1200), () {
+    Navigator.of(context).pop();
+    secondClose != null ? Navigator.of(context).pop() : null;
+  });
 }
 
 showOrderSuccessDialog(BuildContext context, String title, {bool? secondClose}) {

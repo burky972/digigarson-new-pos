@@ -58,7 +58,7 @@ class ProductCubit extends IProductCubit {
                           currency: price.currency,
                           orderType: price.orderType,
                           vatRate: price.vatRate,
-                          price: newUnTaxedPrice(price.price!, price.vatRate!));
+                          price: price.price!);
                     }).toList()
                   : pro.prices,
               description: pro.description,
@@ -84,18 +84,18 @@ class ProductCubit extends IProductCubit {
   }
 
   /// When the price is taxed, the taxed price is calculated.(calling when posting products)
-  double newTaxedPrice(double price, double tax) {
-    double taxRate = tax / 100;
-    return price + (price * taxRate);
-  }
+  // double newTaxedPrice(double price, double tax) {
+  //   double taxRate = tax / 100;
+  //   return price + (price * taxRate);
+  // }
 
   /// When the price is taxed, the untaxed price is calculated.(calling when getting products)
-  double newUnTaxedPrice(double price, double tax) {
-    double taxRate = tax / 100;
-    double priceWithoutTax = price / (1 + taxRate);
-    double roundedPriceWithoutTax = double.parse(priceWithoutTax.toStringAsFixed(2));
-    return roundedPriceWithoutTax;
-  }
+  // double newUnTaxedPrice(double price, double tax) {
+  //   double taxRate = tax / 100;
+  //   double priceWithoutTax = price / (1 + taxRate);
+  //   double roundedPriceWithoutTax = double.parse(priceWithoutTax.toStringAsFixed(2));
+  //   return roundedPriceWithoutTax;
+  // }
 
   /// POST PRODUCTS TO PRODUCT SERVICE
   @override
@@ -106,16 +106,16 @@ class ProductCubit extends IProductCubit {
     appLogger.info('POST PRODUCT CALLED: ', productModel.toJson().toString());
     emit(state.copyWith(states: ProductStates.loading));
     BaseResponseCubit response;
-    if ((productModel.prices?.first.vatRate ?? 0) > 0) {
-      ProductModel newModel = productModel.copyWith(
-        prices: productModel.prices
-            ?.map((e) => e.copyWith(price: newTaxedPrice(e.price!, e.vatRate!)))
-            .toList(),
-      );
-      response = await _productService.postProducts(productModel: newModel);
-    } else {
-      response = await _productService.postProducts(productModel: productModel);
-    }
+    // if ((productModel.prices?.first.vatRate ?? 0) > 0) {
+    //   ProductModel newModel = productModel.copyWith(
+    //     prices: productModel.prices
+    //         ?.map((e) => e.copyWith(price: newTaxedPrice(e.price!, e.vatRate!)))
+    //         .toList(),
+    //   );
+    //   response = await _productService.postProducts(productModel: newModel);
+    // } else {
+    response = await _productService.postProducts(productModel: productModel);
+    // }
     response.fold((l) {
       emit(state.copyWith(states: ProductStates.error));
     }, (r) {
@@ -130,17 +130,16 @@ class ProductCubit extends IProductCubit {
     appLogger.info('UPDATE PRODUCT CALLED: ', productModel.toJson().toString());
     emit(state.copyWith(states: ProductStates.loading));
     BaseResponseCubit response;
-    if ((productModel.prices?.first.vatRate ?? 0) > 0) {
-      ProductModel newModel = productModel.copyWith(
-        prices: productModel.prices
-            ?.map((e) => e.copyWith(price: newTaxedPrice(e.price!, e.vatRate!)))
-            .toList(),
-      );
-      response = await _productService.putProducts(productId: productId, productModel: newModel);
-    } else {
-      response =
-          await _productService.putProducts(productId: productId, productModel: productModel);
-    }
+    // if ((productModel.prices?.first.vatRate ?? 0) > 0) {
+    // ProductModel newModel = productModel.copyWith(
+    //   prices: productModel.prices
+    //       ?.map((e) => e.copyWith(price: newTaxedPrice(e.price!, e.vatRate!)))
+    //       .toList(),
+    // );
+    //   response = await _productService.putProducts(productId: productId, productModel: newModel);
+    // } else {
+    response = await _productService.putProducts(productId: productId, productModel: productModel);
+    // }
 
     response.fold((l) {
       emit(state.copyWith(states: ProductStates.error));

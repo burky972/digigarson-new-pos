@@ -1,4 +1,5 @@
-import 'package:flutter/widgets.dart';
+import 'dart:convert';
+import 'package:core/base/model/base_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum CacheKeys {
@@ -42,8 +43,25 @@ class SharedManager {
     await _preferences!.setDouble(key.name, value);
   }
 
+  Future<bool> setJsonModel<T extends BaseModel>(CacheKeys key, T model) async {
+    var json = jsonEncode(model.toJson());
+    if (json.isNotEmpty) {
+      return await _preferences!.setString(key.name, json);
+    }
+    return false;
+  }
+
+  T? getJsonModel<T extends BaseModel>(CacheKeys key, T model) {
+    var jsonString = _preferences?.getString(key.name);
+    if (jsonString != null) {
+      var jsonMap = jsonDecode(jsonString) as Map<String, dynamic>;
+      return model.fromJson(jsonMap) as T;
+    } else {
+      return null;
+    }
+  }
+
   Future<bool> removeValue(String value) async {
-    debugPrint("DELETE CALLED: $value");
     return await _preferences!.remove(value);
   }
 

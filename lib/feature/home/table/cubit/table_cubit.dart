@@ -10,9 +10,9 @@ import 'package:a_pos_flutter/feature/home/table/service/table_service.dart';
 import 'package:a_pos_flutter/product/global/model/branch/branch_model.dart';
 import 'package:a_pos_flutter/product/global/model/order/new_order_model.dart';
 import 'package:a_pos_flutter/product/global/model/print/print_invoice_model.dart';
-import 'package:a_pos_flutter/product/global/model/user_model.dart';
 import 'package:a_pos_flutter/product/widget/invoices/invoice_widget.dart';
 import 'package:a_pos_flutter/product/widget/printer/printer_widget.dart';
+import 'package:core/base/exception/exception.dart';
 import 'package:core/cache/shared_manager.dart';
 import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:flutter/widgets.dart';
@@ -27,6 +27,9 @@ class TableCubit extends ITableCubit {
   final TAG = "TableCubit";
   List<TableModel> tableModel = [];
   List<String> deletedTableIds = [];
+  List<String> newAddedTableIds = [];
+  String checkoutInput = '';
+
   NewOrderModel newProducts =
       NewOrderModel(tableId: "", products: const [], totalTax: 0, totalPrice: 0);
   Map<String, List<TableModel>> tablesBySection = {};
@@ -46,14 +49,14 @@ class TableCubit extends ITableCubit {
   @override
   void changeIsTableSaving(bool value) => emit(state.copyWith(isTableSaving: value));
   void addIdToDeletedTableIds(String id) => deletedTableIds.add(id);
+  void addIdToNewAddedTableIds(String id) => newAddedTableIds.add(id);
 
   /// get table api request
   @override
-  Future getTable(UserModel userModel) async {
-    appLogger.info('Table CUBIT user model', userModel.toJson().toString());
+  Future getTable() async {
     tableModel.clear();
     emit(state.copyWith(states: TableStates.loading, tableModel: tableModel));
-    final response = await _tableService.getTable(userModel: userModel);
+    final response = await _tableService.getTable();
     tablesBySection = {};
     response.fold((_) => emit(state.copyWith(states: TableStates.error)), (r) {
       r.data.forEach((table) {
@@ -65,28 +68,15 @@ class TableCubit extends ITableCubit {
             for (var product in order.products) {
               if (product?.cancelStatus?.isCancelled != true) {
                 listProduct.add(product!);
-              } else {
-                appLogger.info(
-                    'CANCELLED TRUE :>', product?.cancelStatus?.isCancelled.toString() ?? '');
-                appLogger.info('CANCELLED TRUE :>', product?.productName ?? '');
-              }
+              } else {}
             }
           }
           listProduct.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
           if (listProduct.isNotEmpty) {
-            //TODO: ADD LAST ORDER DATE TO MODEL
-            appLogger.error('LAST ORDER DATE :>',
-                '${listProduct.first.productName} - ${listProduct.first.createdAt}');
             tableModel_ = tableModel_.copyWith(lastOrderDate: listProduct.first.createdAt);
-            appLogger.error(
-                'LAST ORDER DATE :>', '${tableModel_.title}${tableModel_.lastOrderDate}');
           }
         }
         if (tableModel_.section != null) {
-          // for (var order in tableModel_.orders) {
-          // Remove cancelled products from order
-          // order.products.removeWhere((product) => product?.cancelStatus?.isCancelled == true);
-          // }
           // Table'ı map'e section ID'si altında ekliyoruz
           if (tablesBySection.containsKey(tableModel_.section)) {
             tablesBySection[tableModel_.section]!.add(tableModel_);
@@ -111,13 +101,53 @@ class TableCubit extends ITableCubit {
 
   /// post table api request
   @override
-  Future postTable(TableRequestModel tableModel, UserModel user) async {
+  Future postTable(TableRequestModel tableModel) async {
+    bool alreadyExists = false;
+
+    // We are checking if the utility items already exist or not.
+    for (MapEntry<String, List<TableModel>> entry in state.tablesBySectionList?.entries ?? {}) {
+      final sectionId = entry.key;
+      final utilityItems = entry.value;
+      for (var utilityItem in utilityItems) {
+        if (sectionId == tableModel.section &&
+            tableModel.tableType == utilityItem.tableType &&
+            tableModel.title == utilityItem.title &&
+            tableModel.location?.xCoordinate == utilityItem.location?.xCoordinate &&
+            tableModel.location?.yCoordinate == utilityItem.location?.yCoordinate) {
+          alreadyExists = true;
+          break;
+        }
+      }
+      if (alreadyExists) break;
+    }
+
+    // If it already exists, return without making a request.
+    if (alreadyExists) {
+      return false;
+    }
     emit(state.copyWith(states: TableStates.loading));
     final response = await _tableService.postTable(tableModel: tableModel);
     response.fold((_) => emit(state.copyWith(states: TableStates.error)), (r) async {
-      await getTable(user);
+      await getTable();
       emit(state.copyWith(states: TableStates.completed));
     });
+  }
+
+  /// delete all tables
+  @override
+  Future<bool> deleteAllTables() async {
+    emit(state.copyWith(states: TableStates.loading));
+    final response = await _tableService.deleteAllTables();
+    response.fold((err) {
+      appLogger.info('Table CUBIT DELETE ALL TABLES', '${err.message} ${err.statusCode}');
+      emit(state.copyWith(
+          states: TableStates.error,
+          exception: () => AppException(message: err.message, statusCode: err.statusCode)));
+    }, (r) async {
+      appLogger.info('Table CUBIT DELETE ALL TABLES', 'Success');
+      emit(state.copyWith(states: TableStates.completed));
+    });
+    return response.isRight();
   }
 
   /// set selected new product
@@ -126,15 +156,15 @@ class TableCubit extends ITableCubit {
   }
 
   /// update isDeletedSuccess
-  set updateDeletedSuccess(bool value) => emit(state.copyWith(isDeleteSuccess: value));
+  void updateDeletedSuccess(bool value) => emit(state.copyWith(isDeleteSuccess: value));
 
   /// Delete table api request
   @override
   Future<bool> deleteTable(String tableId) async {
+    appLogger.info('Table CUBIT DELETE TABLE', tableId);
     bool? isSuccess;
     emit(state.copyWith(states: TableStates.loading));
     final response = await _tableService.deleteTable(tableId: tableId);
-
     response.fold((_) {
       appLogger.info('Table CUBIT DELETE TABLE', 'Failed');
       emit(state.copyWith(states: TableStates.error, isDeleteSuccess: false));
@@ -142,7 +172,6 @@ class TableCubit extends ITableCubit {
     }, (r) async {
       appLogger.info('Table CUBIT DELETE TABLE', 'Success');
       SharedManager.instance.removeValue(tableId);
-
       emit(state.copyWith(states: TableStates.completed, isDeleteSuccess: true));
       isSuccess = true;
     });
@@ -172,14 +201,12 @@ class TableCubit extends ITableCubit {
   }
 
   /// post table new order
-  Future<bool> postTableNewOrder(BuildContext context, UserModel userModel) async {
+  Future<bool> postTableNewOrder(BuildContext context) async {
     appLogger.info('Table CUBIT POST TABLE NEW ORDER', state.newProducts.toJson().toString());
     bool? isSuccess;
     emit(state.copyWith(states: TableStates.loading));
     final response = await _tableService.postTableNewOrder(
-        userModel: userModel,
-        newOrderModel: state.newProducts,
-        tableId: state.selectedTable!.id.toString());
+        newOrderModel: state.newProducts, tableId: state.selectedTable!.id.toString());
 
     response.fold((_) {
       emit(state.copyWith(states: TableStates.error));
@@ -222,12 +249,15 @@ class TableCubit extends ITableCubit {
   /// reset
   void reset() {
     tableModel.clear();
+    deletedTableIds.clear();
     tablesBySection.clear();
+    newAddedTableIds.clear();
     emit(TableState.initial());
   }
 
   /// set selected table
   Future<void> setSelectedTable(TableModel table) async {
+    clearPriceInfos();
     newProducts = NewOrderModel(
         tableId: table.id.toString(), products: const [], totalTax: 0, totalPrice: 0.0);
     emit(state.copyWith(
@@ -293,17 +323,6 @@ class TableCubit extends ITableCubit {
       // Get the existing product
       var existingProduct = updatedProducts[existingIndex];
 
-      // // Reset tax for recalculation
-      // for (var option in existingProduct.options) {
-      //   for (var item in option.items) {
-      //     if ((item.vatRate ?? 0) > 0) {
-      //       double oldRate = item.price! * (item.vatRate! / 100);
-      //       double newValue = product.tax!;
-      //       newValue -= oldRate;
-      //     }
-      //   }
-      // }
-
       // Merge new options with the existing options
       List<Options> updatedOptions = List.from(existingProduct.options);
 
@@ -366,14 +385,6 @@ class TableCubit extends ITableCubit {
       totalTax: totalTax.toInt(),
       totalPrice: state.selectedTable!.totalPrice ?? 0.0,
     );
-    for (var element in updatedNewProducts.products) {
-      for (var x in element.options) {
-        appLogger.warning("TAG", x.name.toString());
-        for (var z in x.items) {
-          appLogger.warning("TAG", z.itemName.toString());
-        }
-      }
-    }
 
     // Emit the updated state with the new order products
     emit(state.copyWith(
@@ -460,8 +471,8 @@ class TableCubit extends ITableCubit {
   /// calculate Sub total price(without tax)
   void calculateSubPrice() {
     double newOrderProductPrice =
-        state.newOrderProducts.fold(0.0, (sum, product) => sum + product.price!) +
-            state.selectedTable!.remainingPrice!;
+        state.newOrderProducts.fold(0.0, (sum, product) => sum + (product.price ?? 0)) +
+            (state.selectedTable!.totalPrice ?? 0);
     double itemsPrice = 0.0;
     for (var element in state.newProducts.products) {
       for (var option in element.options) {
@@ -472,22 +483,16 @@ class TableCubit extends ITableCubit {
     }
 
     newOrderProductPrice += itemsPrice;
-    appLogger.info('Table CUBIT SUB PRICE', itemsPrice.toString());
+
     emit(state.copyWith(subPrice: newOrderProductPrice));
   }
 
+  clearPriceInfos() => emit(state.copyWith(totalPrice: 0, subPrice: 0, newOrderProducts: []));
+
   /// calculate total price
   double calculateTotalPrice() {
-    // double newOrderProductPrice = state.newOrderProducts.fold(0.0, (sum, product) {
-    //   double productTotal = product.price * (1 + (product.tax / product.quantity) / 100);
-    //   return sum + productTotal;
-    // });
-    appLogger.info('Table CUBIT subPrice PRICE', state.subPrice.toString());
     double finalTotal = state.subPrice + calculateTotalTax();
-    appLogger.info('Table CUBIT TOTAL PRICE', finalTotal.toString());
-
     emit(state.copyWith(totalPrice: finalTotal));
-
     return finalTotal;
   }
 
@@ -500,9 +505,8 @@ class TableCubit extends ITableCubit {
       totalTax = state.selectedTable?.totalTax ?? 0.0;
     }
     newProductsTax = state.newProducts.products.fold(0.0, (sum, product) {
-      return sum + (product.tax ?? 0);
+      return sum + ((product.price ?? 0) * ((product.tax ?? 0) / 100));
     });
-
     return totalTax + newProductsTax;
   }
 
@@ -520,5 +524,110 @@ class TableCubit extends ITableCubit {
   /// set selected option
   Future<void> setSelectedOption(OptionsModel option) async {
     emit(state.copyWith(optionSelected: option));
+  }
+
+  ///---------------------------------CHECKOUT FUNCTIONS -----------------------------------
+
+  /// set new order products for checkOut view
+  void setInitialCheckoutProducts() {
+    if (state.selectedTable == null || state.selectedTable!.orders.isEmpty) {
+      appLogger.error(TAG, 'Table CUBIT SET INITIAL PRODUCTS: No selected table or orders');
+      return;
+    }
+    List<Product> initialProducts = [];
+    for (var order in state.selectedTable!.orders) {
+      initialProducts.addAll(order.products
+          .where((product) => product != null && product.quantity != product.paidQuantity)
+          .whereType<Product>());
+    }
+
+    emit(state.copyWith(
+        willPaidProducts: initialProducts,
+        paidProducts: [],
+        totalDue: 0.0,
+        checkOutRemainingPrice: state.selectedTable!.remainingPrice ?? 0.0));
+  }
+
+  /// add product to paid products in checkout view
+  void addProductToPaidProducts(Product product) {
+    double newTotalDue = state.totalDue + product.priceAfterTax!;
+    double newRemainingPrice = state.checkOutRemainingPrice - product.priceAfterTax!;
+    List<Product> newPaidProducts = List.from(state.paidProducts ?? []);
+    List<Product> newWillPaidProducts = List.from(state.willPaidProducts ?? []);
+
+    newPaidProducts.add(product);
+    newWillPaidProducts.remove(product);
+    if (newTotalDue > state.selectedTable!.remainingPrice!) {
+      emit(state.copyWith(
+        paidProducts: newPaidProducts,
+        willPaidProducts: newWillPaidProducts,
+        totalDue: state.selectedTable!.remainingPrice!,
+        checkOutRemainingPrice: 0,
+      ));
+    } else {
+      emit(state.copyWith(
+        paidProducts: newPaidProducts,
+        willPaidProducts: newWillPaidProducts,
+        totalDue: newTotalDue,
+        checkOutRemainingPrice: newRemainingPrice,
+      ));
+    }
+  }
+
+  /// delete product from paid products in checkout view
+  void deleteOrderToPaidProducts(Product product) {
+    List<Product> newPaidProducts = List.from(state.paidProducts ?? []);
+    List<Product> newWillPaidProducts = List.from(state.willPaidProducts ?? []);
+    newPaidProducts.remove(product);
+    newWillPaidProducts.add(product);
+
+    double totalPaidProductsPrice =
+        newPaidProducts.fold(0, (sum, item) => sum + (item.priceAfterTax ?? 0));
+
+    double newRemainingPrice = state.selectedTable?.remainingPrice ?? 0 + product.priceAfterTax!;
+
+    double newTotalDue = totalPaidProductsPrice <= state.selectedTable!.remainingPrice!
+        ? totalPaidProductsPrice
+        : state.selectedTable?.remainingPrice ?? 0;
+    double lastRemainingPrice = newRemainingPrice > state.selectedTable!.remainingPrice!
+        ? 0.0
+        : (state.selectedTable!.remainingPrice! - newTotalDue);
+    emit(state.copyWith(
+      paidProducts: newPaidProducts,
+      willPaidProducts: newWillPaidProducts,
+      totalDue: newTotalDue,
+      checkOutRemainingPrice: lastRemainingPrice,
+    ));
+  }
+
+  /// set total due
+  void setTotalDue(double totalDue) {
+    setInitialCheckoutProducts();
+    double newRemainingPrice = state.checkOutRemainingPrice - totalDue;
+    emit(state.copyWith(totalDue: totalDue, checkOutRemainingPrice: newRemainingPrice));
+  }
+
+  /// set checkout input
+  void setCheckoutInput(String value) {
+    final newInput = checkoutInput + value;
+    final remainingPrice = state.selectedTable?.remainingPrice ?? 0;
+
+    if (double.tryParse(newInput) != null) {
+      final inputAmount = double.parse(newInput);
+      if (inputAmount <= remainingPrice) {
+        checkoutInput = newInput;
+        emit(state.copyWith(checkoutInput: checkoutInput, totalDue: inputAmount));
+      } else {
+        // If the entered value is greater than the remaining amount, set it to the remaining amount
+        checkoutInput = remainingPrice.toStringAsFixed(2);
+        emit(state.copyWith(checkoutInput: checkoutInput, totalDue: remainingPrice));
+      }
+    }
+  }
+
+  /// clear checkout input
+  void clearCheckoutInput() {
+    checkoutInput = '';
+    emit(state.copyWith(checkoutInput: ''));
   }
 }

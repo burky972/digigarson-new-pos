@@ -1,5 +1,5 @@
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/model/option_model.dart';
-import 'package:a_pos_flutter/feature/home/reopen/model/re_open_model.dart';
+import 'package:a_pos_flutter/feature/home/checks/model/re_open_model.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_state.dart';
 import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
@@ -8,15 +8,14 @@ import 'package:a_pos_flutter/feature/home/table/widget/table_button_widget.dart
 import 'package:a_pos_flutter/product/enums/button_action/button_action_enum.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
-import 'package:a_pos_flutter/product/global/cubit/global_cubit.dart';
 import 'package:a_pos_flutter/product/global/model/order/new_order_model.dart';
-import 'package:a_pos_flutter/product/global/model/user_model.dart';
 import 'package:a_pos_flutter/product/global/service/response_action_service.dart';
 import 'package:a_pos_flutter/product/responsive/border.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/utils/helper/format_double.dart';
 import 'package:a_pos_flutter/product/widget/dialog/move_table_product_dialog.dart';
+import 'package:a_pos_flutter/product/widget/dialog/quick_cash_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -154,6 +153,10 @@ class _TableLeftWidgetState extends State<TableLeftWidget> {
                                                     onTap: () {
                                                       if (state.selectedTable?.orders.isEmpty ??
                                                           true) return;
+                                                      if (state.selectedTable?.orders[rowIndex]
+                                                              .products[i]?.quantity ==
+                                                          state.selectedTable?.orders[rowIndex]
+                                                              .products[i]?.paidQuantity) return;
                                                       setSelectedEditProduct(
                                                           state.selectedTable?.orders[rowIndex]
                                                                   .products[i] ??
@@ -443,7 +446,6 @@ class _TableLeftWidgetState extends State<TableLeftWidget> {
 
   Future<void> handleButtonAction(
       ButtonAction action, BuildContext context, TableState state) async {
-    UserModel userModel = context.read<GlobalCubit>().user;
     TableCubit tableCubit = context.read<TableCubit>();
 
     switch (action.index) {
@@ -460,12 +462,11 @@ class _TableLeftWidgetState extends State<TableLeftWidget> {
         // New Sale
         if (state.newProducts.products.isEmpty) return;
 
-        final response = await context.read<TableCubit>().postTableNewOrder(context, userModel);
+        final response = await context.read<TableCubit>().postTableNewOrder(context);
         ResponseActionService.getTableAndNavigate(
           context: context,
           response: response,
           tableCubit: tableCubit,
-          userModel: userModel,
           action: ButtonAction.newSale,
         );
 
@@ -513,6 +514,13 @@ class _TableLeftWidgetState extends State<TableLeftWidget> {
           builder: (context) => const MoveTableProductDialog(isTransfer: true),
         );
         break;
+
+      /// quickCash
+      case 23:
+        if (state.selectedTable == null || state.newOrderProduct == null) return;
+        QuickCashDialog().show(context);
+
+        break;
       default:
         break;
     }
@@ -550,25 +558,29 @@ class _TableLeftWidgetState extends State<TableLeftWidget> {
       for (var pro in order.products) {
         if (pro?.cancelStatus?.isCancelled == false) {
           Product product = pro ?? Product.empty();
-          context.read<TableCubit>().setSelectedEditProduct(
-                OrderProductModel(
-                  id: product.id ?? '',
-                  isFirst: product.isFirst ?? false,
-                  product: product.id ?? '',
-                  productName: product.productName ?? '',
-                  quantity: product.quantity ?? 1,
-                  categoryId: product.id ?? "", // TODO: Kontrol edilmeli
-                  tax: product.tax ?? 0,
-                  price: product.price ?? 1,
-                  priceId: product.priceId ?? '',
-                  cancelStatus: CancelStatus.empty(),
-                  priceName: '', // TODO: Kontrol edilmeli
-                  priceType: 'REGULAR',
-                  note: product.note ?? '',
-                  options: buildOptions(product),
-                ),
-              );
-          return; // İlk iptal edilmemiş ürünü bulduktan sonra fonksiyondan çık
+
+          /// set selected product if product is not cancelled and if not paid
+          if (product.quantity != product.paidQuantity) {
+            context.read<TableCubit>().setSelectedEditProduct(
+                  OrderProductModel(
+                    id: product.id ?? '',
+                    isFirst: product.isFirst ?? false,
+                    product: product.id ?? '',
+                    productName: product.productName ?? '',
+                    quantity: product.quantity ?? 1,
+                    categoryId: product.id ?? "", // TODO: Kontrol edilmeli
+                    tax: product.tax ?? 0,
+                    price: product.price ?? 1,
+                    priceId: product.priceId ?? '',
+                    cancelStatus: CancelStatus.empty(),
+                    priceName: '', // TODO: Kontrol edilmeli
+                    priceType: 'REGULAR',
+                    note: product.note ?? '',
+                    options: buildOptions(product),
+                  ),
+                );
+            return;
+          }
         }
       }
     }

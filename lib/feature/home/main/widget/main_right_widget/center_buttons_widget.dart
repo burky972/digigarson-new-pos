@@ -1,6 +1,6 @@
 import 'package:a_pos_flutter/feature/back_office/launch/view/back_office_launch_view.dart';
 import 'package:a_pos_flutter/feature/home/main/widget/main_right_widget/main_right_button.dart';
-import 'package:a_pos_flutter/feature/home/reopen/view/re_open_view.dart';
+import 'package:a_pos_flutter/feature/home/checks/view/check_view.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
 import 'package:flutter/material.dart';
 
@@ -20,7 +20,7 @@ class CenterButtonsWidget extends StatelessWidget {
               const MainRightButton(text: 'Take Out'),
               InkWell(
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const ReOpenView()));
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const CheckView()));
                 },
                 child: const MainRightButton(text: 'Re-Open'),
               ),

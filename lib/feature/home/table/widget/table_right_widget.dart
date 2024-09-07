@@ -10,7 +10,7 @@ import 'package:a_pos_flutter/product/responsive/border.dart';
 import 'package:a_pos_flutter/product/widget/dialog/cancel_product_dialog.dart';
 import 'package:a_pos_flutter/product/widget/dialog/move_table_product_dialog.dart';
 import 'package:a_pos_flutter/product/global/getters/getter.dart';
-import 'package:a_pos_flutter/product/widget/dialog/quick_cash_dialog.dart';
+import 'package:a_pos_flutter/product/widget/dialog/new_checkout_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_state.dart';

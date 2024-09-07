@@ -20,6 +20,7 @@ class DioClient {
   final tag = 'DioClient';
 
   String? token;
+  String? refreshToken;
   String? countryCode;
 
   // Initialize
@@ -27,9 +28,9 @@ class DioClient {
     required String baseUrl,
   }) async {
     token = SharedManager.instance.getStringValue(CacheKeys.token.name) ?? "";
+    refreshToken = SharedManager.instance.getStringValue(CacheKeys.refreshToken.name) ?? "";
     countryCode = SharedManager.instance.getStringValue(CacheKeys.country_code.name);
     APosLogger.instance.info('dio Client TOKEN', '$token ');
-    APosLogger.instance.info('dio Client TOKEN', '$countryCode ');
     dio
       ..options.baseUrl = baseUrl
       ..options.connectTimeout = const Duration(minutes: 1)
@@ -37,11 +38,11 @@ class DioClient {
       ..options.headers = {
         'accept': 'application/json',
         'Content-Type': 'application/json; charset=UTF-8',
-        // 'Authorization': 'Bearer $token', //!NEW
+        'Authorization': 'Bearer $token', //!NEW
         // 'lang': countryCode == 'US' ? 'en' : countryCode?.toLowerCase() ?? 'en',
       };
 
-    dio.interceptors.add(LoggingInterceptor());
+    dio.interceptors.add(LoggingInterceptor(dio, refreshToken));
   }
 
   void updateHeader(String token) {
@@ -56,6 +57,30 @@ class DioClient {
     };
   }
 
+  Future<BaseResponseModel> refreshTokenService() async {
+    APosLogger.instance.info('$tag- refreshToken:', ' $refreshToken');
+    try {
+      var response = await dio.post('pos/refresh-token', data: {
+        'refreshToken': '$refreshToken',
+      });
+
+      if (response.statusCode == 200) {
+        APosLogger.instance.info('refreshToken: ', 'refreshToken: ${response.data}');
+        final newAccessToken = response.data['accessToken'];
+        SharedManager.instance.setStringValue(CacheKeys.token, newAccessToken);
+        updateHeader(newAccessToken);
+        return BaseResponseModel();
+      } else {
+        // Handle unsuccessful refresh (e.g., logout user)
+        throw Exception('Refresh token failed');
+      }
+    } catch (e) {
+      return BaseResponseModel(
+          serverException:
+              ServerException(message: 'Unknown error: ${e.toString()}', statusCode: '505'));
+    }
+  }
+
   Future<BaseResponseModel> get(
     String uri, {
     Map<String, dynamic>? queryParameters,
@@ -64,8 +89,7 @@ class DioClient {
     ProgressCallback? onReceiveProgress,
   }) async {
     try {
-      APosLogger.instance.info(tag, 'GET request');
-      APosLogger.instance.info(tag, 'uri: $uri');
+      APosLogger.instance.info(tag, 'GET request uri: $uri');
       var response = await dio.get(
         uri,
         queryParameters: queryParameters,
@@ -74,7 +98,6 @@ class DioClient {
         onReceiveProgress: onReceiveProgress,
       );
       APosLogger.instance.info(tag, 'response: ${response.data}');
-      APosLogger.instance.info(tag, 'response: ${response.statusMessage}');
 
       return BaseResponseModel(data: response.data);
     } on SocketException catch (e) {
@@ -89,13 +112,24 @@ class DioClient {
               ServerException(message: 'FormatException: ${e.message}', statusCode: e.toString()));
     } on DioException catch (dioError) {
       APosLogger.instance.error('GET RESPONSE DATA:', '${dioError.response?.data.toString()}');
-      // We are adding error message and status code to BaseResponseModel.
-      return BaseResponseModel(
-        serverException: ServerException(
-          message: dioError.response?.data.toString() ?? dioError.message.toString(),
-          statusCode: dioError.response?.statusCode.toString() ?? 'unknown',
-        ),
-      );
+      if (dioError.response?.statusCode == 401) {
+        await refreshTokenService();
+        return await get(
+          uri,
+          queryParameters: queryParameters,
+          options: options,
+          cancelToken: cancelToken,
+          onReceiveProgress: onReceiveProgress,
+        );
+      } else {
+        // We are adding error message and status code to BaseResponseModel.
+        return BaseResponseModel(
+          serverException: ServerException(
+            message: dioError.response?.data.toString() ?? dioError.message.toString(),
+            statusCode: dioError.response?.statusCode.toString() ?? 'unknown',
+          ),
+        );
+      }
     } catch (e) {
       APosLogger.instance.error(tag, e.toString());
       return BaseResponseModel(
@@ -133,13 +167,26 @@ class DioClient {
               ServerException(message: ' FormatException${e.message}', statusCode: '505'));
     } on DioException catch (dioError) {
       APosLogger.instance.error('POST RESPONSE DATA:', '${dioError.response?.data.toString()}');
-      // We are adding error message and status code to BaseResponseModel.
-      return BaseResponseModel(
-        serverException: ServerException(
-          message: dioError.response?.data?.toString() ?? dioError.message ?? 'Unknown Error',
-          statusCode: dioError.response?.statusCode.toString() ?? 'unknown',
-        ),
-      );
+      if (dioError.response?.statusCode == 401) {
+        await refreshTokenService();
+        return await post(
+          uri,
+          data: data,
+          queryParameters: queryParameters,
+          options: options,
+          cancelToken: cancelToken,
+          onSendProgress: onSendProgress,
+          onReceiveProgress: onReceiveProgress,
+        );
+      } else {
+        // We are adding error message and status code to BaseResponseModel.
+        return BaseResponseModel(
+          serverException: ServerException(
+            message: dioError.response?.data?.toString() ?? dioError.message ?? 'Unknown Error',
+            statusCode: dioError.response?.statusCode.toString() ?? 'unknown',
+          ),
+        );
+      }
     } catch (e) {
       return BaseResponseModel(
           serverException:
@@ -174,16 +221,27 @@ class DioClient {
           serverException:
               ServerException(message: ' FormatException${e.message}', statusCode: '505'));
     } on DioException catch (dioError) {
-      APosLogger.instance.error('put CATCH', dioError.toString());
       APosLogger.instance.error('put RESPONSE DATA:', '${dioError.response?.data.toString()}');
-
-      // We are adding error message and status code to BaseResponseModel.
-      return BaseResponseModel(
-        serverException: ServerException(
-          message: dioError.response?.data?['error'] ?? dioError.message,
-          statusCode: dioError.response?.statusCode.toString() ?? 'unknown',
-        ),
-      );
+      if (dioError.response?.statusCode == 401) {
+        await refreshTokenService();
+        return await put(
+          uri,
+          data: data,
+          queryParameters: queryParameters,
+          options: options,
+          cancelToken: cancelToken,
+          onSendProgress: onSendProgress,
+          onReceiveProgress: onReceiveProgress,
+        );
+      } else {
+        // We are adding error message and status code to BaseResponseModel.
+        return BaseResponseModel(
+          serverException: ServerException(
+            message: dioError.response?.data?['error'] ?? dioError.message,
+            statusCode: dioError.response?.statusCode.toString() ?? 'unknown',
+          ),
+        );
+      }
     } catch (e) {
       return BaseResponseModel(
           serverException:
@@ -216,14 +274,24 @@ class DioClient {
     } on DioException catch (dioError) {
       APosLogger.instance.error('DELETE CATCH', dioError.toString());
       APosLogger.instance.error('DELETE RESPONSE DATA:', '${dioError.response?.data.toString()}');
-
-      // We are adding error message and status code to BaseResponseModel.
-      return BaseResponseModel(
-        serverException: ServerException(
-          message: dioError.response?.data?['error'] ?? dioError.message,
-          statusCode: dioError.response?.statusCode.toString() ?? 'unknown',
-        ),
-      );
+      if (dioError.response?.statusCode == 401) {
+        await refreshTokenService();
+        return await delete(
+          uri,
+          data: data,
+          queryParameters: queryParameters,
+          options: options,
+          cancelToken: cancelToken,
+        );
+      } else {
+        // We are adding error message and status code to BaseResponseModel.
+        return BaseResponseModel(
+          serverException: ServerException(
+            message: dioError.response?.data?['error'] ?? dioError.message,
+            statusCode: dioError.response?.statusCode.toString() ?? 'unknown',
+          ),
+        );
+      }
     } catch (e) {
       return BaseResponseModel(serverException: ServerException(message: '$e', statusCode: '505'));
     }

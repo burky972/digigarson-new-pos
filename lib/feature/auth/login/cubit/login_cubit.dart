@@ -31,8 +31,7 @@ class LoginCubit extends ILoginCubit {
           'accessToken']; //todo: check if no problem inside Global Service saveAccessToken function delete here!
       DioClient.instance.updateHeader(token);
       UserModel user = UserModel().fromJson(r.data);
-      GlobalService.saveAccessToken(user.accessToken!);
-      GlobalService.saveRefreshToken(user.refreshToken!);
+      await GlobalService.setLoginFunc(user);
       emit(state.copyWith(userModel: user, states: LoginStates.completed));
     });
   }

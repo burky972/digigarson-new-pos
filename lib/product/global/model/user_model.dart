@@ -15,10 +15,10 @@ class UserModel extends BaseModel<UserModel> {
   final String? refreshToken;
   final User? user;
 
+  factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
+
   @override
-  UserModel fromJson(Map<String, dynamic> json) {
-    return _$UserModelFromJson(json);
-  }
+  UserModel fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
 
   @override
   Map<String, dynamic> toJson() => _$UserModelToJson(this);
@@ -66,7 +66,7 @@ class User extends BaseModel<User> {
 
   @override
   User fromJson(Map<String, dynamic> json) {
-    return fromJson(json);
+    return User.fromJson(json);
   }
 }
 

@@ -1,7 +1,6 @@
 import 'package:a_pos_flutter/feature/home/main/view/main_view.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
 import 'package:a_pos_flutter/product/enums/button_action/button_action_enum.dart';
-import 'package:a_pos_flutter/product/global/model/user_model.dart';
 import 'package:a_pos_flutter/product/widget/pop_up/pop_up.dart';
 import 'package:flutter/material.dart';
 
@@ -15,12 +14,12 @@ class ResponseActionService {
     required BuildContext context,
     required bool response,
     required TableCubit tableCubit,
-    required UserModel userModel,
     required ButtonAction action,
+    bool isShowingError = true,
   }) async {
     if (response) {
       await tableCubit
-          .getTable(userModel)
+          .getTable()
           .then((_) => showOrderSuccessDialog(context, action.getSuccessMessage()));
 
       await Future.delayed(const Duration(milliseconds: 1600)).then(
@@ -28,7 +27,7 @@ class ResponseActionService {
             context, MaterialPageRoute(builder: (_) => const MainView()), (route) => false),
       );
     } else {
-      showErrorDialog(context, action.getErrorMessage());
+      isShowingError ? showErrorDialog(context, action.getErrorMessage()) : null;
     }
   }
 }

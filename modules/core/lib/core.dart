@@ -1,6 +1,7 @@
 export 'base/cubit/base_cubit.dart';
 export 'base/exception/exception.dart';
 export 'base/exception/failure.dart';
+export 'const/space.dart';
 export 'base/model/base_model.dart';
 export 'base/model/base_response_model.dart';
 export 'network/dio_client.dart';

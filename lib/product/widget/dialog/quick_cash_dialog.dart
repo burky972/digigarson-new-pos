@@ -6,9 +6,6 @@ import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
 import 'package:a_pos_flutter/language/locale_keys.g.dart';
 import 'package:a_pos_flutter/product/enums/button_action/button_action_enum.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
-import 'package:a_pos_flutter/product/global/cubit/global_cubit.dart';
-import 'package:a_pos_flutter/product/global/model/order/new_order_model.dart';
-import 'package:a_pos_flutter/product/global/model/user_model.dart';
 import 'package:a_pos_flutter/product/global/service/response_action_service.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/widget/button/light_blue_button.dart';
@@ -31,7 +28,7 @@ class QuickCashDialog {
 
   Widget _buildDialog(BuildContext context) {
     return BlocSelector<TableCubit, TableState, double>(
-      selector: (state) => state.totalPrice,
+      selector: (state) => state.selectedTable!.remainingPrice ?? 0.0,
       builder: (context, totalPrice) {
         return AlertDialog(
           title: Text(
@@ -73,34 +70,29 @@ class QuickCashDialog {
 
   Future<void> _handleQuickCash(BuildContext context, {required TableState state}) async {
     showOrderWarningDialog(context, "Payment completing...");
-    UserModel user = context.read<GlobalCubit>().user;
     TableCubit tableCubit = context.read<TableCubit>();
     if (state.selectedTable == null ||
         state.newOrderProduct == null ||
         state.selectedTable?.orders == null ||
         state.selectedTable?.orders.isEmpty == true) return;
-    OrderProductModel newOrderProduct = state.newOrderProduct!;
+    List<PaidProductModel> allProducts = [];
+    for (var product in state.selectedTable!.orders.first.products) {
+      allProducts.add(
+          PaidProductModel(id: product!.id!, quantity: product.quantity!, price: product.price!));
+    }
     bool isPaidSuccess = await context.read<OrderCubit>().payOrderProduct(
         payOrderModel: PayRequestModel(payments: [
-          Payment(id: '', type: 1, amount: 1, currency: 'USD')
+          Payment(id: '', type: 1, amount: state.selectedTable?.remainingPrice, currency: 'USD')
         ], paidOrderModel: [
           PaidOrderModel(
-              orderNum: state.selectedTable!.orders.first
-                  .orderNum!, //TODO: check here cause not only orders.first!!!!
-              products: [
-                PaidProductModel(
-                    id: newOrderProduct.id!,
-                    quantity: newOrderProduct.quantity!,
-                    price: newOrderProduct.price!)
-              ])
+              orderNum: state.selectedTable!.orders.first.orderNum!, products: allProducts)
         ]),
         tableId: state.selectedTable!.id!);
-
+    tableCubit.clearPriceInfos();
     await ResponseActionService.getTableAndNavigate(
         context: context,
         response: isPaidSuccess,
         tableCubit: tableCubit,
-        userModel: user,
         action: ButtonAction.checkout);
   }
 }

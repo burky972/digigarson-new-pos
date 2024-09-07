@@ -6,6 +6,7 @@ part 'section_model.g.dart';
 
 @JsonSerializable()
 class SectionModel extends BaseModel<SectionModel> {
+  @JsonKey(name: '_id')
   final String? id;
   final String? title;
 

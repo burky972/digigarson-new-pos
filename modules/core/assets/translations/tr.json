@@ -112,6 +112,7 @@
   "AddService": "Servis Ekle",
   "permission": "Yetkisiz İşlem",
   "Notes": "KAYITLI NOT",
+  "isCleaningAllTable": "İşlemi gerçekleştirmek istediğinizden emin misiniz? Devam ederseniz, kayıtlı tüm masalar kalıcı olarak silinecektir",
   "clear": "Sil",
   "close": "Kapat",
   "min_screen": "Pencere Modu",
@@ -132,8 +133,12 @@
   "reset": "Sıfırla",
   "totalAmount": "Toplam Tutar:",
   "amountPayable": "Ödenecek Tutar:",
-  "remainingAmount": "Kalan Tutar:",
+  "remainingPrice": "Kalan Tutar:",
   "income": "GELİRLER",
   "outcome": "GİDERLER",
-  "total": "TOPLAM"
+  "total": "TOPLAM",
+  "amount": "Miktar",
+  "receivables": "Tahsilatlar",
+  "payments": "Ödemeler"
+
 }

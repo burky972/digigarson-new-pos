@@ -17,6 +17,7 @@ class NetworkConstants {
   static const String cancelReasons = 'pos/cancel-reasons';
   static const String paymentMethod = 'pos/payment-methods';
   static const String tables = 'pos/tables';
+  static const String deleteAllTables = 'pos/tables/delete/all';
   static const String check = 'pos/checks/';
   static const String oldUpdate = 'pos/checks/old/';
   static const String newOrderPos = 'pos/orders/';
@@ -30,4 +31,5 @@ class NetworkConstants {
   static const String closeTable = 'pos/tables/close/';
   static const String editCustomerCount = 'pos/table/customer-count/';
   static const String caseZReport = 'pos/report/z-report';
+  static const String utilityItem = 'pos/utility-items';
 }

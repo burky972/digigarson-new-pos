@@ -7,6 +7,7 @@ import 'package:a_pos_flutter/feature/home/table/widget/timer_widget.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
 import 'package:a_pos_flutter/product/global/cubit/global_cubit.dart';
+import 'package:a_pos_flutter/product/global/service/global_service.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/widget/button/light_blue_button.dart';
@@ -41,8 +42,7 @@ class _TableHeaderWidgetState extends State<TableHeaderWidget> {
                   children: [
                     _TopRichTextWidget(
                         leftText: 'Logged',
-                        rightText:
-                            '${context.read<GlobalCubit>().user.user?.name} ${context.read<GlobalCubit>().user.user?.lastName}'),
+                        rightText: '${GlobalService.user.name} ${GlobalService.user.lastName}'),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -74,9 +74,7 @@ class _TableHeaderWidgetState extends State<TableHeaderWidget> {
                 width: context.dynamicWidth(.2),
                 child: Column(
                   children: [
-                    _TopRichTextWidget(
-                        leftText: 'Waiter',
-                        rightText: '${context.read<GlobalCubit>().user.user?.name}'),
+                    _TopRichTextWidget(leftText: 'Waiter', rightText: '${GlobalService.user.name}'),
                     const _TopRichTextWidget(leftText: 'Customer', rightText: ''),
                   ],
                 ),

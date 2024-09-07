@@ -28,6 +28,10 @@ class $AssetsImagesGen {
 
   /// Directory path: assets/images/tables
   $AssetsImagesTablesGen get tables => const $AssetsImagesTablesGen();
+
+  /// Directory path: assets/images/utility_items
+  $AssetsImagesUtilityItemsGen get utilityItems =>
+      const $AssetsImagesUtilityItemsGen();
 }
 
 class $AssetsImagesOnBoardingGen {
@@ -168,122 +172,17 @@ class $AssetsImagesTablesGen {
   /// File path: assets/images/tables/45.png
   AssetGenImage get a45 => const AssetGenImage('assets/images/tables/45.png');
 
-  /// File path: assets/images/tables/46.png
-  AssetGenImage get a46 => const AssetGenImage('assets/images/tables/46.png');
-
-  /// File path: assets/images/tables/47.png
-  AssetGenImage get a47 => const AssetGenImage('assets/images/tables/47.png');
-
-  /// File path: assets/images/tables/48.png
-  AssetGenImage get a48 => const AssetGenImage('assets/images/tables/48.png');
-
-  /// File path: assets/images/tables/49.png
-  AssetGenImage get a49 => const AssetGenImage('assets/images/tables/49.png');
-
   /// File path: assets/images/tables/5.png
   AssetGenImage get a5 => const AssetGenImage('assets/images/tables/5.png');
-
-  /// File path: assets/images/tables/50.png
-  AssetGenImage get a50 => const AssetGenImage('assets/images/tables/50.png');
-
-  /// File path: assets/images/tables/51.png
-  AssetGenImage get a51 => const AssetGenImage('assets/images/tables/51.png');
-
-  /// File path: assets/images/tables/52.png
-  AssetGenImage get a52 => const AssetGenImage('assets/images/tables/52.png');
-
-  /// File path: assets/images/tables/53.png
-  AssetGenImage get a53 => const AssetGenImage('assets/images/tables/53.png');
-
-  /// File path: assets/images/tables/54.png
-  AssetGenImage get a54 => const AssetGenImage('assets/images/tables/54.png');
-
-  /// File path: assets/images/tables/55.png
-  AssetGenImage get a55 => const AssetGenImage('assets/images/tables/55.png');
-
-  /// File path: assets/images/tables/56.png
-  AssetGenImage get a56 => const AssetGenImage('assets/images/tables/56.png');
-
-  /// File path: assets/images/tables/57.png
-  AssetGenImage get a57 => const AssetGenImage('assets/images/tables/57.png');
-
-  /// File path: assets/images/tables/58.png
-  AssetGenImage get a58 => const AssetGenImage('assets/images/tables/58.png');
-
-  /// File path: assets/images/tables/59.png
-  AssetGenImage get a59 => const AssetGenImage('assets/images/tables/59.png');
 
   /// File path: assets/images/tables/6.png
   AssetGenImage get a6 => const AssetGenImage('assets/images/tables/6.png');
 
-  /// File path: assets/images/tables/60.png
-  AssetGenImage get a60 => const AssetGenImage('assets/images/tables/60.png');
-
-  /// File path: assets/images/tables/61.png
-  AssetGenImage get a61 => const AssetGenImage('assets/images/tables/61.png');
-
-  /// File path: assets/images/tables/62.png
-  AssetGenImage get a62 => const AssetGenImage('assets/images/tables/62.png');
-
-  /// File path: assets/images/tables/63.png
-  AssetGenImage get a63 => const AssetGenImage('assets/images/tables/63.png');
-
-  /// File path: assets/images/tables/64.png
-  AssetGenImage get a64 => const AssetGenImage('assets/images/tables/64.png');
-
-  /// File path: assets/images/tables/65.png
-  AssetGenImage get a65 => const AssetGenImage('assets/images/tables/65.png');
-
-  /// File path: assets/images/tables/66.png
-  AssetGenImage get a66 => const AssetGenImage('assets/images/tables/66.png');
-
-  /// File path: assets/images/tables/67.png
-  AssetGenImage get a67 => const AssetGenImage('assets/images/tables/67.png');
-
-  /// File path: assets/images/tables/68.png
-  AssetGenImage get a68 => const AssetGenImage('assets/images/tables/68.png');
-
-  /// File path: assets/images/tables/69.png
-  AssetGenImage get a69 => const AssetGenImage('assets/images/tables/69.png');
-
   /// File path: assets/images/tables/7.png
   AssetGenImage get a7 => const AssetGenImage('assets/images/tables/7.png');
 
-  /// File path: assets/images/tables/70.png
-  AssetGenImage get a70 => const AssetGenImage('assets/images/tables/70.png');
-
-  /// File path: assets/images/tables/71.png
-  AssetGenImage get a71 => const AssetGenImage('assets/images/tables/71.png');
-
-  /// File path: assets/images/tables/72.png
-  AssetGenImage get a72 => const AssetGenImage('assets/images/tables/72.png');
-
-  /// File path: assets/images/tables/73.png
-  AssetGenImage get a73 => const AssetGenImage('assets/images/tables/73.png');
-
-  /// File path: assets/images/tables/74.png
-  AssetGenImage get a74 => const AssetGenImage('assets/images/tables/74.png');
-
-  /// File path: assets/images/tables/75.png
-  AssetGenImage get a75 => const AssetGenImage('assets/images/tables/75.png');
-
-  /// File path: assets/images/tables/76.png
-  AssetGenImage get a76 => const AssetGenImage('assets/images/tables/76.png');
-
-  /// File path: assets/images/tables/77.png
-  AssetGenImage get a77 => const AssetGenImage('assets/images/tables/77.png');
-
-  /// File path: assets/images/tables/78.png
-  AssetGenImage get a78 => const AssetGenImage('assets/images/tables/78.png');
-
-  /// File path: assets/images/tables/79.png
-  AssetGenImage get a79 => const AssetGenImage('assets/images/tables/79.png');
-
   /// File path: assets/images/tables/8.png
   AssetGenImage get a8 => const AssetGenImage('assets/images/tables/8.png');
-
-  /// File path: assets/images/tables/80.png
-  AssetGenImage get a80 => const AssetGenImage('assets/images/tables/80.png');
 
   /// File path: assets/images/tables/9.png
   AssetGenImage get a9 => const AssetGenImage('assets/images/tables/9.png');
@@ -330,45 +229,193 @@ class $AssetsImagesTablesGen {
         a43,
         a44,
         a45,
-        a46,
-        a47,
-        a48,
-        a49,
         a5,
-        a50,
-        a51,
-        a52,
-        a53,
-        a54,
-        a55,
-        a56,
-        a57,
-        a58,
-        a59,
         a6,
-        a60,
-        a61,
-        a62,
-        a63,
-        a64,
-        a65,
-        a66,
-        a67,
-        a68,
-        a69,
         a7,
-        a70,
-        a71,
-        a72,
-        a73,
-        a74,
-        a75,
-        a76,
-        a77,
-        a78,
-        a79,
         a8,
-        a80,
+        a9
+      ];
+}
+
+class $AssetsImagesUtilityItemsGen {
+  const $AssetsImagesUtilityItemsGen();
+
+  /// File path: assets/images/utility_items/1.png
+  AssetGenImage get a1 =>
+      const AssetGenImage('assets/images/utility_items/1.png');
+
+  /// File path: assets/images/utility_items/10.png
+  AssetGenImage get a10 =>
+      const AssetGenImage('assets/images/utility_items/10.png');
+
+  /// File path: assets/images/utility_items/11.png
+  AssetGenImage get a11 =>
+      const AssetGenImage('assets/images/utility_items/11.png');
+
+  /// File path: assets/images/utility_items/12.png
+  AssetGenImage get a12 =>
+      const AssetGenImage('assets/images/utility_items/12.png');
+
+  /// File path: assets/images/utility_items/13.png
+  AssetGenImage get a13 =>
+      const AssetGenImage('assets/images/utility_items/13.png');
+
+  /// File path: assets/images/utility_items/14.png
+  AssetGenImage get a14 =>
+      const AssetGenImage('assets/images/utility_items/14.png');
+
+  /// File path: assets/images/utility_items/15.png
+  AssetGenImage get a15 =>
+      const AssetGenImage('assets/images/utility_items/15.png');
+
+  /// File path: assets/images/utility_items/16.png
+  AssetGenImage get a16 =>
+      const AssetGenImage('assets/images/utility_items/16.png');
+
+  /// File path: assets/images/utility_items/17.png
+  AssetGenImage get a17 =>
+      const AssetGenImage('assets/images/utility_items/17.png');
+
+  /// File path: assets/images/utility_items/18.png
+  AssetGenImage get a18 =>
+      const AssetGenImage('assets/images/utility_items/18.png');
+
+  /// File path: assets/images/utility_items/19.png
+  AssetGenImage get a19 =>
+      const AssetGenImage('assets/images/utility_items/19.png');
+
+  /// File path: assets/images/utility_items/2.png
+  AssetGenImage get a2 =>
+      const AssetGenImage('assets/images/utility_items/2.png');
+
+  /// File path: assets/images/utility_items/20.png
+  AssetGenImage get a20 =>
+      const AssetGenImage('assets/images/utility_items/20.png');
+
+  /// File path: assets/images/utility_items/21.png
+  AssetGenImage get a21 =>
+      const AssetGenImage('assets/images/utility_items/21.png');
+
+  /// File path: assets/images/utility_items/22.png
+  AssetGenImage get a22 =>
+      const AssetGenImage('assets/images/utility_items/22.png');
+
+  /// File path: assets/images/utility_items/23.png
+  AssetGenImage get a23 =>
+      const AssetGenImage('assets/images/utility_items/23.png');
+
+  /// File path: assets/images/utility_items/24.png
+  AssetGenImage get a24 =>
+      const AssetGenImage('assets/images/utility_items/24.png');
+
+  /// File path: assets/images/utility_items/25.png
+  AssetGenImage get a25 =>
+      const AssetGenImage('assets/images/utility_items/25.png');
+
+  /// File path: assets/images/utility_items/26.png
+  AssetGenImage get a26 =>
+      const AssetGenImage('assets/images/utility_items/26.png');
+
+  /// File path: assets/images/utility_items/27.png
+  AssetGenImage get a27 =>
+      const AssetGenImage('assets/images/utility_items/27.png');
+
+  /// File path: assets/images/utility_items/28.png
+  AssetGenImage get a28 =>
+      const AssetGenImage('assets/images/utility_items/28.png');
+
+  /// File path: assets/images/utility_items/29.png
+  AssetGenImage get a29 =>
+      const AssetGenImage('assets/images/utility_items/29.png');
+
+  /// File path: assets/images/utility_items/3.png
+  AssetGenImage get a3 =>
+      const AssetGenImage('assets/images/utility_items/3.png');
+
+  /// File path: assets/images/utility_items/30.png
+  AssetGenImage get a30 =>
+      const AssetGenImage('assets/images/utility_items/30.png');
+
+  /// File path: assets/images/utility_items/31.png
+  AssetGenImage get a31 =>
+      const AssetGenImage('assets/images/utility_items/31.png');
+
+  /// File path: assets/images/utility_items/32.png
+  AssetGenImage get a32 =>
+      const AssetGenImage('assets/images/utility_items/32.png');
+
+  /// File path: assets/images/utility_items/33.png
+  AssetGenImage get a33 =>
+      const AssetGenImage('assets/images/utility_items/33.png');
+
+  /// File path: assets/images/utility_items/34.png
+  AssetGenImage get a34 =>
+      const AssetGenImage('assets/images/utility_items/34.png');
+
+  /// File path: assets/images/utility_items/35.png
+  AssetGenImage get a35 =>
+      const AssetGenImage('assets/images/utility_items/35.png');
+
+  /// File path: assets/images/utility_items/4.png
+  AssetGenImage get a4 =>
+      const AssetGenImage('assets/images/utility_items/4.png');
+
+  /// File path: assets/images/utility_items/5.png
+  AssetGenImage get a5 =>
+      const AssetGenImage('assets/images/utility_items/5.png');
+
+  /// File path: assets/images/utility_items/6.png
+  AssetGenImage get a6 =>
+      const AssetGenImage('assets/images/utility_items/6.png');
+
+  /// File path: assets/images/utility_items/7.png
+  AssetGenImage get a7 =>
+      const AssetGenImage('assets/images/utility_items/7.png');
+
+  /// File path: assets/images/utility_items/8.png
+  AssetGenImage get a8 =>
+      const AssetGenImage('assets/images/utility_items/8.png');
+
+  /// File path: assets/images/utility_items/9.png
+  AssetGenImage get a9 =>
+      const AssetGenImage('assets/images/utility_items/9.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [
+        a1,
+        a10,
+        a11,
+        a12,
+        a13,
+        a14,
+        a15,
+        a16,
+        a17,
+        a18,
+        a19,
+        a2,
+        a20,
+        a21,
+        a22,
+        a23,
+        a24,
+        a25,
+        a26,
+        a27,
+        a28,
+        a29,
+        a3,
+        a30,
+        a31,
+        a32,
+        a33,
+        a34,
+        a35,
+        a4,
+        a5,
+        a6,
+        a7,
+        a8,
         a9
       ];
 }

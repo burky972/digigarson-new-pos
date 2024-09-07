@@ -1,12 +1,12 @@
-import 'package:a_pos_flutter/feature/home/case/cubit/case_cubit.dart';
-import 'package:a_pos_flutter/feature/home/reopen/cubit/reopen_cubit.dart';
-import 'package:a_pos_flutter/feature/home/reopen/cubit/reopen_state.dart';
-import 'package:a_pos_flutter/feature/home/reopen/model/chek_old_model.dart';
+import 'package:a_pos_flutter/feature/home/checks/cubit/check_cubit.dart';
+import 'package:a_pos_flutter/feature/home/checks/cubit/check_state.dart';
+import 'package:a_pos_flutter/feature/home/checks/model/single_check_model.dart';
+import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
 import 'package:a_pos_flutter/product/constant/app/app_constant.dart';
+import 'package:a_pos_flutter/product/enums/payment_type/enum.dart';
 import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/responsive/border.dart';
 import 'package:a_pos_flutter/product/widget/keyboard/re_open_custom_keyboard.dart';
-import 'package:a_pos_flutter/product/widget/pop_up/pop_up.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -77,22 +77,23 @@ class OldCheckDialog {
     Overlay.of(context).insert(_overlayEntry!);
   }
 
-  void showPutDialog(BuildContext context, OldCheckModel? order, {int? index}) {
+  void showPutDialog(BuildContext context, SingleCheckModel? order, {int? index}) {
     payments = [];
     amountControllers = [];
     amountFocusNode = [];
     selectedPaymentMethod = [];
     remaining = 0.0;
     total = 0.0;
-    currency = "TL";
-    for (var pay in order!.payments!) {
-      currency = pay.currency.toString();
-      total += pay.amount!;
-      amountControllers.add(TextEditingController(text: pay.amount.toString()));
+
+    currency = 'USD';
+    total = order!.totalPrice!;
+    for (var pay in order.payments!) {
+      amountControllers.add(TextEditingController(text: order.payments?.first.amount.toString()));
       amountFocusNode.add(FocusNode());
-      selectedPaymentMethod.add(AppConstants.payment_types_list[pay.type! - 1].toString());
-      payments.add(Payment(type: pay.type, amount: pay.amount, currency: pay.currency));
+      selectedPaymentMethod.add(PaymentType.allTypes[pay.type! - 1].toString());
+      payments.add(Payment(type: pay.type, amount: pay.amount, currency: pay.currency, id: ''));
     }
+
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -125,7 +126,10 @@ class OldCheckDialog {
                                 selectedPaymentMethod
                                     .add(AppConstants.payment_types_list[0].toString());
                                 payments.add(Payment(
-                                    type: 1, amount: double.parse("0"), currency: currency));
+                                    type: 1,
+                                    amount: double.parse("0"),
+                                    currency: currency,
+                                    id: ''));
                               });
                             },
                             style: ElevatedButton.styleFrom(
@@ -209,35 +213,34 @@ class OldCheckDialog {
                       },
                     )),
                 actions: <Widget>[
-                  BlocBuilder<ReopenCubit, ReopenState>(
+                  BlocBuilder<CheckCubit, CheckState>(
                     builder: (context, state) {
                       return InkWell(
                         onTap: () async {
-                          if (remaining == 0.0) {
-                            PutPaymentModel paymentPut = PutPaymentModel(payments: payments);
-                            showOrderWarningDialog(context, 'Order is being updated...');
-                            bool return_ = await context.read<ReopenCubit>().oldCheckPut(
-                                // userModel: context.read<GlobalCubit>().user,
-                                id: state.selectOrder!.orderId.toString(),
-                                paymentPut: paymentPut);
+                          // if (remaining == 0.0) {
+                          //   PutPaymentModel paymentPut = PutPaymentModel(payments: payments);
+                          //   showOrderWarningDialog(context, 'Order is being updated...');
+                          //   bool return_ = await context.read<CheckCubit>().oldCheckPut(
+                          //       // userModel: context.read<GlobalCubit>().user,
+                          //       id: state.selectOrder!.orderId.toString(),
+                          //       paymentPut: paymentPut);
 
-                            if (return_) {
-                              Navigator.of(context).pop();
-                              await context.read<ReopenCubit>().getAllCheck(
-                                  // userModel: context.read<GlobalCubit>().user,
-                                  id: context.read<CaseCubit>().cases!.id.toString());
-                              showOrderSuccessDialog(
-                                  context, "Order has been updated successfully.",
-                                  secondClose: true);
-                            } else {
-                              Navigator.of(context).pop();
-                              showOrderErrorDialog(context, 'ERROR! Order was not updated',
-                                  secondClose: true);
-                            }
-                          } else {
-                            showOrderErrorDialog(
-                                context, 'ERROR! You have entered too little or too much.');
-                          }
+                          //   if (return_) {
+                          //     Navigator.of(context).pop();
+                          //     await context.read<CheckCubit>().getAllCheck(
+                          //         caseId: context.read<CaseCubit>().cases!.id.toString());
+                          //     showOrderSuccessDialog(
+                          //         context, "Order has been updated successfully.",
+                          //         secondClose: true);
+                          //   } else {
+                          //     Navigator.of(context).pop();
+                          //     showOrderErrorDialog(context, 'ERROR! Order was not updated',
+                          //         secondClose: true);
+                          //   }
+                          // } else {
+                          //   showOrderErrorDialog(
+                          //       context, 'ERROR! You have entered too little or too much.');
+                          // }
                         },
                         child: Container(
                           width: MediaQuery.of(context).size.width * .08,

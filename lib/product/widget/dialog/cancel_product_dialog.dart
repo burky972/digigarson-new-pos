@@ -8,9 +8,7 @@ import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
 import 'package:a_pos_flutter/language/locale_keys.g.dart';
 import 'package:a_pos_flutter/product/enums/button_action/button_action_enum.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
-import 'package:a_pos_flutter/product/global/cubit/global_cubit.dart';
 import 'package:a_pos_flutter/product/global/model/order/new_order_model.dart';
-import 'package:a_pos_flutter/product/global/model/user_model.dart';
 import 'package:a_pos_flutter/product/global/service/global_service.dart';
 import 'package:a_pos_flutter/product/global/service/response_action_service.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
@@ -329,7 +327,6 @@ class CancelProductDialog {
   Future<void> cancelProduct(BuildContext context,
       {required CancelProduct body, required TableState state}) async {
     showOrderWarningDialog(context, "Product Canceling...");
-    UserModel user = context.read<GlobalCubit>().user;
     TableCubit tableCubit = context.read<TableCubit>();
     if (state.selectedTable == null ||
         state.newOrderProduct == null ||
@@ -353,7 +350,6 @@ class CancelProductDialog {
         context: context,
         response: response,
         tableCubit: tableCubit,
-        userModel: user,
         action: ButtonAction.cancelProduct);
   }
 }

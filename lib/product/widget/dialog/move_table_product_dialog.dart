@@ -7,8 +7,6 @@ import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
 import 'package:a_pos_flutter/product/enums/button_action/button_action_enum.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
-import 'package:a_pos_flutter/product/global/cubit/global_cubit.dart';
-import 'package:a_pos_flutter/product/global/model/user_model.dart';
 import 'package:a_pos_flutter/product/global/service/response_action_service.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
@@ -194,7 +192,6 @@ class _MoveTableButtons extends StatelessWidget {
       builder: (context, state) {
         OrderCubit orderCubit = context.read<OrderCubit>();
         TableCubit tableCubit = context.read<TableCubit>();
-        UserModel userModel = context.read<GlobalCubit>().user;
         return Padding(
           padding: const AppPadding.minAll(),
           child: Row(
@@ -205,9 +202,9 @@ class _MoveTableButtons extends StatelessWidget {
                       ? null
                       : () async {
                           if (isTransfer) {
-                            await _transferTable(orderCubit, state, tableCubit, userModel, context);
+                            await _transferTable(orderCubit, state, tableCubit, context);
                           } else {
-                            await _moveProduct(orderCubit, state, tableCubit, userModel, context);
+                            await _moveProduct(orderCubit, state, tableCubit, context);
                           }
                         },
                   child: const LightBlueButton(buttonText: 'OK')),
@@ -224,8 +221,8 @@ class _MoveTableButtons extends StatelessWidget {
   }
 
   /// Move Product Function
-  Future<void> _moveProduct(OrderCubit orderCubit, TableState state, TableCubit tableCubit,
-      UserModel userModel, BuildContext context) async {
+  Future<void> _moveProduct(
+      OrderCubit orderCubit, TableState state, TableCubit tableCubit, BuildContext context) async {
     final response = await orderCubit.moveProducts(
         tableId: state.selectedMoveTable!.id!,
         targetTableId: state.selectedTable!.id!,
@@ -234,24 +231,24 @@ class _MoveTableButtons extends StatelessWidget {
       context: context,
       response: response,
       tableCubit: tableCubit,
-      userModel: userModel,
       action: ButtonAction.moveProduct,
     );
   }
 
   /// Transfer Table Function
-  Future<void> _transferTable(OrderCubit orderCubit, TableState state, TableCubit tableCubit,
-      UserModel userModel, BuildContext context) async {
+  Future<void> _transferTable(
+      OrderCubit orderCubit, TableState state, TableCubit tableCubit, BuildContext context) async {
     final response = await orderCubit.transferTable(
         tableId: state.selectedMoveTable!.id!,
         targetTableId: state.selectedTable!.id!,
         moveTable: MoveProduct(
-            orderIds: state.selectedMoveTable!.orders.map((e) => e.orderNum.toString()).toList()));
+            orderIds: state.selectedMoveTable!.orders.first.products
+                .map((e) => e!.id.toString())
+                .toList()));
     await ResponseActionService.getTableAndNavigate(
       context: context,
       response: response,
       tableCubit: tableCubit,
-      userModel: userModel,
       action: ButtonAction.moveTable,
     );
   }

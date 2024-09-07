@@ -2,14 +2,11 @@ import 'dart:async';
 
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
-import 'package:a_pos_flutter/product/global/cubit/global_cubit.dart';
-import 'package:a_pos_flutter/product/global/cubit/global_state.dart';
-import 'package:a_pos_flutter/product/global/model/user_model.dart';
+import 'package:a_pos_flutter/product/global/service/global_service.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/utils/helper/timer_convert.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TopMainInfo extends StatefulWidget {
   const TopMainInfo({super.key});
@@ -37,14 +34,9 @@ class _TopMainInfoState extends State<TopMainInfo> with _TopMainInfoMixin {
             rightText:
                 '${TimerConvert().formatNumber(_currentDateTime.hour)}:${TimerConvert().formatNumber(_currentDateTime.minute)}:${TimerConvert().formatNumber(_currentDateTime.second)}',
           ),
-          BlocSelector<GlobalCubit, GlobalState, User>(
-            selector: (state) => state.user!.user!,
-            builder: (context, user) {
-              return _EachInfoRow(
-                leftText: "User:",
-                rightText: '${user.name} ${user.lastName}',
-              );
-            },
+          _EachInfoRow(
+            leftText: "User:",
+            rightText: '${GlobalService.user.name} ${GlobalService.user.lastName}',
           )
         ],
       ),

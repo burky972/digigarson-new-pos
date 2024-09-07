@@ -314,9 +314,10 @@ Future<void> handleButtonAction(
     case 9:
       appLogger.info('TAG', 'CASE 9 - ${state.newOrderProduct?.productName}');
       if (state.selectedTable == null || state.newOrderProduct == null) return;
-      QuickCashDialog().show(context);
-
+      tableCubit.setInitialCheckoutProducts();
+      NewCheckoutDialog.show(context);
       break;
+
     default:
       break;
   }

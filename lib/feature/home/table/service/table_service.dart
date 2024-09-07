@@ -16,10 +16,8 @@ import 'package:fpdart/fpdart.dart';
 class TableService implements ITableService {
   /// GET TABLE
   @override
-  DefaultServiceResponse getTable({required UserModel userModel}) async {
-    BaseResponseModel response = await DioClient.instance.get(
-      NetworkConstants.tables,
-    );
+  DefaultServiceResponse getTable() async {
+    BaseResponseModel response = await DioClient.instance.get(NetworkConstants.tables);
     appLogger.info('Table SERVICE GET TABLE', response.data.toString());
     return ApiResponseHandler.handleResponse(response);
   }
@@ -38,15 +36,12 @@ class TableService implements ITableService {
   /// post TABLE NEW ORDER
   @override
   DefaultServiceResponse postTableNewOrder(
-      {required UserModel userModel,
-      required String tableId,
-      required NewOrderModel newOrderModel}) async {
+      {required String tableId, required NewOrderModel newOrderModel}) async {
     appLogger.info('Table SERVICE POST NEW ORDER json', newOrderModel.toJson().toString());
     BaseResponseModel response = await DioClient.instance.post(
       '${NetworkConstants.newOrderPos}$tableId',
       data: newOrderModel.toJson(),
     );
-    appLogger.info('Table SERVICE POST NEW ORDER', response.data.toString());
     return ApiResponseHandler.handleResponse(response);
   }
 
@@ -263,6 +258,16 @@ class TableService implements ITableService {
       data: qrProductModel.toJson(),
     );
     appLogger.info('Table SERVICE PUT CANCEL Table Qr Order Approve', response.data.toString());
+    return ApiResponseHandler.handleResponse(response);
+  }
+
+  /// Delete All Tables
+  @override
+  DefaultServiceResponse deleteAllTables() async {
+    BaseResponseModel response = await DioClient.instance.delete(
+      NetworkConstants.deleteAllTables,
+    );
+    appLogger.info('Table SERVICE Delete All Table', response.data.toString());
     return ApiResponseHandler.handleResponse(response);
   }
 }

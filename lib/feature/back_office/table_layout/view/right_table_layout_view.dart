@@ -1,5 +1,6 @@
 import 'package:a_pos_flutter/feature/back_office/sections/cubit/section_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/table_layout/model/table_layout_model.dart';
+import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -56,10 +57,9 @@ class _RightTableLayoutViewState extends State<RightTableLayoutView>
         return GestureDetector(
           onTap: () => setState(() {
             widget.onSelectedTableChanged(selectedTable);
-            debugPrint(selectedTable?.uniqueId.toString());
           }),
           onDoubleTap: () {
-            _setTableName(selectedTable);
+            (selectedTable?.id ?? -1) > 44 ? null : _setTableName(selectedTable);
           },
           onPanUpdate: (details) {
             if (selectedTable != null) {
@@ -111,7 +111,7 @@ class _RightTableLayoutViewState extends State<RightTableLayoutView>
       for (var table in placedTables.reversed) {
         if (_isPositionInsideTable(localPosition, table)) {
           selectedTable = table;
-          debugPrint('selectedTable is ${selectedTable?.name ?? ''}');
+          debugPrint('selectedTable is ${selectedTable?.id ?? ''}');
           break;
         }
       }
@@ -129,6 +129,8 @@ class _RightTableLayoutViewState extends State<RightTableLayoutView>
     final RenderBox renderBox = rightPanelKey.currentContext!.findRenderObject() as RenderBox;
     final localOffset = renderBox.globalToLocal(globalOffset);
 
+    // Add new table
+    context.read<TableCubit>().addIdToNewAddedTableIds(table.uniqueId);
     setState(() {
       TableItem newTable = TableItem(
         id: table.id,

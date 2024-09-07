@@ -112,12 +112,12 @@ class SectionCubit extends ISectionCubit {
         await deleteSections(sectionId: originalSection.id!, sectionModel: originalSection);
       }
     }
+
     for (var section in allSections ?? []) {
       final originalSection = originalSections.firstWhere(
         (original) => original.id == section.id,
         orElse: () => SectionModel.empty(),
       );
-
       if (originalSection.id != section.id) {
         if (section.title != null && section.title!.isNotEmpty) {
           await postSections(sectionModel: section);
@@ -129,7 +129,8 @@ class SectionCubit extends ISectionCubit {
     }
 
     originalSections = allSections ?? [];
-    emit(state.copyWith(originalSections: originalSections));
+    appLogger.info('section originalLength', '${originalSections.length}!!');
+    emit(state.copyWith(originalSections: originalSections, allSections: originalSections));
     await getSections();
   }
 

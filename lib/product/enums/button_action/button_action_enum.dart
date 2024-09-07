@@ -24,7 +24,8 @@ enum ButtonAction {
   service(19),
   discount(20),
   catering(21),
-  moveTable(22);
+  moveTable(22),
+  quickCash(23);
 
   final int value;
   const ButtonAction(this.value);
@@ -53,6 +54,7 @@ enum ButtonAction {
     ButtonAction.discount: "Discount",
     ButtonAction.catering: "Catering",
     ButtonAction.moveTable: "Move Table",
+    ButtonAction.quickCash: "Quick Cash",
   };
 
   /// Returns a success message based on the current ResponseAction.

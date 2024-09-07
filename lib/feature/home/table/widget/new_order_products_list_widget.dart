@@ -1,4 +1,4 @@
-import 'package:a_pos_flutter/feature/home/reopen/model/re_open_model.dart';
+import 'package:a_pos_flutter/feature/home/checks/model/re_open_model.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_state.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';

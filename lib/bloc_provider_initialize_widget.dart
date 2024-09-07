@@ -9,17 +9,13 @@ class BlocProviderInitializeWidget extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) {
-            final cubit = TokenCubit();
-            cubit.init();
-            return cubit;
-          },
-        ),
-        BlocProvider(
           create: (_) => GlobalCubit(),
         ),
         BlocProvider(
           create: (context) => CaseCubit(),
+        ),
+        BlocProvider(
+          create: (context) => UtilityItemCubit()..init(),
         ),
         BlocProvider(
           create: (context) => BranchCubit(),
@@ -40,7 +36,7 @@ class BlocProviderInitializeWidget extends StatelessWidget {
           create: (context) => NoteServePaymentCancelReasonCubit(),
         ),
         BlocProvider(
-          create: (context) => ReopenCubit(),
+          create: (context) => CheckCubit(),
         ),
         BlocProvider(
           create: (context) => TableCubit(),

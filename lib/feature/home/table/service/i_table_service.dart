@@ -6,13 +6,12 @@ import 'package:a_pos_flutter/product/utils/helper/typedef.dart';
 import 'package:core/base/model/base_response_model.dart';
 
 abstract class ITableService {
-  DefaultServiceResponse getTable({required UserModel userModel});
+  DefaultServiceResponse getTable();
   DefaultServiceResponse postTable({required TableRequestModel tableModel});
   DefaultServiceResponse deleteTable({required String tableId});
+  DefaultServiceResponse deleteAllTables();
   DefaultServiceResponse postTableNewOrder(
-      {required UserModel userModel,
-      required String tableId,
-      required NewOrderModel newOrderModel});
+      {required String tableId, required NewOrderModel newOrderModel});
   DefaultServiceResponse postTableNewService(
       {required UserModel userModel, required String tableId, required NewService newServiceModel});
   DefaultServiceResponse deleteTableService(

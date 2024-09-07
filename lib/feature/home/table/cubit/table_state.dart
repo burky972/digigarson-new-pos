@@ -32,6 +32,13 @@ class TableState extends BaseState {
     required this.isDeleteSuccess,
     required this.totalPrice,
     required this.subPrice,
+    required this.exception,
+    required this.paidProducts,
+    required this.willPaidProducts,
+    required this.totalDue,
+    required this.checkOutRemainingPrice,
+    required this.checkoutInput,
+    required this.allProductsList,
   });
 
   factory TableState.initial() {
@@ -59,6 +66,13 @@ class TableState extends BaseState {
       isTableSaving: false,
       isDeleteSuccess: false,
       totalPrice: 0.0,
+      exception: null,
+      paidProducts: const [],
+      willPaidProducts: const [],
+      totalDue: 0.0,
+      checkOutRemainingPrice: 0.0,
+      checkoutInput: '0.0',
+      allProductsList: const [],
     );
   }
 
@@ -85,6 +99,13 @@ class TableState extends BaseState {
   final Map<String, List<TableModel>>? tablesBySectionList;
   final bool? isTableSaving;
   final bool? isDeleteSuccess;
+  final AppException? exception;
+  final List<Product>? paidProducts;
+  final List<Product>? willPaidProducts;
+  final double totalDue;
+  final double checkOutRemainingPrice;
+  final String checkoutInput;
+  final List<Product> allProductsList;
 
   @override
   List<Object?> get props => [
@@ -110,6 +131,13 @@ class TableState extends BaseState {
         tablesBySectionList,
         isTableSaving,
         isDeleteSuccess,
+        exception,
+        paidProducts,
+        willPaidProducts,
+        totalDue,
+        checkOutRemainingPrice,
+        checkoutInput,
+        allProductsList,
       ];
 
   TableState copyWith({
@@ -136,6 +164,13 @@ class TableState extends BaseState {
     Map<String, List<TableModel>>? Function()? tablesBySectionList,
     bool? isTableSaving,
     bool? isDeleteSuccess,
+    AppException? Function()? exception,
+    List<Product>? paidProducts,
+    List<Product>? willPaidProducts,
+    double? totalDue,
+    double? checkOutRemainingPrice,
+    String? checkoutInput,
+    List<Product>? allProductsList,
   }) {
     return TableState(
       states: states ?? this.states,
@@ -163,6 +198,13 @@ class TableState extends BaseState {
           tablesBySectionList != null ? tablesBySectionList() : this.tablesBySectionList,
       isTableSaving: isTableSaving ?? this.isTableSaving,
       isDeleteSuccess: isDeleteSuccess ?? this.isDeleteSuccess,
+      exception: exception != null ? exception() : this.exception,
+      paidProducts: paidProducts ?? this.paidProducts,
+      willPaidProducts: willPaidProducts ?? this.willPaidProducts,
+      totalDue: totalDue ?? this.totalDue,
+      checkOutRemainingPrice: checkOutRemainingPrice ?? this.checkOutRemainingPrice,
+      checkoutInput: checkoutInput ?? this.checkoutInput,
+      allProductsList: allProductsList ?? this.allProductsList,
     );
   }
 }

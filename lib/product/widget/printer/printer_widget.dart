@@ -1,5 +1,6 @@
-import 'package:a_pos_flutter/feature/home/branch/cubit/branch_cubit.dart';
-import 'package:a_pos_flutter/feature/home/reopen/model/chek_old_model.dart';
+import 'package:a_pos_flutter/feature/back_office/sections/cubit/section_cubit.dart';
+import 'package:a_pos_flutter/feature/home/checks/model/check_response_model.dart';
+import 'package:a_pos_flutter/feature/home/checks/model/single_check_model.dart';
 import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
 import 'package:a_pos_flutter/language/locale_keys.g.dart';
 import 'package:a_pos_flutter/product/global/model/order/new_order_model.dart';
@@ -27,7 +28,7 @@ class PrinterWidget {
     double change = 0.0;
     if (selectedTable != null) {
       table =
-          '${context.read<BranchCubit>().branchModel!.sections!.where((element) => element.sId == selectedTable.section).first.title} ${selectedTable.title}';
+          '${context.read<SectionCubit>().allSectionList.where((element) => element.id == selectedTable.section).first.title} ${selectedTable.title}';
       for (var order in selectedTable.orders) {
         orderNo = order.orderNum!;
         for (var product in order.products) {
@@ -106,8 +107,11 @@ class PrinterWidget {
   }
 
   PrinterInvoiceModel invoiceOldCheckConvert(
-      OldCheckModel? selectedTable, CustomPrinterModel? printer, BuildContext context,
-      {String? section}) {
+      {SingleCheckModel? selectedTable,
+      required CheckModel check,
+      required CustomPrinterModel? printer,
+      required BuildContext context,
+      required String? section}) {
     String table = "";
     int orderNo = 0;
     List<ItemPrinter> items = [];
@@ -123,24 +127,24 @@ class PrinterWidget {
     double change = 0.0;
     if (selectedTable != null) {
       table = section ?? "";
+      orderNo = check.checkNo!;
       for (var order in selectedTable.orders!) {
-        orderNo = order.checkNo!;
-        for (var product in order.products!) {
-          subTotal += (product.status! > 0
-              ? product.isServe!
-                  ? 0.0
-                  : product.price!
-              : 0.0);
-          if (product.status! != 0) {
+        for (var product in order.products) {
+          if (product != null) {
+            subTotal += product.price!;
+
             ItemPrinter newItem = ItemPrinter(
                 itemId: product.product.toString(),
                 itemPriceName: "",
                 itemName: product.productName.toString().trim(),
-                itemOptionString: product.optionsString.toString().trim(),
+                // itemOptionString: product.optionsString.toString().trim(),//TODO: CHECK HERE
+                itemOptionString:
+                    product.options.isNotEmpty ? product.options.first.name.toString().trim() : '',
                 itemPrice: product.price!,
                 qty: product.quantity!,
                 discountAmounte: 0,
-                status: product.isServe! ? 2 : 1,
+                // status: product.isServe! ? 2 : 1,
+                status: product.cancelStatus!.isCancelled! ? 1 : 2,
                 discountName: "");
             updateItemIfExist(items, newItem);
           }
@@ -152,7 +156,7 @@ class PrinterWidget {
             amount: double.parse(DoubleConvert().formatPriceDouble(serviceFree.amount!)),
             percentile: double.parse(DoubleConvert().formatDouble(serviceFree.percentile!)),
             type: serviceFree.type!,
-            id: serviceFree.sId!));
+            id: serviceFree.id!));
       }
       for (var cover_ in selectedTable.covers!) {
         coverTotal += double.parse(DoubleConvert().formatDouble(cover_.price!));
@@ -162,7 +166,7 @@ class PrinterWidget {
             percentile: 10,
             quantity: cover_.quantity!,
             title: cover_.title!,
-            id: cover_.sId!));
+            id: cover_.id!));
       }
       for (var discount in selectedTable.discounts!) {
         discountTotal += discount.amount!;
@@ -203,7 +207,7 @@ class PrinterWidget {
     int orderNo = 0;
     if (selectedTable != null) {
       table =
-          '${context.read<BranchCubit>().branchModel!.sections!.where((element) => element.sId == selectedTable.section).first.title} ${selectedTable.title}';
+          '${context.read<SectionCubit>().allSectionList.where((element) => element.id == selectedTable.section).first.title} ${selectedTable.title}';
       orderNo = selectedTable.checkNo!;
     }
     List<ItemKitchenPrinter> items = [];
@@ -251,7 +255,7 @@ class PrinterWidget {
     int orderNo = 0;
     if (selectedTable != null) {
       table =
-          '${context.read<BranchCubit>().branchModel!.sections!.where((element) => element.sId == selectedTable.section).first.title} ${selectedTable.title}';
+          '${context.read<SectionCubit>().allSectionList.where((element) => element.id == selectedTable.section).first.title} ${selectedTable.title}';
       orderNo = selectedTable.checkNo!;
     }
     List<ItemKitchenCancelPrinter> items = [];

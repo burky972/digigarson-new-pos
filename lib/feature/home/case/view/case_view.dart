@@ -6,7 +6,7 @@ import 'package:a_pos_flutter/gen/assets.gen.dart';
 import 'package:a_pos_flutter/language/locale_keys.g.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
-import 'package:a_pos_flutter/product/global/cubit/global_cubit.dart';
+import 'package:a_pos_flutter/product/global/service/global_service.dart';
 import 'package:a_pos_flutter/product/widget/button/custom_button.dart';
 import 'package:a_pos_flutter/product/widget/button/exit_button.dart';
 import 'package:a_pos_flutter/product/widget/keyboard/custom_keyboard.dart';
@@ -143,7 +143,7 @@ class _CaseViewState extends State<CaseView> {
                           child: CustomButton(
                             buttonColor: context.colorScheme.surfaceTint,
                             onTap: () async {
-                              final token = context.read<GlobalCubit>().user.accessToken;
+                              final token = GlobalService.userModel.accessToken;
                               bool isPosted = await context.read<CaseCubit>().postCase(
                                     balanceModel: BalanceModel(
                                       amount: double.parse(_startAmountController.text),

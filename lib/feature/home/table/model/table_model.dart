@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/model/option_model.dart';
 import 'package:a_pos_flutter/product/global/model/order/new_order_model.dart';
@@ -13,6 +14,7 @@ import 'package:a_pos_flutter/feature/home/table/model/table_request_model.dart'
 part 'table_model.g.dart';
 
 @JsonSerializable()
+// ignore: must_be_immutable
 class TableModel extends BaseModel<TableModel> {
   @JsonKey(name: '_id')
   final String? id;
@@ -26,8 +28,8 @@ class TableModel extends BaseModel<TableModel> {
   final LocationModel? location;
   final double? totalPrice;
   final double? totalTax;
+  final double? totalPriceAfterTax;
   final double? remainingPrice;
-
   final List<OrderModel> orders;
   final List<PaidOrderModel>? paidOrders;
   final List<CoverModel> cover; //X
@@ -53,6 +55,7 @@ class TableModel extends BaseModel<TableModel> {
     this.tableType,
     this.location,
     this.totalPrice,
+    this.totalPriceAfterTax,
     this.totalTax,
     this.remainingPrice,
     this.id,
@@ -88,6 +91,7 @@ class TableModel extends BaseModel<TableModel> {
         location,
         totalPrice,
         totalTax,
+        totalPriceAfterTax,
         remainingPrice,
         id,
         orders,
@@ -113,6 +117,7 @@ class TableModel extends BaseModel<TableModel> {
     int? tableType,
     LocationModel? location,
     double? totalPrice,
+    double? totalPriceAfterTax,
     double? totalTax,
     double? remainingPrice,
     String? id,
@@ -138,6 +143,7 @@ class TableModel extends BaseModel<TableModel> {
       tableType: tableType ?? this.tableType,
       location: location ?? this.location,
       totalPrice: totalPrice ?? this.totalPrice,
+      totalPriceAfterTax: totalPriceAfterTax ?? this.totalPriceAfterTax,
       totalTax: totalTax ?? this.totalTax,
       remainingPrice: remainingPrice ?? this.remainingPrice,
       id: id ?? this.id,
@@ -272,7 +278,7 @@ class DiscountModel {
       data['user'] = user;
       data['percentile'] = percentile;
     } catch (e) {
-      print(e);
+      log(e.toString());
     }
     return data;
   }
@@ -412,7 +418,6 @@ class OrderModel {
 
   late int? orderNum;
   late List<Product?> products;
-
   late DateTime? updatedAt;
   late DateTime? createdAt;
 
@@ -436,7 +441,7 @@ class OrderModel {
       data['updatedAt'] = updatedAt.toString();
       data['createdAt'] = createdAt.toString();
     } catch (e) {
-      print('Error order: $e');
+      log('Error order: $e');
     }
     return data;
   }
@@ -592,7 +597,9 @@ class Product {
     required this.product,
     required this.productName,
     required this.quantity,
+    required this.paidQuantity,
     required this.price,
+    required this.priceAfterTax,
     required this.priceId,
     required this.cancelStatus,
     required this.createdAt,
@@ -603,7 +610,9 @@ class Product {
   String? product;
   String? productName;
   double? quantity;
+  double? paidQuantity;
   double? price;
+  double? priceAfterTax;
   String? priceId;
   late List<Options> options;
   String? note;
@@ -623,8 +632,10 @@ class Product {
       product: '',
       productName: '',
       quantity: 0.0,
+      paidQuantity: 0.0,
       priceId: '',
       price: 0.0,
+      priceAfterTax: 0.0,
       cancelStatus: CancelStatus.empty(),
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
@@ -641,10 +652,12 @@ class Product {
     product = json["product"].toString();
     productName = json["productName"].toString();
     quantity = double.tryParse(json["quantity"].toString());
+    paidQuantity = double.tryParse(json["paidQuantity"].toString());
     tax = (json['tax'] as num?)?.toDouble();
     priceId = json["priceId"].toString();
     cancelStatus = CancelStatus.fromJson(json["cancelStatus"]);
     price = double.tryParse(json["price"].toString());
+    priceAfterTax = double.tryParse(json["priceAfterTax"].toString());
     createdAt = DateTime.tryParse(json["createdAt"] ?? "");
     updatedAt = DateTime.tryParse(json["updatedAt"] ?? "");
   }
@@ -661,8 +674,10 @@ class Product {
       }
 
       if (quantity != null) data['quantity'] = quantity;
+      if (paidQuantity != null) data['paidQuantity'] = paidQuantity;
       if (priceId != null) data['priceId'] = priceId;
       if (price != null) data['price'] = price;
+      if (priceAfterTax != null) data['priceAfterTax'] = priceAfterTax;
       if (price != null) data['tax'] = tax;
       if (note != null) data['note'] = note;
 
@@ -670,7 +685,7 @@ class Product {
       if (updatedAt != null) data['updatedAt'] = updatedAt.toString();
       if (createdAt != null) data['createdAt'] = createdAt.toString();
     } catch (e) {
-      print('Error OrderModel-Product: $e');
+      log('Error OrderModel-Product: $e');
     }
     return data;
   }
@@ -683,8 +698,10 @@ class Product {
         "product": product,
         "productName": productName,
         "quantity": quantity,
+        "paidQuantity": paidQuantity,
         "priceId": priceId,
         "price": price,
+        "priceAfterTax": priceAfterTax,
         "createdAt": createdAt!.toIso8601String(),
       };
 
@@ -698,8 +715,10 @@ class Product {
     product = other.product;
     productName = other.productName;
     quantity = other.quantity;
+    paidQuantity = other.paidQuantity;
     priceId = other.priceId;
     price = other.price;
+    priceAfterTax = other.priceAfterTax;
   }
 }
 
@@ -738,7 +757,7 @@ class Options {
       data['nameOption'] = name;
       data['items'] = items.map((items) => items.toJson()).toList();
     } catch (e) {
-      print('Error option: $e');
+      log('Error option: $e');
     }
 
     return data;

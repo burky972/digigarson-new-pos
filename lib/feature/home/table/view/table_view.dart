@@ -43,7 +43,7 @@ class _TableViewState extends State<TableView> with _TableMixin {
                         width: context.dynamicWidth(.38),
                         height: context.height - 60,
                         child: TableLeftWidget(
-                          tableModel: state.selectedTable!, //TODO: CHECK HERE LATER
+                          tableModel: state.selectedTable!,
                         ),
                       );
                     },
