@@ -10,16 +10,16 @@ class _BottomButtonFields extends StatelessWidget {
         const Expanded(child: TextField()),
         const LightBlueButton(buttonText: 'Upload'),
         const LightBlueButton(buttonText: 'inventory'),
-        SizedBox(width: MediaQuery.of(context).size.width * 0.1),
+        SizedBox(width: context.dynamicWidth(0.1)),
         const LightBlueButton(buttonText: 'Move Up'),
         const LightBlueButton(buttonText: 'Move Down'),
         LightBlueButton(
           buttonText: 'Add',
-          onTap: () => context.read<CategoryCubit>().addNewCategory(),
+          onTap: () => context.read<CategoryCubit>().addNewSubCategory(),
         ),
         LightBlueButton(
           buttonText: 'Delete',
-          onTap: context.read<CategoryCubit>().state.selectedCategory == null
+          onTap: context.read<CategoryCubit>().state.selectedSubCategory == null
               ? null
               : () async {
                   await patchCategory(context);
@@ -27,7 +27,10 @@ class _BottomButtonFields extends StatelessWidget {
         ),
         LightBlueButton(
             buttonText: 'Save',
-            onTap: () async => await context.read<CategoryCubit>().saveChanges()),
+            onTap: () async => await context
+                .read<CategoryCubit>()
+                .saveSubCategoriesChanges()
+                .whenComplete(() => context.read<CategoryCubit>().getCategories())),
         const LightBlueButton(buttonText: 'Export'),
         LightBlueButton(
           buttonText: 'Exit',
@@ -38,21 +41,16 @@ class _BottomButtonFields extends StatelessWidget {
   }
 
   Future<void> patchCategory(BuildContext context) async {
-    ProductCubit productCubit = context.read<ProductCubit>();
-    bool hasProductInCategory = false;
-    for (var product in productCubit.state.allProducts) {
-      if (product?.category == context.read<CategoryCubit>().state.selectedCategory?.id) {
-        hasProductInCategory = true;
-        break;
-      }
-    }
-    if (hasProductInCategory) {
-      showOrderErrorDialog(context, 'CATEGORY HAS PRODUCTS!');
+    CategoryCubit categoryCubit = context.read<CategoryCubit>();
+    final bool isSuccess =
+        await categoryCubit.patchCategories(categoryId: categoryCubit.selectedSubCategory!.id!);
+    if (!isSuccess) {
+      await showOrderErrorDialog(context, '${categoryCubit.state.exception?.message}!');
+      await categoryCubit.getCategories();
     } else {
-      await context
-          .read<CategoryCubit>()
-          .patchCategories(categoryId: context.read<CategoryCubit>().state.selectedCategory!.id!)
-          .whenComplete(() => context.read<CategoryCubit>().getCategories());
+      await categoryCubit
+          .patchCategories(categoryId: categoryCubit.state.selectedSubCategory!.id!)
+          .whenComplete(() => categoryCubit.getCategories());
     }
   }
 }

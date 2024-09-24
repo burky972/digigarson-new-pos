@@ -26,66 +26,63 @@ class CleanAllTablesDialog {
   }
 
   Widget _buildDialog(BuildContext context, Map<String, List<TableItem>> tableStates) {
-    return BlocConsumer<TableCubit, TableState>(
-      listener: (context, state) async {
-        if (state.exception != null && state.exception!.message.isNotEmpty) {
-          showErrorDialog(context, state.exception!.message);
-          await Future.delayed(const Duration(milliseconds: 1505));
-        }
-      },
-      builder: (context, state) {
-        return AlertDialog(
-          title: Text(
-            LocaleKeys.delete.tr(),
-            style: CustomFontStyle.popupNotificationTextStyle
-                .copyWith(color: context.colorScheme.tertiary, fontSize: 16),
+    return AlertDialog(
+      title: Text(
+        LocaleKeys.delete.tr(),
+        style: CustomFontStyle.popupNotificationTextStyle
+            .copyWith(color: context.colorScheme.tertiary, fontSize: 16),
+      ),
+      content: Container(
+          width: MediaQuery.of(context).size.width * .6 + 5,
+          height: 250,
+          constraints: const BoxConstraints(
+            minWidth: 420,
+            maxWidth: 520,
+            maxHeight: 350,
           ),
-          content: Container(
-              width: MediaQuery.of(context).size.width * .6 + 5,
-              height: 250,
-              constraints: const BoxConstraints(
-                minWidth: 420,
-                maxWidth: 520,
-                maxHeight: 350,
-              ),
-              child: Text(
-                '${LocaleKeys.isCleaningAllTable.tr()}!',
-                style: CustomFontStyle.titlesTextStyle
-                    .copyWith(color: context.colorScheme.error, fontSize: 24),
-              )),
-          actions: [
-            LightBlueButton(
+          child: Text(
+            '${LocaleKeys.isCleaningAllTable.tr()}!',
+            style: CustomFontStyle.titlesTextStyle
+                .copyWith(color: context.colorScheme.error, fontSize: 24),
+          )),
+      actions: [
+        BlocConsumer<TableCubit, TableState>(
+          listener: (context, state) {
+            if (state.states == TableStates.error && state.exception != null) {
+              showErrorDialog(context, state.exception!.message);
+              Future.delayed(const Duration(milliseconds: 1600)).then(
+                (value) => Navigator.pop(context),
+              );
+            }
+          },
+          builder: (context, state) {
+            return LightBlueButton(
               buttonText: LocaleKeys.YES.tr(),
-              onTap: () async =>
-                  await _handleCleanAllTables(context, state: state, tableStates: tableStates)
-                      .then((_) => Navigator.pop(context)),
-            ),
-            LightBlueButton(
-              buttonText: LocaleKeys.NO.tr(),
-              onTap: () => Navigator.pop(context),
-            ),
-          ],
-        );
-      },
+              onTap: () async {
+                TableCubit tableCubit = context.read<TableCubit>();
+                bool isDeleted = await tableCubit.deleteAllTables();
+                if (isDeleted) {
+                  tableStates.forEach((key, tables) async {
+                    await SharedManager.instance.removeValue(key);
+                  });
+                  showOrderSuccessDialog(context, 'All tables states cleaned!');
+                }
+                await ResponseActionService.getTableAndNavigate(
+                  context: context,
+                  response: isDeleted,
+                  tableCubit: tableCubit,
+                  isShowingError: false,
+                  action: ButtonAction.closeTable,
+                );
+              },
+            );
+          },
+        ),
+        LightBlueButton(
+          buttonText: LocaleKeys.NO.tr(),
+          onTap: () => Navigator.pop(context),
+        ),
+      ],
     );
-  }
-
-  Future<void> _handleCleanAllTables(BuildContext context,
-      {required TableState state, required Map<String, List<TableItem>> tableStates}) async {
-    TableCubit tableCubit = context.read<TableCubit>();
-
-    bool isDeleted = await context.read<TableCubit>().deleteAllTables();
-    if (isDeleted) {
-      tableStates.forEach((key, tables) async {
-        await SharedManager.instance.removeValue(key);
-      });
-      showOrderSuccessDialog(context, 'All tables states cleaned!');
-    } else {}
-    await ResponseActionService.getTableAndNavigate(
-        context: context,
-        response: isDeleted,
-        tableCubit: tableCubit,
-        isShowingError: false,
-        action: ButtonAction.closeTable);
   }
 }

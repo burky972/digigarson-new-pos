@@ -2,8 +2,13 @@ import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
 import 'package:a_pos_flutter/feature/home/table/model/table_request_model.dart';
 import 'package:a_pos_flutter/feature/home/table/service/i_table_service.dart';
 import 'package:a_pos_flutter/product/constant/string/query_params.dart';
+import 'package:a_pos_flutter/product/enums/customer_count/customer_count_type.dart';
+import 'package:a_pos_flutter/product/global/model/catering/catering_cancel_model.dart';
+import 'package:a_pos_flutter/product/global/model/catering/catering_model.dart';
 import 'package:a_pos_flutter/product/global/model/change_price/change_product_price_model.dart';
+import 'package:a_pos_flutter/product/global/model/customer_count/customer_count_model.dart';
 import 'package:a_pos_flutter/product/global/model/order/new_order_model.dart';
+import 'package:a_pos_flutter/product/global/model/service_fee/service_fee_request_model.dart';
 import 'package:a_pos_flutter/product/global/model/user_model.dart';
 import 'package:a_pos_flutter/product/utils/helper/api_response_handler.dart';
 import 'package:core/base/exception/exception.dart';
@@ -114,10 +119,9 @@ class TableService implements ITableService {
 
   /// GET CLOSE TABLE
   @override
-  DefaultServiceResponse closeTable({required UserModel userModel, required String tableId}) async {
-    BaseResponseModel response = await DioClient.instance.get(
-      '${NetworkConstants.closeTable}$tableId',
-      queryParameters: QueryParams.dioQueryParams(userModel),
+  DefaultServiceResponse closeTable({required String tableId}) async {
+    BaseResponseModel response = await DioClient.instance.put(
+      '${NetworkConstants.tables}/$tableId/close',
     );
     appLogger.info('Table SERVICE CLOSE TABLE', response.data.toString());
     return ApiResponseHandler.handleResponse(response);
@@ -126,13 +130,10 @@ class TableService implements ITableService {
   /// post TABLE COVER
   @override
   DefaultServiceResponse postTableCover(
-      {required UserModel userModel,
-      required String tableId,
-      required NewCover newCoverModel}) async {
+      {required String tableId, required CoverRequestModel coverModel}) async {
     BaseResponseModel response = await DioClient.instance.post(
-      '${NetworkConstants.newCoverPost}$tableId',
-      queryParameters: QueryParams.dioQueryParams(userModel),
-      data: newCoverModel.toJson(),
+      '${NetworkConstants.cover}/$tableId/cover',
+      data: coverModel.toJson(),
     );
     appLogger.info('Table SERVICE POST TABLE COVER', response.data.toString());
     return ApiResponseHandler.handleResponse(response);
@@ -141,13 +142,9 @@ class TableService implements ITableService {
   /// DELETE TABLE COVER
   @override
   DefaultServiceResponse deleteTableCover(
-      {required UserModel userModel,
-      required String tableId,
-      required DeleteCover coverModel}) async {
+      {required String tableId, required String coverId}) async {
     BaseResponseModel response = await DioClient.instance.delete(
-      '${NetworkConstants.newCoverPost}$tableId',
-      queryParameters: QueryParams.dioQueryParams(userModel),
-      data: coverModel.toJson(),
+      '${NetworkConstants.cover}/$tableId/$coverId',
     );
     appLogger.info('Table SERVICE DELETE COVER', response.data.toString());
     return ApiResponseHandler.handleResponse(response);
@@ -159,22 +156,23 @@ class TableService implements ITableService {
     List<OrderProductModel> orderProducts = [];
     for (var product in products) {
       OrderProductModel orderProduct = OrderProductModel(
-        isFirst: product.isFirst!,
-        note: product.note!,
-        cancelStatus: CancelStatus.empty(),
-        id: product.id!,
-        product: product.product!,
-        productName: product.productName!,
-        categoryId: '', //! check here later,
-        quantity: double.tryParse(product.quantity!.toString()) ?? 1.0,
-        priceId: product.priceId!,
-        options: product.options.map((e) => Options.fromJson(e.toJson())).toList(),
-        priceName: 'REGULAR',
-        priceType: 'REGULAR',
-        tax: product.tax!,
-        price: product.price!,
-        // createdAt: product.createdAt!.toString(),
-      );
+          isFirst: product.isFirst!,
+          note: product.note!,
+          cancelStatus: CancelStatus.empty(),
+          id: product.id!,
+          product: product.product!,
+          productName: product.productName!,
+          categoryId: '', //! check here later,
+          quantity: double.tryParse(product.quantity!.toString()) ?? 1.0,
+          priceId: product.priceId!,
+          options: product.options.map((e) => Options.fromJson(e.toJson())).toList(),
+          priceName: 'REGULAR',
+          priceType: 'REGULAR',
+          priceAfterTax: product.priceAfterTax!,
+          tax: product.tax!,
+          price: product.price!,
+          // createdAt: product.createdAt!.toString(),
+          serveInfo: product.serveInfo ?? ServeInfoModel.empty());
       orderProducts.add(orderProduct);
     }
     return orderProducts;
@@ -203,36 +201,6 @@ class TableService implements ITableService {
     } catch (e) {
       return Left(ServerException(message: e.toString(), statusCode: '505'));
     }
-  }
-
-  /// PUT Table Product Catering
-  @override
-  DefaultServiceResponse putProductCatering(
-      {required UserModel userModel,
-      required CateringProduct cateringModel,
-      required String tableId}) async {
-    BaseResponseModel response = await DioClient.instance.put(
-      '${NetworkConstants.cateringProductPut}$tableId/${cateringModel.orderNum}/${cateringModel.orderId}',
-      queryParameters: QueryParams.dioQueryParams(userModel),
-      data: cateringModel.toJson(),
-    );
-    appLogger.info('Table SERVICE PUT PRODUCT CATERING', response.data.toString());
-    return ApiResponseHandler.handleResponse(response);
-  }
-
-  /// Cancel  Table Product Catering
-  @override
-  DefaultServiceResponse cancelProductCatering(
-      {required UserModel userModel,
-      required CateringProduct cateringModel,
-      required String tableId}) async {
-    BaseResponseModel response = await DioClient.instance.put(
-      '${NetworkConstants.cateringProductPut}$tableId/cancel',
-      queryParameters: QueryParams.dioQueryParams(userModel),
-      data: cateringModel.toJson(),
-    );
-    appLogger.info('Table SERVICE PUT CANCEL PRODUCT CATERING', response.data.toString());
-    return ApiResponseHandler.handleResponse(response);
   }
 
   /// PUT Table Qr Order Approve
@@ -268,6 +236,69 @@ class TableService implements ITableService {
       NetworkConstants.deleteAllTables,
     );
     appLogger.info('Table SERVICE Delete All Table', response.data.toString());
+    return ApiResponseHandler.handleResponse(response);
+  }
+
+  /// PATCH (edit) Customer Count
+  @override
+  DefaultServiceResponse patchCustomerCount({
+    required String tableId,
+    required CustomerCountType type,
+    required CustomerCountModel customerCountModel,
+  }) async {
+    BaseResponseModel response = await DioClient.instance.patch(
+      NetworkConstants.editCustomerCount(tableId: tableId, type: type.name),
+      data: customerCountModel.toJson(),
+    );
+    appLogger.info('Table SERVICE patch customer count', response.data.toString());
+    return ApiResponseHandler.handleResponse(response);
+  }
+
+  /// Post catering cancel
+  @override
+  DefaultServiceResponse cancelCatering({required CateringCancelModel cateringCancelModel}) async {
+    BaseResponseModel response = await DioClient.instance.post(
+      NetworkConstants.cancelCatering(
+        tableId: cateringCancelModel.tableId,
+      ),
+      data: {
+        "products": [cateringCancelModel.id]
+      },
+    );
+    return ApiResponseHandler.handleResponse(response);
+  }
+
+  ///Post catering
+  @override
+  DefaultServiceResponse postCatering({required CateringModel cateringModel}) async {
+    BaseResponseModel response = await DioClient.instance.post(
+      NetworkConstants.postCatering(
+          tableId: cateringModel.tableId!,
+          orderNum: cateringModel.orderNum.toString(),
+          productId: cateringModel.productId!),
+      data: {"serveId": cateringModel.serveId, "quantity": cateringModel.quantity},
+    );
+    return ApiResponseHandler.handleResponse(response);
+  }
+
+  ///Post service fee
+  @override
+  DefaultServiceResponse postServiceFee(
+      {required String tableId, required ServiceFeeRequestModel serviceFeeRequestModel}) async {
+    BaseResponseModel response = await DioClient.instance.post(
+      NetworkConstants.postServiceFee(tableId: tableId, type: serviceFeeRequestModel.type!),
+      data: serviceFeeRequestModel.toJson(),
+    );
+    return ApiResponseHandler.handleResponse(response);
+  }
+
+  /// Delete service fee
+  @override
+  DefaultServiceResponse deleteServiceFee(
+      {required String tableId, required String serviceId}) async {
+    BaseResponseModel response = await DioClient.instance.delete(
+      NetworkConstants.delServiceFee(tableId: tableId, serviceId: serviceId),
+    );
     return ApiResponseHandler.handleResponse(response);
   }
 }

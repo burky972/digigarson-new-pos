@@ -14,6 +14,7 @@ import 'package:a_pos_flutter/product/responsive/border.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/utils/helper/format_double.dart';
+import 'package:a_pos_flutter/product/widget/dialog/old_checkout_dialog.dart';
 import 'package:a_pos_flutter/product/widget/invoices/invoice_widget.dart';
 import 'package:a_pos_flutter/product/widget/printer/printer_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -287,7 +288,7 @@ class _CheckRightWidgetState extends State<CheckRightWidget> with _CheckRightMix
                               text: state.selectedCheck != null
                                   ? (state.selectedCheck!.totalPrice! +
                                           state.selectedCheck!.totalTax!)
-                                      .toString()
+                                      .toStringAsFixed(2)
                                   : "")
                         ],
                       ),
@@ -305,7 +306,7 @@ class _CheckRightWidgetState extends State<CheckRightWidget> with _CheckRightMix
                                           0.0,
                                           (previousValue, element) =>
                                               previousValue + element.amount!)
-                                      .toString() ??
+                                      .toStringAsFixed(2) ??
                                   "")
                         ],
                       ),
@@ -321,7 +322,7 @@ class _CheckRightWidgetState extends State<CheckRightWidget> with _CheckRightMix
                                     .where((e) => e.type == 2)
                                     .fold(0.0,
                                         (previousValue, element) => previousValue + element.amount!)
-                                    .toString() ??
+                                    .toStringAsFixed(2) ??
                                 "",
                           )
                         ],
@@ -341,10 +342,7 @@ class _CheckRightWidgetState extends State<CheckRightWidget> with _CheckRightMix
                   return InkWell(
                       onTap: () {
                         if (state.selectedCheck == null) return;
-                        // Iterable<OldCheckModel> order = state.reOpenModel
-                        //     .where((element) => element.sId == state.selectOrder!.orderId);
-                        // OldCheckDialog().showPutDialog(
-                        //     context, index: 1, order.isNotEmpty ? order.first : null);
+                        OldCheckDialog().show(context, index: 1, state.selectedCheck);
                       },
                       child: const _CheckButton(buttonText: "Re Open"));
                 },

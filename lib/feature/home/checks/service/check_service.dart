@@ -1,3 +1,4 @@
+import 'package:a_pos_flutter/feature/home/checks/model/single_check_model.dart';
 import 'package:a_pos_flutter/feature/home/checks/service/i_check_service.dart';
 import 'package:a_pos_flutter/product/constant/string/query_params.dart';
 import 'package:a_pos_flutter/product/global/getters/getter.dart';
@@ -22,6 +23,17 @@ class CheckService implements ICheckService {
   @override
   BaseResponseData<BaseResponseModel> getSingleCheck({required String checkId}) async {
     BaseResponseModel response = await DioClient.instance.get('${NetworkConstants.check}$checkId');
+    appLogger.info('Check SERVICE=> getSingleCheck', response.data.toString());
+    return ApiResponseHandler.handleResponse(response);
+  }
+
+  @override
+  BaseResponseData<BaseResponseModel> updateCheck(
+      {required String checkId, required SingleCheckModel checkModel}) async {
+    BaseResponseModel response = await DioClient.instance.put(
+      '${NetworkConstants.check}$checkId',
+      data: checkModel.toJson(),
+    );
     appLogger.info('Check SERVICE=> getSingleCheck', response.data.toString());
     return ApiResponseHandler.handleResponse(response);
   }

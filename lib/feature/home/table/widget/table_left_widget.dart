@@ -8,14 +8,18 @@ import 'package:a_pos_flutter/feature/home/table/widget/table_button_widget.dart
 import 'package:a_pos_flutter/product/enums/button_action/button_action_enum.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
+import 'package:a_pos_flutter/product/global/cubit/quick_service/quick_service_cubit.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/global/model/order/new_order_model.dart';
-import 'package:a_pos_flutter/product/global/service/response_action_service.dart';
 import 'package:a_pos_flutter/product/responsive/border.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/utils/helper/format_double.dart';
+import 'package:a_pos_flutter/product/widget/dialog/catering_dialog.dart';
 import 'package:a_pos_flutter/product/widget/dialog/move_table_product_dialog.dart';
-import 'package:a_pos_flutter/product/widget/dialog/quick_cash_dialog.dart';
+import 'package:a_pos_flutter/product/widget/dialog/new_checkout_dialog.dart';
+import 'package:a_pos_flutter/product/widget/dialog/quick_service_checkout_dialog.dart';
+import 'package:a_pos_flutter/product/widget/dialog/service_fee_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -55,7 +59,7 @@ class _TableLeftWidgetState extends State<TableLeftWidget> {
   @override
   Widget build(BuildContext context) {
     List<MapEntry<ButtonAction, String>> leftWrapButtonList =
-        ButtonAction.buttonLabels.entries.toList().sublist(11);
+        ButtonAction.buttonLabels.entries.toList().sublist(12);
     bool isSales = false;
 
     return BlocBuilder<TableCubit, TableState>(
@@ -121,7 +125,7 @@ class _TableLeftWidgetState extends State<TableLeftWidget> {
                                 children: List.generate(
                                   state.selectedTable != null &&
                                           state.selectedTable!.orders.isNotEmpty
-                                      ? state.selectedTable!.orders.length
+                                      ? state.selectedTable?.orders.length ?? 0
                                       : state.newProducts.products.isNotEmpty
                                           ? 1
                                           : 0,
@@ -189,19 +193,50 @@ class _TableLeftWidgetState extends State<TableLeftWidget> {
                                                                   ),
                                                                   width: context.width *
                                                                       headTitle[0].width,
-                                                                  child: Text(
-                                                                      '${state.selectedTable!.orders[rowIndex].products[i]!.productName?.toUpperCase()}',
-                                                                      style: state
+                                                                  child: Row(
+                                                                    children: [
+                                                                      Text(
+                                                                          '${state.selectedTable!.orders[rowIndex].products[i]!.productName?.toUpperCase()}',
+                                                                          style: state
+                                                                                      .selectedTable!
+                                                                                      .orders[
+                                                                                          rowIndex]
+                                                                                      .products[i]!
+                                                                                      .cancelStatus
+                                                                                      ?.isCancelled ??
+                                                                                  false
+                                                                              ? CustomFontStyle
+                                                                                  .titleErrorTextStyle
+                                                                              : CustomFontStyle
+                                                                                  .titlesTextStyle),
+                                                                      const Spacer(),
+                                                                      Text(
+                                                                          state
                                                                                   .selectedTable!
                                                                                   .orders[rowIndex]
                                                                                   .products[i]!
-                                                                                  .cancelStatus
-                                                                                  ?.isCancelled ??
-                                                                              false
-                                                                          ? CustomFontStyle
-                                                                              .titleErrorTextStyle
-                                                                          : CustomFontStyle
-                                                                              .titlesTextStyle)),
+                                                                                  .serveInfo!
+                                                                                  .isServe
+                                                                              ? 'SERVED!'
+                                                                              : '',
+                                                                          style: state
+                                                                                      .selectedTable!
+                                                                                      .orders[
+                                                                                          rowIndex]
+                                                                                      .products[i]!
+                                                                                      .cancelStatus
+                                                                                      ?.isCancelled ??
+                                                                                  false
+                                                                              ? CustomFontStyle
+                                                                                  .titleErrorTextStyle
+                                                                              : CustomFontStyle
+                                                                                  .titlesTextStyle
+                                                                                  .copyWith(
+                                                                                      color: context
+                                                                                          .colorScheme
+                                                                                          .error)),
+                                                                    ],
+                                                                  )),
                                                               Container(
                                                                 padding: const EdgeInsets.only(
                                                                     left: 3, right: 3),
@@ -344,7 +379,7 @@ class _TableLeftWidgetState extends State<TableLeftWidget> {
                     Container(
                       color: context.colorScheme.primary,
                       width: context.dynamicWidth(.32) + (context.dynamicWidth(.06) - 60),
-                      height: 75,
+                      height: 110,
                       child: BlocBuilder<TableCubit, TableState>(
                         builder: (context, state) {
                           return Column(
@@ -359,50 +394,93 @@ class _TableLeftWidgetState extends State<TableLeftWidget> {
                               _SubTotalTaxTotalWidget(
                                   leftText: 'Total',
                                   rightText: DoubleConvert().formatPriceDouble(state.totalPrice)),
+                              _SubTotalTaxTotalWidget(
+                                  leftText: 'Remaining Price',
+                                  rightText: DoubleConvert().formatPriceDouble(
+                                      state.selectedTable?.remainingPrice ?? 0.0)),
                             ],
                           );
                         },
                       ),
                     ),
-                    const SizedBox(
-                      height: 2,
-                    ),
+                    const SizedBox(height: 2),
                     SingleChildScrollView(
                       child: SizedBox(
                         width: context.dynamicWidth(.32) + (context.dynamicWidth(.06) - 60),
-                        child: Wrap(
-                          alignment: WrapAlignment.spaceBetween,
-                          runSpacing: 4,
-                          children: leftWrapButtonList.map((button) {
-                            final action = button.key;
-                            final label = button.value;
-                            return action.name == ButtonAction.sales.name
-                                ? isSales
-                                    ? //TODO!: IN SOME SITUATION SALES BUTTON WON'T BE SHOWING IN THE TABLE SCREEN
-                                    //TODO:CHECK HERE LATER!
-                                    TableButtonWidget(label)
-                                    : Container(
-                                        width: (context.dynamicWidth(.32) +
-                                                (context.dynamicWidth(.06) - 60)) /
-                                            4,
-                                        constraints: const BoxConstraints(
-                                          minWidth: 60,
-                                          maxWidth: 110,
-                                          minHeight: 55,
-                                        ),
-                                      )
-                                : BlocBuilder<TableCubit, TableState>(
-                                    builder: (context, state) {
-                                      return InkWell(
-                                        onTap: () async {
-                                          await handleButtonAction(action, context, state);
-                                        },
-                                        child: TableButtonWidget(label),
-                                      );
+                        child: state.isQuickService
+                            // TODO: Handle quick service post request
+                            ? BlocBuilder<TableCubit, TableState>(
+                                builder: (context, state) {
+                                  return InkWell(
+                                    onTap: () async {
+                                      context.read<QuickServiceCubit>().clearProductList();
+                                      if (state.newProducts.products.isEmpty) return;
+                                      context
+                                          .read<QuickServiceCubit>()
+                                          .setAllProducts(state.newProducts.products);
+                                      context
+                                          .read<QuickServiceCubit>()
+                                          .setInitialTotalPrices(state.totalPrice);
+                                      context.read<QuickServiceCubit>().setWillPaidProduct(
+                                            state.newProducts.products.map((orderProduct) {
+                                              return Product(
+                                                isFirst: orderProduct.isFirst,
+                                                note: orderProduct.note,
+                                                paidQuantity: orderProduct.paidQuantity,
+                                                serveInfo: orderProduct.serveInfo,
+                                                id: orderProduct.id,
+                                                options: orderProduct.options,
+                                                quantity: orderProduct.quantity,
+                                                cancelStatus: orderProduct.cancelStatus,
+                                                priceAfterTax: orderProduct.priceAfterTax,
+                                                productName: orderProduct.productName,
+                                                tax: orderProduct.tax,
+                                                price: orderProduct.price,
+                                                priceId: orderProduct.priceId,
+                                                product: orderProduct.product,
+                                              );
+                                            }).toList(),
+                                          );
+
+                                      QuickServiceCheckoutDialog.show(context);
                                     },
+                                    child: const TableButtonWidget('Sales'),
                                   );
-                          }).toList(),
-                        ),
+                                },
+                              )
+                            : Wrap(
+                                alignment: WrapAlignment.spaceBetween,
+                                runSpacing: 4,
+                                children: leftWrapButtonList.map((button) {
+                                  final action = button.key;
+                                  final label = button.value;
+                                  return action.name == ButtonAction.sales.name
+                                      ? isSales
+                                          ? //TODO!: IN SOME SITUATION SALES BUTTON WON'T BE SHOWING IN THE TABLE SCREEN
+                                          //TODO:CHECK HERE LATER!
+                                          TableButtonWidget(label)
+                                          : Container(
+                                              width: (context.dynamicWidth(.32) +
+                                                      (context.dynamicWidth(.06) - 60)) /
+                                                  4,
+                                              constraints: const BoxConstraints(
+                                                minWidth: 60,
+                                                maxWidth: 110,
+                                                minHeight: 55,
+                                              ),
+                                            )
+                                      : BlocBuilder<TableCubit, TableState>(
+                                          builder: (context, state) {
+                                            return InkWell(
+                                              onTap: () async {
+                                                await handleButtonAction(action, context, state);
+                                              },
+                                              child: TableButtonWidget(label),
+                                            );
+                                          },
+                                        );
+                                }).toList(),
+                              ),
                       ),
                     )
                   ]),
@@ -424,15 +502,6 @@ class _TableLeftWidgetState extends State<TableLeftWidget> {
                         padding: EdgeInsets.all(2.0),
                         child: NumberButton(txt: "C", color: Colors.red),
                       ),
-                      // Padding(
-                      //   padding: const EdgeInsets.all(2.0),
-                      //   child: BlocBuilder<TableCubit,TableState>(
-                      //     builder: ((context, state) =>
-                      //         TableLeftNumberContainerWidget(
-                      //             text: DoubleConvert()
-                      //                 .formatDouble(tableListProvider.NewOrderProductAmount))),
-                      //   ),
-                      // ),
                     ],
                   ),
                 ),
@@ -444,37 +513,24 @@ class _TableLeftWidgetState extends State<TableLeftWidget> {
     );
   }
 
+  Future<void> handleQuickServiceSale() async {}
   Future<void> handleButtonAction(
       ButtonAction action, BuildContext context, TableState state) async {
     TableCubit tableCubit = context.read<TableCubit>();
 
     switch (action.index) {
-      case 8:
-        // Close Table
-        break;
-      case 9:
-        // Checkout
-        break;
       case 10:
         // Sales
         break;
-      case 11:
-        // New Sale
-        if (state.newProducts.products.isEmpty) return;
 
-        final response = await context.read<TableCubit>().postTableNewOrder(context);
-        ResponseActionService.getTableAndNavigate(
-          context: context,
-          response: response,
-          tableCubit: tableCubit,
-          action: ButtonAction.newSale,
-        );
-
-        break;
       case 12:
+        appLogger.warning("TAG", "12 clicked");
+
         // Split
         break;
       case 13:
+        appLogger.warning("TAG", "13 clicked");
+
         // Special Item
         break;
       case 14:
@@ -494,16 +550,38 @@ class _TableLeftWidgetState extends State<TableLeftWidget> {
         break;
       case 19:
         // Service
+        if (state.selectedTable?.orders == null || state.selectedTable?.orders.isEmpty == true) {
+          return;
+        }
+        ServiceFeeDialog().showServiceDialog(context);
         break;
+
+      /// Discount
       case 20:
-        // Discount
         break;
+
+      /// Catering
       case 21:
-        // Catering
+        if (state.newOrderProduct == null) return;
+        if (state.selectedTable?.orders == null || state.selectedTable?.orders.isEmpty == true) {
+          return;
+        }
+        CateringDialog().show(context);
 
         break;
+
+      /// Cancel Catering
       case 22:
-        // Move Table
+        if (state.newOrderProduct == null) return;
+        if (state.selectedTable?.orders == null || state.selectedTable?.orders.isEmpty == true) {
+          return;
+        }
+        CateringDialog().show(context, true);
+
+        break;
+
+      /// Move Table
+      case 23:
         if (state.newOrderProduct == null) return;
         tableCubit.setSelectedMoveTable(state.selectedTable!);
         if (state.selectedTable?.orders == null || state.selectedTable?.orders.isEmpty == true) {
@@ -516,9 +594,14 @@ class _TableLeftWidgetState extends State<TableLeftWidget> {
         break;
 
       /// quickCash
-      case 23:
-        if (state.selectedTable == null || state.newOrderProduct == null) return;
-        QuickCashDialog().show(context);
+      case 24:
+        // QuickCashDialog().show(context);
+        if (state.selectedTable == null ||
+            state.newOrderProduct == null ||
+            state.selectedTable?.orders == null ||
+            state.selectedTable?.orders.isEmpty == true) return;
+        tableCubit.setInitialQuickCheckoutProducts();
+        NewCheckoutDialog.show(context);
 
         break;
       default:
@@ -540,11 +623,14 @@ class _TableLeftWidgetState extends State<TableLeftWidget> {
               tax: product.tax ?? 0,
               price: product.price ?? 1,
               priceId: product.priceId ?? '',
+              paidQuantity: product.paidQuantity ?? 0,
+              priceAfterTax: product.priceAfterTax ?? 0,
               cancelStatus: CancelStatus.empty(),
               priceName: '', // TODO: Kontrol edilmeli
               priceType: 'REGULAR',
               note: product.note ?? '',
               options: buildOptions(product),
+              serveInfo: product.serveInfo ?? ServeInfoModel.empty(),
             ),
           );
     }
@@ -563,21 +649,23 @@ class _TableLeftWidgetState extends State<TableLeftWidget> {
           if (product.quantity != product.paidQuantity) {
             context.read<TableCubit>().setSelectedEditProduct(
                   OrderProductModel(
-                    id: product.id ?? '',
-                    isFirst: product.isFirst ?? false,
-                    product: product.id ?? '',
-                    productName: product.productName ?? '',
-                    quantity: product.quantity ?? 1,
-                    categoryId: product.id ?? "", // TODO: Kontrol edilmeli
-                    tax: product.tax ?? 0,
-                    price: product.price ?? 1,
-                    priceId: product.priceId ?? '',
-                    cancelStatus: CancelStatus.empty(),
-                    priceName: '', // TODO: Kontrol edilmeli
-                    priceType: 'REGULAR',
-                    note: product.note ?? '',
-                    options: buildOptions(product),
-                  ),
+                      id: product.id ?? '',
+                      isFirst: product.isFirst ?? false,
+                      product: product.id ?? '',
+                      productName: product.productName ?? '',
+                      quantity: product.quantity ?? 1,
+                      categoryId: product.id ?? "", // TODO: Kontrol edilmeli
+                      tax: product.tax ?? 0,
+                      price: product.price ?? 1,
+                      priceId: product.priceId ?? '',
+                      cancelStatus: CancelStatus.empty(),
+                      priceName: '', // TODO: Kontrol edilmeli
+                      paidQuantity: product.paidQuantity ?? 0,
+                      priceAfterTax: product.priceAfterTax ?? 0,
+                      priceType: 'REGULAR',
+                      note: product.note ?? '',
+                      options: buildOptions(product),
+                      serveInfo: product.serveInfo ?? ServeInfoModel.empty()),
                 );
             return;
           }
@@ -765,11 +853,13 @@ class _DiscountCoverServiceContainer extends StatelessWidget {
         children: [
           Text(
             "$leftText: ",
-            style: CustomFontStyle.generalTextStyle,
+            style: CustomFontStyle.generalTextStyle
+                .copyWith(color: Colors.white, fontWeight: FontWeight.bold),
           ),
           Text(
             rightText,
-            style: CustomFontStyle.generalTextStyle,
+            style: CustomFontStyle.generalTextStyle
+                .copyWith(color: Colors.white, fontWeight: FontWeight.bold),
           ),
         ],
       ),

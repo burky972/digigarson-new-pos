@@ -48,6 +48,9 @@ class BlocProviderInitializeWidget extends StatelessWidget {
           create: (context) => RestaurantCubit(),
         ),
         BlocProvider(
+          create: (context) => QuickServiceCubit(),
+        ),
+        BlocProvider(
           create: (context) => SectionCubit()..getSections(),
         ),
       ],

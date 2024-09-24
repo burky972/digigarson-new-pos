@@ -13,6 +13,7 @@ import 'package:a_pos_flutter/feature/home/table/widget/timer_widget.dart';
 import 'package:a_pos_flutter/product/enums/utility_item/enum.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
 import 'package:a_pos_flutter/product/global/cubit/global_cubit.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:flutter/material.dart';
 import 'package:a_pos_flutter/feature/back_office/table_layout/model/table_layout_model.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
@@ -75,10 +76,16 @@ class _MainSavedTableViewState extends State<MainSavedTableView> with TickerProv
   }
 
   Future<void> _asyncMethod() async {
-    await context.read<SectionCubit>().getSections();
-    await context
-        .read<CheckCubit>()
-        .getAllCheck(caseId: context.read<CaseCubit>().cases?.id.toString() ?? "");
+    try {
+      await Future.wait([
+        context.read<SectionCubit>().getSections(),
+        context.read<CheckCubit>().getAllCheck(
+              caseId: context.read<CaseCubit>().cases?.id.toString() ?? "",
+            ),
+      ]);
+    } catch (e) {
+      appLogger.error('MainView _asyncMethod:,', ' $e');
+    }
   }
 
   @override
@@ -150,7 +157,7 @@ class _MainSavedTableViewState extends State<MainSavedTableView> with TickerProv
                             table.buildTable(tableList[listTableType]),
                             //TODO: CHECK HERE FOR TOTAL AMOUNT AND LAST OPENED ORDER DATE !!
                             tableType < 46
-                                ? Text('24€',
+                                ? Text('\$ ${table.totalPriceAfterTax?.toStringAsFixed(2)}',
                                     style: CustomFontStyle.generalTextStyle
                                         .copyWith(color: context.colorScheme.surface))
                                 : const SizedBox(),

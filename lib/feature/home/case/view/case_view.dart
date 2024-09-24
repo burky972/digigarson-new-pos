@@ -61,6 +61,10 @@ class _CaseViewState extends State<CaseView> {
         child: CustomNumberKeyboard(
           width: 150,
           onKeyPressed: (value) => onCustomKeyboardPressed(value),
+          onClose: () {
+            _overlayEntry?.remove();
+            _overlayEntry = null;
+          },
         ),
       ),
     );
@@ -121,25 +125,25 @@ class _CaseViewState extends State<CaseView> {
                     child: Center(child: Assets.icon.icLogo.image()),
                   ),
                   SizedBox(
-                    width: MediaQuery.of(context).size.width,
+                    width: context.width,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         SizedBox(
-                            width: MediaQuery.of(context).size.width * .3,
+                            width: context.dynamicWidth(.3),
                             child: CustomTextField(
                               onTap: () {
                                 _showCustomKeyboard(
                                     context, _startAmountController, _startAmountNode);
                               },
-                              hintText: 'Enter the initial amount',
+                              hintText: LocaleKeys.enterInitialAmount.tr(),
                               textInputType: TextInputType.none,
                               focusNode: _startAmountNode,
                               controller: _startAmountController,
                             )),
                         Container(width: 5),
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * .2,
+                          width: context.dynamicWidth(.2),
                           child: CustomButton(
                             buttonColor: context.colorScheme.surfaceTint,
                             onTap: () async {

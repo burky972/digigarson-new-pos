@@ -24,8 +24,9 @@ enum ButtonAction {
   service(19),
   discount(20),
   catering(21),
-  moveTable(22),
-  quickCash(23);
+  cancelCatering(22),
+  moveTable(23),
+  quickCash(24);
 
   final int value;
   const ButtonAction(this.value);
@@ -37,7 +38,6 @@ enum ButtonAction {
     ButtonAction.qrCancel: "QR Cancel",
     ButtonAction.cover: "Cover",
     ButtonAction.editCustomerCount: "Edit Customer Count",
-    ButtonAction.cashOpen: "Cash Open",
     ButtonAction.changePrice: "Change price",
     ButtonAction.closeTable: "Close Table",
     ButtonAction.checkout: "Checkout",
@@ -53,6 +53,7 @@ enum ButtonAction {
     ButtonAction.service: "Service",
     ButtonAction.discount: "Discount",
     ButtonAction.catering: "Catering",
+    ButtonAction.cancelCatering: "Cancel Catering",
     ButtonAction.moveTable: "Move Table",
     ButtonAction.quickCash: "Quick Cash",
   };
@@ -68,6 +69,12 @@ enum ButtonAction {
         return 'Product cancelled successfully';
       case ButtonAction.moveProduct:
         return 'Product moved successfully';
+
+      /// using this for reopen put check request!
+      case ButtonAction.changePrice:
+        return 'Check has been updated successfully.';
+      case ButtonAction.closeTable:
+        return 'Table closed successfully';
       case ButtonAction.checkout:
         return 'Product Paid successfully';
       default:
@@ -86,6 +93,10 @@ enum ButtonAction {
         return 'Product could not cancelled successfully';
       case ButtonAction.moveProduct:
         return 'Product could not moved successfully';
+      case ButtonAction.changePrice:
+        return 'Check could not updated successfully!';
+      case ButtonAction.closeTable:
+        return 'Table could not closed successfully';
       case ButtonAction.checkout:
         return 'Pay Error!';
       default:

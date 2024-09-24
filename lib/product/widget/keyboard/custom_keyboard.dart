@@ -6,19 +6,46 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 /// Keyboard with 1...9 and clear button
 class CustomNumberKeyboard extends StatelessWidget {
-  const CustomNumberKeyboard({super.key, required this.onKeyPressed, this.width = 270});
+  const CustomNumberKeyboard({
+    super.key,
+    required this.onKeyPressed,
+    this.width = 270,
+    this.height = 290.0,
+    this.isOnClose = true,
+    required this.onClose,
+  });
   final Function(String)? onKeyPressed;
   final double? width;
+  final double? height;
+  final bool isOnClose;
+  final VoidCallback onClose;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 290.0,
+      height: height,
       margin: const EdgeInsets.all(4),
       width: width ?? 270,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
+          Visibility(
+            visible: isOnClose,
+            child: Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                    icon: const Icon(
+                      Icons.close,
+                      color: Colors.red,
+                    ),
+                    onPressed: onClose,
+                  ),
+                ],
+              ),
+            ),
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [

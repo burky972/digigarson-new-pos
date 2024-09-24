@@ -71,7 +71,7 @@ final ThemeData APosTheme = ThemeData(
       borderRadius: BorderRadius.all(Radius.circular(4.0)),
     ),
     alignedDropdown: false,
-    buttonColor: _primaryColor,
+    buttonColor: Color.fromARGB(255, 71, 255, 237),
     disabledColor: Color(0x61000000),
     highlightColor: Color(0x29000000),
     splashColor: Color(0x1f000000),

@@ -113,6 +113,8 @@ class _SignInWidgetState extends State<LoginBodyWidget> with LoginMixin {
                                       padding: const AppPadding.minAll(),
                                       child: CustomNumberKeyboard(
                                         onKeyPressed: (value) => onCustomKeyboardPressed(value),
+                                        onClose: () {},
+                                        isOnClose: false,
                                       ),
                                     ),
                                   ),
@@ -241,10 +243,10 @@ class _LeftItemsWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Current Time',
+                      LocaleKeys.currentTime,
                       style: CustomFontStyle.titlesTextStyle
                           .copyWith(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
-                    ),
+                    ).tr(),
                     kGap5,
                     Text(
                       timeString,

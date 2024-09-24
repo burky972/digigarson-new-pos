@@ -30,6 +30,10 @@ class AppPadding extends EdgeInsets {
 
   const AppPadding.extraLowVertical() : super.symmetric(vertical: 4);
 
+  /// [ProjectPadding.extraLowHorizontal] is 4
+
+  const AppPadding.extraLowHorizontal() : super.symmetric(horizontal: 4);
+
   /// [ProjectPadding.lowVertical] is 8
 
   const AppPadding.lowVertical() : super.symmetric(vertical: 8);

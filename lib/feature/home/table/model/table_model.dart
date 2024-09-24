@@ -4,6 +4,7 @@ import 'dart:developer';
 
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/model/option_model.dart';
 import 'package:a_pos_flutter/product/global/model/order/new_order_model.dart';
+import 'package:a_pos_flutter/product/global/model/service_fee/service_fee_model.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
@@ -74,11 +75,48 @@ class TableModel extends BaseModel<TableModel> {
   });
 
   factory TableModel.fromJson(Map<String, dynamic> json) => _$TableModelFromJson(json);
+
+  factory TableModel.empty() => TableModel(
+        orders: const [],
+        paidOrders: const [],
+        discount: const [],
+        cover: const [],
+        payments: const [],
+        serviceFee: const [],
+      );
   @override
   Map<String, dynamic> toJson() => _$TableModelToJson(this);
 
   @override
   TableModel fromJson(Map<String, dynamic> json) => _$TableModelFromJson(json);
+
+  TableModel updateFromJson(Map<String, dynamic> json) => TableModel(
+        id: json['_id'] as String?,
+        checkNo: (json['checkNo'] as num?)?.toInt(),
+        totalPrice: (json['totalPrice'] as num?)?.toDouble(),
+        totalPriceAfterTax: (json['totalPriceAfterTax'] as num?)?.toDouble(),
+        totalTax: (json['totalTax'] as num?)?.toDouble(),
+        remainingPrice: (json['remainingPrice'] as num?)?.toDouble(),
+        orders: (json['orders'] as List<dynamic>)
+            .map((e) => OrderModel.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        paidOrders: (json['paidOrders'] as List<dynamic>?)
+            ?.map((e) => PaidOrderModel.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        discount: (json['discount'] as List<dynamic>)
+            .map((e) => DiscountModel.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        cover: (json['cover'] as List<dynamic>)
+            .map((e) => CoverModel.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        payments: (json['payments'] as List<dynamic>)
+            .map((e) => Payment.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        serviceFee: (json['serviceFee'] as List<dynamic>)
+            .map((e) => ServiceFeeModel.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        customerCount: (json['customerCount'] as num?)?.toInt(),
+      );
 
   @override
   List<Object?> get props => [
@@ -180,66 +218,39 @@ class TableModel extends BaseModel<TableModel> {
   }
 }
 
-class CoverModel {
+@JsonSerializable()
+class CoverModel extends BaseModel<CoverModel> {
   CoverModel({
     required this.id,
     required this.type,
     required this.title,
     required this.quantity,
     required this.price,
-    required this.percentile,
     required this.totalPrice,
     required this.user,
     required this.isPaid,
   });
 
-  String? id;
-  String? type;
-  String? title;
-  double? quantity;
-  double? price;
-  double? percentile;
-  double? totalPrice;
-  String? user;
-  bool? isPaid;
+  @JsonKey(name: '_id')
+  final String? id;
+  final String? type;
+  final String? title;
+  final double? quantity;
+  final double? price;
+  final double? totalPrice;
+  final String? user;
+  final bool? isPaid;
 
-  CoverModel.fromJson(Map<String, dynamic> json) {
-    id = json["_id"]?.toString();
-    type = json["type"]?.toString();
-    title = json["title"]?.toString();
-    quantity = json["quantity"] == null ? null : double.tryParse(json["quantity"].toString());
-    price = json["price"] == null ? null : double.tryParse(json["price"].toString());
-    percentile = json["percentile"] == null ? null : double.tryParse(json["percentile"].toString());
-    totalPrice = json["totalPrice"] == null ? null : double.tryParse(json["totalPrice"].toString());
-    user = json["user"]?.toString();
-    isPaid = json["is_paid"];
-  }
+  factory CoverModel.fromJson(Map<String, dynamic> json) => _$CoverModelFromJson(json);
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['_id'] = id;
-    data['type'] = type;
-    data['user'] = user;
-    data['percentile'] = percentile;
-    data['totalPrice'] = totalPrice;
-    data['is_paid'] = isPaid;
-    data['title'] = title;
-    data['quantity'] = quantity;
-    data['price'] = price;
-    return data;
-  }
+  @override
+  CoverModel fromJson(Map<String, dynamic> json) => _$CoverModelFromJson(json);
 
-  CoverModel.copy(CoverModel other) {
-    id = other.id;
-    isPaid = other.isPaid;
-    title = other.title;
-    quantity = other.quantity;
-    price = other.price;
-    type = other.type;
-    user = other.user;
-    percentile = other.percentile;
-    totalPrice = other.totalPrice;
-  }
+  @override
+  List<Object?> get props => [id, type, title, quantity, price, totalPrice, user, isPaid];
+
+  @override
+  Map<String, dynamic> toJson() => _$CoverModelToJson(this);
 }
 
 class DiscountModel {
@@ -281,48 +292,6 @@ class DiscountModel {
       log(e.toString());
     }
     return data;
-  }
-}
-
-class ServiceFeeModel {
-  ServiceFeeModel({
-    required this.id,
-    required this.amount,
-    required this.percentile,
-    required this.type,
-    required this.user,
-  });
-
-  String? id;
-  double? amount;
-  double? percentile;
-  int? type;
-  String? user;
-
-  ServiceFeeModel.fromJson(Map<String, dynamic> json) {
-    id = json["_id"]?.toString();
-    amount = double.tryParse(json["amount"].toString());
-    percentile = double.tryParse(json["percentile"].toString());
-    type = json["type"];
-    user = json["user"]?.toString();
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['_id'] = id;
-    data['amount'] = amount;
-    data['user'] = user;
-    data['percentile'] = percentile;
-    data['type'] = type;
-    return data;
-  }
-
-  ServiceFeeModel.copy(ServiceFeeModel other) {
-    id = other.id;
-    amount = other.amount;
-    user = other.user;
-    percentile = other.percentile;
-    type = other.type;
   }
 }
 
@@ -557,9 +526,10 @@ class IsPrint {
   }
 }
 
+@JsonSerializable(includeIfNull: false)
 class Payment {
   Payment({
-    required this.id,
+    this.id,
     required this.type,
     required this.amount,
     required this.currency,
@@ -570,21 +540,9 @@ class Payment {
   double? amount;
   String? currency;
 
-  Payment.fromJson(Map<String, dynamic> json) {
-    id = json["_id"].toString();
-    type = json["type"];
-    amount = double.tryParse(json["amount"].toString());
-    currency = json["currency"].toString();
-  }
+  factory Payment.fromJson(Map<String, dynamic> json) => _$PaymentFromJson(json);
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['_id'] = id;
-    data['type'] = type;
-    data['amount'] = amount;
-    data['currency'] = currency;
-    return data;
-  }
+  Map<String, dynamic> toJson() => _$PaymentToJson(this);
 }
 
 class Product {
@@ -602,8 +560,9 @@ class Product {
     required this.priceAfterTax,
     required this.priceId,
     required this.cancelStatus,
-    required this.createdAt,
-    required this.updatedAt,
+    required this.serveInfo,
+    this.createdAt,
+    this.updatedAt,
   });
 
   bool? isFirst;
@@ -619,6 +578,7 @@ class Product {
   String? id;
   double? tax;
   CancelStatus? cancelStatus;
+  ServeInfoModel? serveInfo;
   DateTime? createdAt;
   DateTime? updatedAt;
 
@@ -639,6 +599,7 @@ class Product {
       cancelStatus: CancelStatus.empty(),
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
+      serveInfo: ServeInfoModel.empty(),
     );
   }
 
@@ -656,6 +617,7 @@ class Product {
     tax = (json['tax'] as num?)?.toDouble();
     priceId = json["priceId"].toString();
     cancelStatus = CancelStatus.fromJson(json["cancelStatus"]);
+    serveInfo = ServeInfoModel.fromJson(json["serveInfo"]);
     price = double.tryParse(json["price"].toString());
     priceAfterTax = double.tryParse(json["priceAfterTax"].toString());
     createdAt = DateTime.tryParse(json["createdAt"] ?? "");
@@ -720,6 +682,27 @@ class Product {
     price = other.price;
     priceAfterTax = other.priceAfterTax;
   }
+}
+
+@JsonSerializable()
+class ServeInfoModel extends BaseModel<ServeInfoModel> {
+  ServeInfoModel({required this.isServe});
+  final bool isServe;
+
+  factory ServeInfoModel.fromJson(Map<String, dynamic> json) => _$ServeInfoModelFromJson(json);
+
+  @override
+  ServeInfoModel fromJson(Map<String, dynamic> json) => _$ServeInfoModelFromJson(json);
+
+  factory ServeInfoModel.empty() {
+    return ServeInfoModel(isServe: false);
+  }
+
+  @override
+  List<Object?> get props => [isServe];
+
+  @override
+  Map<String, dynamic> toJson() => _$ServeInfoModelToJson(this);
 }
 
 class Options {

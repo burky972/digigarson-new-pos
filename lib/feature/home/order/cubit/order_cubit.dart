@@ -3,6 +3,7 @@ import 'package:a_pos_flutter/feature/home/order/model/pay_request_model.dart';
 import 'package:a_pos_flutter/feature/home/order/service/i_order_service.dart';
 import 'package:a_pos_flutter/feature/home/order/service/order_service.dart';
 import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
+import 'package:a_pos_flutter/product/global/model/quick_service/quick_service_request_model.dart';
 import 'package:core/core.dart';
 import 'package:a_pos_flutter/product/global/getters/getter.dart';
 
@@ -48,6 +49,7 @@ class OrderCubit extends IOrderCubit {
         await _orderService.payOrderProduct(payOrderModel: payOrderModel, tableId: tableId);
     response.fold((_) => emit(state.copyWith(states: OrderStates.error)),
         (r) => emit(state.copyWith(states: OrderStates.success)));
+
     return response.isRight();
   }
 
@@ -76,6 +78,19 @@ class OrderCubit extends IOrderCubit {
     emit(state.copyWith(states: OrderStates.loading));
     final response = await _orderService.moveTableProduct(
         moveProductModel: moveProduct, tableId: tableId, targetTableId: targetTableId);
+    response.fold(
+      (l) => emit(state.copyWith(states: OrderStates.error)),
+      (r) => emit(state.copyWith(states: OrderStates.success)),
+    );
+    return response.isRight();
+  }
+
+  /// Post Quick Service
+  @override
+  Future<bool> postQuickService({required QuickServiceRequestModel quickServiceModel}) async {
+    appLogger.info(TAG, 'quick service postiong... ${quickServiceModel.toJson()}');
+    emit(state.copyWith(states: OrderStates.loading));
+    final response = await _orderService.postQuickService(quickServiceModel: quickServiceModel);
     response.fold(
       (l) => emit(state.copyWith(states: OrderStates.error)),
       (r) => emit(state.copyWith(states: OrderStates.success)),

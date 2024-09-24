@@ -23,6 +23,10 @@ class CheckCubit extends ICheckCubit {
   }
 
   @override
+  void setSelectedCheck(SingleCheckModel? checkModel) =>
+      emit(state.copyWith(selectedCheck: () => checkModel));
+
+  @override
   Future<void> getAllCheck({required String caseId}) async {
     checkModelList.clear();
     emit(state.copyWith(states: CheckStates.loading, checkModelList: []));
@@ -69,8 +73,29 @@ class CheckCubit extends ICheckCubit {
         selectedCheck =
             (result.data as List).map((e) => SingleCheckModel.fromJson(e)).toList().first;
         appLogger.info('single Check Cubit', selectedCheck!.toJson().toString());
-        emit(state.copyWith(selectedCheck: selectedCheck, states: CheckStates.completed));
+        emit(state.copyWith(selectedCheck: () => selectedCheck, states: CheckStates.completed));
       },
     );
+  }
+
+  @override
+  Future<bool> updateCheck({required String checkId, required SingleCheckModel checkModel}) async {
+    emit(state.copyWith(states: CheckStates.loading));
+
+    final response = await _checkService.updateCheck(checkId: checkId, checkModel: checkModel);
+    response.fold(
+      (l) {
+        appLogger.error('update Check Cubit error', l.message);
+        emit(state.copyWith(states: CheckStates.error));
+      },
+      (result) {
+        if (result.data == null) {
+          appLogger.info('update Check Cubit', 'null !!!!!!');
+        }
+        appLogger.info('update Check Cubit', result.data.toString());
+        emit(state.copyWith(states: CheckStates.completed));
+      },
+    );
+    return response.isRight();
   }
 }

@@ -16,7 +16,18 @@ enum PaymentType {
 
   static List<PaymentType> get allTypes => [CREDIT_CARD, CASH];
 
-  String getServerValue(int value) {
+  String get displayTitle {
+    switch (this) {
+      case PaymentType.CREDIT_CARD:
+        return 'Credit Card';
+      case PaymentType.CASH:
+        return 'Cash';
+      default:
+        return '';
+    }
+  }
+
+  static String getServerValue(int value) {
     switch (value) {
       case 1:
         return 'Credit Card';

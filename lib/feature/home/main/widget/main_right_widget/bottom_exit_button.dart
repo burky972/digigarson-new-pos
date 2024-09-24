@@ -1,10 +1,11 @@
 import 'package:a_pos_flutter/feature/auth/login/view/login_view.dart';
-
+import 'package:a_pos_flutter/language/locale_keys.g.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
 import 'package:a_pos_flutter/product/responsive/border.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/widget/button/custom_yes_no_button.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class MainRightBottomExitButton extends StatelessWidget {
@@ -20,7 +21,7 @@ class MainRightBottomExitButton extends StatelessWidget {
             context: context,
             builder: (_) {
               return AlertDialog(
-                title: const Text('Are you sure you want to close this window?'),
+                title: const Text(LocaleKeys.sureWannaCloseWindow).tr(),
                 actions: [
                   CustomNoButton(onPressed: () => Navigator.of(context).pop()),
                   CustomYesButton(onPressed: () {
@@ -41,12 +42,12 @@ class MainRightBottomExitButton extends StatelessWidget {
               border: BorderConstants.borderAllSmall),
           child: Center(
             child: Text(
-              "EXIT",
+              LocaleKeys.exit,
               style: CustomFontStyle.buttonTextStyle.copyWith(
                 color: Colors.white,
                 fontSize: 20,
               ),
-            ),
+            ).tr(),
           ),
         ),
       ),

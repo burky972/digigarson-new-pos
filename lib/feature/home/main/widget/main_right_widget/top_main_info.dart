@@ -1,11 +1,12 @@
 import 'dart:async';
-
+import 'package:a_pos_flutter/language/locale_keys.g.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
 import 'package:a_pos_flutter/product/global/service/global_service.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/utils/helper/timer_convert.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class TopMainInfo extends StatefulWidget {
@@ -26,16 +27,16 @@ class _TopMainInfoState extends State<TopMainInfo> with _TopMainInfoMixin {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _EachInfoRow(
-              leftText: "Date:",
+              leftText: LocaleKeys.date.tr(),
               rightText:
                   '${_currentDateTime.day}/${_currentDateTime.month}/${_currentDateTime.year}'),
           _EachInfoRow(
-            leftText: "Time:",
+            leftText: LocaleKeys.time.tr(),
             rightText:
                 '${TimerConvert().formatNumber(_currentDateTime.hour)}:${TimerConvert().formatNumber(_currentDateTime.minute)}:${TimerConvert().formatNumber(_currentDateTime.second)}',
           ),
           _EachInfoRow(
-            leftText: "User:",
+            leftText: LocaleKeys.User.tr(),
             rightText: '${GlobalService.user.name} ${GlobalService.user.lastName}',
           )
         ],
@@ -67,7 +68,7 @@ class _EachInfoRow extends StatelessWidget {
                 fit: BoxFit.scaleDown,
                 alignment: const AlignmentDirectional(0, 0),
                 child: Text(
-                  _leftText,
+                  '$_leftText:',
                   style: CustomFontStyle.generalTextStyle.copyWith(
                       color: context.colorScheme.onSecondary,
                       fontWeight: FontWeight.w800,

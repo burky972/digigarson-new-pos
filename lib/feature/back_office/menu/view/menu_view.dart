@@ -1,4 +1,5 @@
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/view/category_view.dart';
+import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/view/main_category_view.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/view/product_view.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/view/option_view.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option_group/view/option_group_view.dart';
@@ -26,7 +27,7 @@ class _MenuViewState extends State<MenuView> with SingleTickerProviderStateMixin
   @override
   void initState() {
     super.initState();
-    tabController = TabController(length: 4, vsync: this);
+    tabController = TabController(length: 5, vsync: this);
   }
 
   @override
@@ -51,6 +52,7 @@ class _MenuViewState extends State<MenuView> with SingleTickerProviderStateMixin
               child: TabBarView(
                 controller: tabController,
                 children: const [
+                  MainCategoryView(),
                   CategoryView(),
                   ProductView(),
                   OptionGroupsView(),
@@ -83,6 +85,7 @@ class _TabsMenuTitles extends StatelessWidget {
         labelStyle: CustomFontStyle.menuTextStyle.copyWith(fontWeight: FontWeight.bold),
         unselectedLabelColor: Colors.black,
         tabs: const [
+          Tab(text: 'Main Categories'),
           Tab(text: 'Menu Groups'),
           Tab(text: 'Menu Items'),
           Tab(text: 'Option Groups'),

@@ -19,8 +19,8 @@ part 'product_state.dart';
 class ProductCubit extends IProductCubit {
   ProductCubit() : super(ProductState.initial());
   final TextEditingController productNameController = TextEditingController();
-  final TextEditingController productPriceController = TextEditingController();
-  final TextEditingController taxController = TextEditingController();
+  final TextEditingController? productPriceController = TextEditingController();
+  final TextEditingController? taxController = TextEditingController();
   List<ProductModel> originalProducts = [];
   int firstProductsLength = 0;
   Map<String, List<ProductModel>>? originalCategorizedProducts = {};
@@ -83,20 +83,6 @@ class ProductCubit extends IProductCubit {
     });
   }
 
-  /// When the price is taxed, the taxed price is calculated.(calling when posting products)
-  // double newTaxedPrice(double price, double tax) {
-  //   double taxRate = tax / 100;
-  //   return price + (price * taxRate);
-  // }
-
-  /// When the price is taxed, the untaxed price is calculated.(calling when getting products)
-  // double newUnTaxedPrice(double price, double tax) {
-  //   double taxRate = tax / 100;
-  //   double priceWithoutTax = price / (1 + taxRate);
-  //   double roundedPriceWithoutTax = double.parse(priceWithoutTax.toStringAsFixed(2));
-  //   return roundedPriceWithoutTax;
-  // }
-
   /// POST PRODUCTS TO PRODUCT SERVICE
   @override
   Future postProducts({required ProductModel productModel}) async {
@@ -106,14 +92,7 @@ class ProductCubit extends IProductCubit {
     appLogger.info('POST PRODUCT CALLED: ', productModel.toJson().toString());
     emit(state.copyWith(states: ProductStates.loading));
     BaseResponseCubit response;
-    // if ((productModel.prices?.first.vatRate ?? 0) > 0) {
-    //   ProductModel newModel = productModel.copyWith(
-    //     prices: productModel.prices
-    //         ?.map((e) => e.copyWith(price: newTaxedPrice(e.price!, e.vatRate!)))
-    //         .toList(),
-    //   );
-    //   response = await _productService.postProducts(productModel: newModel);
-    // } else {
+
     response = await _productService.postProducts(productModel: productModel);
     // }
     response.fold((l) {
@@ -130,17 +109,7 @@ class ProductCubit extends IProductCubit {
     appLogger.info('UPDATE PRODUCT CALLED: ', productModel.toJson().toString());
     emit(state.copyWith(states: ProductStates.loading));
     BaseResponseCubit response;
-    // if ((productModel.prices?.first.vatRate ?? 0) > 0) {
-    // ProductModel newModel = productModel.copyWith(
-    //   prices: productModel.prices
-    //       ?.map((e) => e.copyWith(price: newTaxedPrice(e.price!, e.vatRate!)))
-    //       .toList(),
-    // );
-    //   response = await _productService.putProducts(productId: productId, productModel: newModel);
-    // } else {
     response = await _productService.putProducts(productId: productId, productModel: productModel);
-    // }
-
     response.fold((l) {
       emit(state.copyWith(states: ProductStates.error));
     }, (r) {
@@ -154,9 +123,7 @@ class ProductCubit extends IProductCubit {
   Future patchProducts({required String productId}) async {
     emit(state.copyWith(states: ProductStates.loading));
     BaseResponseCubit response;
-
     response = await _productService.patchProducts(productId: productId);
-
     response.fold((l) {
       emit(state.copyWith(states: ProductStates.error));
     }, (r) {
@@ -177,8 +144,8 @@ class ProductCubit extends IProductCubit {
 
     // Clear text controllers
     productNameController.clear();
-    productPriceController.clear();
-    taxController.clear();
+    productPriceController?.clear();
+    taxController?.clear();
 
     // Create new product and add
     final newProduct = ProductModel.empty().copyWith(category: categoryId);
@@ -202,7 +169,7 @@ class ProductCubit extends IProductCubit {
 
     final updatedProduct = state.selectedProduct!.copyWith(
         title: title,
-        id: originalProducts.contains(state.selectedProduct!)
+        id: originalProducts.map((e) => e.id).contains(state.selectedProduct!.id)
             ? () => state.selectedProduct!.id
             : () => GlobalService.generateUniqueId());
     appLogger.info('UPDATED PRODUCT: ', updatedProduct.toJson().toString());
@@ -281,8 +248,8 @@ class ProductCubit extends IProductCubit {
   @override
   void setSelectedProduct(ProductModel product, PriceModel price) {
     productNameController.text = product.title ?? '';
-    productPriceController.text = price.price.toString();
-    taxController.text = price.vatRate.toString();
+    productPriceController?.text = product.prices?.first.price.toString() ?? '0.0';
+    taxController?.text = product.prices?.first.vatRate.toString() ?? '0.0';
     emit(state.copyWith(selectedProduct: () => product));
   }
 
@@ -291,11 +258,12 @@ class ProductCubit extends IProductCubit {
     final isProductsInCategory = state.categorizedProducts?[categoryId];
     final productsInCategory =
         isProductsInCategory?.isNotEmpty == true ? isProductsInCategory!.first : ProductModel();
+    appLogger.info('SELECTED PRODUCT: ', '$categoryId ${productsInCategory.toJson()}');
 
     emit(state.copyWith(selectedProduct: () => productsInCategory));
     productNameController.text = productsInCategory.title ?? '';
-    productPriceController.text = productsInCategory.prices?.first.price.toString() ?? '';
-    taxController.text = productsInCategory.prices?.first.vatRate.toString() ?? '';
+    productPriceController?.text = productsInCategory.prices?.first.price.toString() ?? '';
+    taxController?.text = productsInCategory.prices?.first.vatRate.toString() ?? '';
   }
 
   //TODO: CHECK UPDATE SELECTED PRODUCT PRICE-NAME-TAX FUNCS AND MAKE THESE ALL ONE FUNC !!!
@@ -347,7 +315,8 @@ class ProductCubit extends IProductCubit {
   @override
   Future<void> close() {
     productNameController.dispose();
-    productPriceController.dispose();
+    productPriceController?.dispose();
+    taxController?.dispose();
     return super.close();
   }
 
@@ -371,7 +340,7 @@ class ProductCubit extends IProductCubit {
   void updateSelectedProductImage(String base64Image) {
     if (state.selectedProduct == null) return;
 
-    final updatedProduct = state.selectedProduct!.copyWith(image: base64Image);
+    final updatedProduct = state.selectedProduct!.copyWith(image: () => base64Image);
 
     // allProducts listesini güncelle
     final updatedAllProducts = state.allProducts.map((product) {
@@ -445,13 +414,20 @@ class ProductCubit extends IProductCubit {
 
         // Mevcut ürün güncelleme: originalProduct ve updatedProduct aynı değilse
         if (updatedProduct != originalProduct) {
-          await putProducts(productModel: updatedProduct, productId: originalProduct.id ?? '');
+          if (state.selectedProduct?.image != null &&
+              (state.selectedProduct!.image!.length < 500)) {
+            ProductModel newProductModel = updatedProduct.copyWith(image: () => null);
+
+            await putProducts(productModel: newProductModel, productId: originalProduct.id ?? '');
+          } else {
+            await putProducts(productModel: updatedProduct, productId: originalProduct.id ?? '');
+          }
         }
       }
-    }
 
-    // İstekler başarılı olduktan sonra originalCategorizedProducts'ı güncelle
-    originalCategorizedProducts = Map.from(state.categorizedProducts!);
+      // İstekler başarılı olduktan sonra originalCategorizedProducts'ı güncelle
+      originalCategorizedProducts = Map.from(state.categorizedProducts!);
+    }
   }
 }
 

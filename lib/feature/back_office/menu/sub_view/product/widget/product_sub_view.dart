@@ -21,15 +21,15 @@ class _CategoryListWidget extends StatelessWidget {
           BlocBuilder<CategoryCubit, CategoryState>(
             builder: (context, state) {
               return Column(
-                children: state.allCategories.map((e) {
+                children: state.subCategories.map((e) {
                   return InkWell(
-                    onTap: () {
-                      context.read<CategoryCubit>().setSelectedCategory(e);
-                      context.read<ProductCubit>().setSelectedProductById(
-                          context.read<CategoryCubit>().selectedCategory!.id!);
+                    onTap: () async {
+                      await context.read<CategoryCubit>().setSelectedSubCategory(e);
+                      if (!context.mounted) return;
+                      context.read<ProductCubit>().setSelectedProductById(e.id!);
                     },
                     child: Container(
-                      color: e == state.selectedCategory ? context.colorScheme.tertiary : null,
+                      color: e == state.selectedSubCategory ? context.colorScheme.tertiary : null,
                       child: Column(
                         children: [
                           Text('${e.title}'),
@@ -59,9 +59,10 @@ class _MiddleProductTableWidget extends StatelessWidget {
     return BlocBuilder<ProductCubit, ProductState>(
       builder: (context, state) {
         List<ProductModel>? productsToDisplay = [];
-        if (context.read<CategoryCubit>().selectedCategory?.id != null) {
+        if (context.read<CategoryCubit>().selectedSubCategory?.id != null) {
           productsToDisplay =
-              state.categorizedProducts?[context.read<CategoryCubit>().selectedCategory?.id] ?? [];
+              state.categorizedProducts?[context.read<CategoryCubit>().selectedSubCategory?.id] ??
+                  [];
         }
         return Padding(
           padding: const EdgeInsets.only(left: 8.0),
@@ -372,10 +373,19 @@ class _BottomWidgets extends StatelessWidget {
                                   const Expanded(flex: 1, child: Text('Option Group')),
                                   Expanded(
                                     flex: 2,
-                                    child: CustomBorderAllTextfield(
-                                      isReadOnly: true,
-                                      controller: context.read<CategoryCubit>().titleController,
-                                      onChanged: (value) {},
+                                    child:
+                                        BlocSelector<CategoryCubit, CategoryState, CategoryModel>(
+                                      selector: (state) {
+                                        return state.selectedSubCategory ?? CategoryModel.empty();
+                                      },
+                                      builder: (context, selectedSubCategory) {
+                                        return CustomBorderAllTextfield(
+                                          isReadOnly: true,
+                                          controller: TextEditingController(
+                                              text: selectedSubCategory.title ?? ""),
+                                          onChanged: (value) {},
+                                        );
+                                      },
                                     ),
                                   ),
                                 ],
@@ -395,7 +405,7 @@ class _BottomWidgets extends StatelessWidget {
                                       onChanged: (value) {
                                         context.read<ProductCubit>().updateSelectedProductName(
                                             value,
-                                            context.read<CategoryCubit>().selectedCategory!.id!);
+                                            context.read<CategoryCubit>().selectedSubCategory!.id!);
                                       },
                                     ),
                                   ),
@@ -427,11 +437,12 @@ class _BottomWidgets extends StatelessWidget {
                                       isReadOnly:
                                           state.selectedProduct?.prices?.first.priceName == null,
                                       controller:
-                                          context.read<ProductCubit>().productPriceController,
+                                          context.read<ProductCubit>().productPriceController ??
+                                              TextEditingController(text: ''),
                                       onChanged: (value) {
                                         context.read<ProductCubit>().updateSelectedProductPrice(
                                             double.tryParse(value) ?? 0.0,
-                                            context.read<CategoryCubit>().selectedCategory!.id!);
+                                            context.read<CategoryCubit>().selectedSubCategory!.id!);
                                       },
                                     ),
                                   ),
@@ -519,11 +530,12 @@ class _BottomWidgets extends StatelessWidget {
                                   flex: 2,
                                   //todo: tax controller
                                   child: CustomBorderAllTextfield(
-                                    controller: context.read<ProductCubit>().taxController,
+                                    controller: context.read<ProductCubit>().taxController ??
+                                        TextEditingController(text: ''),
                                     onChanged: (value) => context
                                         .read<ProductCubit>()
                                         .updateSelectedProductTax(value,
-                                            context.read<CategoryCubit>().selectedCategory!.id!),
+                                            context.read<CategoryCubit>().selectedSubCategory!.id!),
                                   ),
                                 ),
                               ],

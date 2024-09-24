@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/cubit/category_cubit.dart';
+import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/model/category_model.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/cubit/option_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/cubit/option_state.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/model/option_model.dart';

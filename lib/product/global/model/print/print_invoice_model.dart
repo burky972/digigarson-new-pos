@@ -469,7 +469,7 @@ class ItemPrinter {
 class ServicePrinter {
   double amount;
   double percentile;
-  int type;
+  String type;
   String id;
 
   ServicePrinter({

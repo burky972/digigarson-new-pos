@@ -5,7 +5,7 @@ import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
 
 part 'pay_request_model.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull: false)
 class PayRequestModel extends BaseModel<PayRequestModel> {
   PayRequestModel({
     required this.payments,

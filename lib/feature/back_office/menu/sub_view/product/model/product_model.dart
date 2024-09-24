@@ -86,7 +86,7 @@ class ProductModel extends BaseModel<ProductModel> {
   ProductModel copyWith({
     String? Function()? id,
     String? title,
-    String? image,
+    String? Function()? image,
     String? category,
     List<PriceModel>? prices,
     String? description,
@@ -102,7 +102,7 @@ class ProductModel extends BaseModel<ProductModel> {
     return ProductModel(
       id: id != null ? id() : this.id,
       title: title ?? this.title,
-      image: image ?? this.image,
+      image: image != null ? image() : this.image,
       category: category ?? this.category,
       prices: prices ?? this.prices,
       description: description ?? this.description,

@@ -33,65 +33,41 @@ class _TableWidget extends StatelessWidget {
                     _TableCellTitleText(title: 'Group Description'),
                     _TableCellTitleText(title: 'Dine In'),
                     _TableCellTitleText(title: 'Quick Service'),
-
-                    // _TableCellTitleText(title: 'Take Out'),
-                    // _TableCellTitleText(title: 'Delivery'),
-                    // _TableCellTitleText(title: 'Quick Service'),
-                    // _TableCellTitleText(title: 'Bar'),
                   ],
                 ),
-                ...state.allCategories.asMap().entries.map((entry) {
+                ...state.subCategories.asMap().entries.map((entry) {
                   // int index = entry.key;
                   CategoryModel category = entry.value;
                   return TableRow(
                     decoration: BoxDecoration(
-                      color:
-                          category == state.selectedCategory ? context.colorScheme.tertiary : null,
+                      color: category == state.selectedSubCategory
+                          ? context.colorScheme.tertiary
+                          : null,
                     ),
                     children: [
                       BlocListener<CategoryCubit, CategoryState>(
                         listener: (context, state) {},
                         listenWhen: (previous, current) =>
-                            previous.selectedCategory?.title != current.selectedCategory?.title,
+                            previous.selectedSubCategory?.title !=
+                            current.selectedSubCategory?.title,
                         child: _TableCellContentText(
                             onTap: () =>
-                                context.read<CategoryCubit>().setSelectedCategory(category),
+                                context.read<CategoryCubit>().setSelectedSubCategory(category),
                             content: category.title ?? ''),
                       ),
-
                       _TableCellContentText(
-                          // onTap: () => widget.onRowTap(index),
-                          onTap: () => {},
-                          content: category.parentCategory ?? ''),
-                      _TableUnOnPressedCheckBox(
-                        value: false,
-                        onTap: () {},
+                        // onTap: () => widget.onRowTap(index),
+                        onTap: () => {},
+                        content: '',
                       ),
                       _TableUnOnPressedCheckBox(
                         value: false,
                         onTap: () {},
                       ),
-
-                      // _TableUnOnPressedCheckBox(
-                      //   value: row['dinIn'],
-                      //   onTap: () => widget.onRowTap(index),
-                      // ),
-                      // _TableUnOnPressedCheckBox(
-                      //   value: row['takeOut'],
-                      //   onTap: () => widget.onRowTap(index),
-                      // ),
-                      // _TableUnOnPressedCheckBox(
-                      //   value: row['delivery'],
-                      //   onTap: () => widget.onRowTap(index),
-                      // ),
-                      // _TableUnOnPressedCheckBox(
-                      //   value: row['quickService'],
-                      //   onTap: () => widget.onRowTap(index),
-                      // ),
-                      // _TableUnOnPressedCheckBox(
-                      //   value: row['bar'],
-                      //   onTap: () => widget.onRowTap(index),
-                      // )
+                      _TableUnOnPressedCheckBox(
+                        value: false,
+                        onTap: () {},
+                      ),
                     ],
                   );
                 }),

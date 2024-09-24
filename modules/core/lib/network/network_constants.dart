@@ -23,13 +23,23 @@ class NetworkConstants {
   static const String newOrderPos = 'pos/orders/';
   static const String newServicePost = 'pos/table/service/';
   static const String newDiscountPost = 'pos/discount/';
-  static const String newCoverPost = 'pos/covers/';
   static const String cateringProductPut = 'pos/catering/';
   static const String moveOrderPut = 'pos/order/move/';
   static const String orders = 'pos/orders/';
   static const String qrOrderPut = 'pos/qr/';
-  static const String closeTable = 'pos/tables/close/';
-  static const String editCustomerCount = 'pos/table/customer-count/';
   static const String caseZReport = 'pos/report/z-report';
   static const String utilityItem = 'pos/utility-items';
+  static const String quickService = 'pos/quick-services';
+  static String editCustomerCount({required String tableId, required String type}) =>
+      '/pos/tables/$tableId/customer-count/$type';
+  static String postCatering(
+          {required String tableId, required String orderNum, required String productId}) =>
+      '/pos/orders/$tableId/serve/$orderNum/$productId';
+  static String cancelCatering({required String tableId}) => '/pos/orders/$tableId/cancel-serve';
+  static String postServiceFee({required String tableId, required String type}) =>
+      '/pos/tables/$tableId/service-fee/$type';
+  static String delServiceFee({required String tableId, required String serviceId}) =>
+      '/pos/tables/$tableId/service-fee/$serviceId';
+  static const String cover = '/pos/cover';
+  static const String expense = 'pos/expenses';
 }

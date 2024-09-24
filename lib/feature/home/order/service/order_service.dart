@@ -1,6 +1,7 @@
 import 'package:a_pos_flutter/feature/home/order/model/pay_request_model.dart';
 import 'package:a_pos_flutter/feature/home/order/service/i_order_service.dart';
 import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
+import 'package:a_pos_flutter/product/global/model/quick_service/quick_service_request_model.dart';
 import 'package:a_pos_flutter/product/utils/helper/api_response_handler.dart';
 import 'package:a_pos_flutter/product/utils/helper/typedef.dart';
 import 'package:core/base/model/base_response_model.dart';
@@ -60,6 +61,16 @@ class OrderService implements IOrderService {
       data: moveProductModel.toJson(),
     );
     appLogger.info('Table SERVICE PUT Move-transfer Order Table', response.data.toString());
+    return ApiResponseHandler.handleResponse(response);
+  }
+
+  @override
+  DefaultServiceResponse postQuickService(
+      {required QuickServiceRequestModel quickServiceModel}) async {
+    BaseResponseModel response = await DioClient.instance.post(
+      NetworkConstants.quickService,
+      data: quickServiceModel.toJson(),
+    );
     return ApiResponseHandler.handleResponse(response);
   }
 }

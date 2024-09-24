@@ -65,14 +65,14 @@ class OptionCheckDialog extends StatelessWidget {
                 const Spacer(),
 
                 /// bottom button fields
-                const Padding(
-                  padding: AppPadding.minAll(),
+                Padding(
+                  padding: const AppPadding.minAll(),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      LightBlueButton(buttonText: 'Enter'),
-                      LightBlueButton(buttonText: 'Void'),
-                      LightBlueButton(buttonText: 'Close'),
+                      const LightBlueButton(buttonText: 'Enter'),
+                      const LightBlueButton(buttonText: 'Void'),
+                      LightBlueButton(buttonText: 'Close', onTap: () => Navigator.pop(context)),
                     ],
                   ),
                 )

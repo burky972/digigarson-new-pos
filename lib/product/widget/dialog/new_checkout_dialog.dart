@@ -85,8 +85,6 @@ class _LeftCheckoutWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isExpanded = false;
-    bool isCoverExpanded = false;
     return CustomScrollView(
       slivers: [
         SliverList(
@@ -131,58 +129,46 @@ class _LeftCheckoutWidget extends StatelessWidget {
                     ),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(backgroundColor: context.colorScheme.primary),
-                      onPressed: () {
-                        // setState(() {
-                        isExpanded = !isExpanded;
-                        // });
-                      },
-                      child: Text(isExpanded ? '^' : '↓',
+                      onPressed: () => context
+                          .read<TableCubit>()
+                          .setServiceFeeExpanded(!state.isServiceFeeExpanded),
+                      child: Text(state.isServiceFeeExpanded ? '^' : '↓',
                           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                     ),
                   ],
                 );
               }),
-              BlocBuilder<TableCubit, TableState>(
-                builder: ((context, state) {
-                  return Container(
-                    width: 200,
-                    height: isExpanded
-                        ? state.selectedTable!.serviceFee.length > 3
-                            ? 150
-                            : state.selectedTable!.serviceFee.length < 3
-                                ? 50
-                                : 80
-                        : 0,
-                    color: Colors.black12,
-                    child: CustomScrollView(
-                      slivers: [
-                        SliverList.list(
-                            children: isExpanded
-                                ? state.selectedTable!.serviceFee
-                                    .map((item) => Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                                          child: Row(children: [
-                                            const SizedBox(
-                                              width: 50,
-                                              child: Text('1'),
-                                            ),
-                                            SizedBox(
-                                              width: context.dynamicWidth(0.1),
-                                              child: Text('%${item.percentile}'),
-                                            ),
-                                            SizedBox(
-                                              width: context.dynamicWidth(0.07),
-                                              child: Text('${item.amount}'),
-                                            ),
-                                          ]),
-                                        ))
-                                    .toList()
-                                : []),
-                      ],
+              const _ServiceFeeInfoWidget(),
+              SizedBox(height: context.dynamicHeight(.01)),
+              BlocBuilder<TableCubit, TableState>(builder: (context, state) {
+                return Row(children: [
+                  SizedBox(
+                    width: 50,
+                    child: Text(
+                      '${state.serveList.length}',
                     ),
-                  );
-                }),
-              ),
+                  ),
+                  SizedBox(
+                    width: context.dynamicWidth(0.1),
+                    child: const Text("Serve", style: CustomFontStyle.formsTextStyle),
+                  ),
+                  SizedBox(
+                    width: context.dynamicWidth(0.1),
+                    child: Text(
+                      '${state.serveList.fold(0.0, (previousValue, serve) => serve.priceAfterTax! + previousValue)}',
+                    ),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(backgroundColor: context.colorScheme.primary),
+                    onPressed: () =>
+                        context.read<TableCubit>().setServeExpanded(!state.isServeExpanded),
+                    child: Text(state.isServeExpanded ? '^' : '↓',
+                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  ),
+                ]);
+              }),
+              const _ServeInfoWidget(),
+              SizedBox(height: context.dynamicHeight(.01)),
               BlocBuilder<TableCubit, TableState>(
                   builder: (context, state) => Padding(
                         padding: const AppPadding.extraLowVertical(),
@@ -203,12 +189,10 @@ class _LeftCheckoutWidget extends StatelessWidget {
                               ),
                             ),
                             ElevatedButton(
-                              onPressed: () {
-                                // setState(() {
-                                isCoverExpanded = !isCoverExpanded;
-                                // });
-                              },
-                              child: Text(isCoverExpanded ? '^' : '↓',
+                              onPressed: () => context
+                                  .read<TableCubit>()
+                                  .setCoverExpanded(!state.isCoverExpanded),
+                              child: Text(state.isCoverExpanded ? '^' : '↓',
                                   style:
                                       const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                             ),
@@ -218,7 +202,7 @@ class _LeftCheckoutWidget extends StatelessWidget {
               BlocBuilder<TableCubit, TableState>(
                 builder: ((context, state) => Container(
                       width: 200,
-                      height: isCoverExpanded
+                      height: state.isCoverExpanded
                           ? state.selectedTable!.cover.length > 3
                               ? 150
                               : state.selectedTable!.cover.length < 3
@@ -229,7 +213,7 @@ class _LeftCheckoutWidget extends StatelessWidget {
                       child: CustomScrollView(
                         slivers: [
                           SliverList.list(
-                              children: isCoverExpanded
+                              children: state.isCoverExpanded
                                   ? state.selectedTable!.cover
                                       .map((cover) => Padding(
                                             padding: const AppPadding.extraLowVertical(),
@@ -422,13 +406,13 @@ class _MiddleCheckoutWidget extends StatelessWidget {
                           context.read<TableCubit>().clearCheckoutInput();
                           context.read<TableCubit>().setTotalDue(0);
                         }
-                        //! open these comments codes later for enter payment value
                         context.read<TableCubit>().setCheckoutInput(value);
-                        final checkoutInput = context.read<TableCubit>().state.checkoutInput;
+                        var checkoutInput = context.read<TableCubit>().state.checkoutInput;
                         debugPrint('input $checkoutInput');
-
                         if (double.parse(checkoutInput) <=
                             context.read<TableCubit>().state.selectedTable!.remainingPrice!) {
+                          appLogger.info(
+                              'Table CUBIT POST TABLE NEW ORDER', 'inside if: $checkoutInput');
                           context.read<TableCubit>().setTotalDue(double.parse(checkoutInput));
                         }
                       }, onClearPressed: (val) {
@@ -484,6 +468,9 @@ class _RightCheckoutWidget extends StatelessWidget {
           ]),
           tableId: state.selectedTable!.id!);
 
+      context.read<TableCubit>().clearCheckoutInput();
+      context.read<TableCubit>().setTotalDue(0);
+
       await ResponseActionService.getTableAndNavigate(
           context: context,
           response: isPaidSuccess,
@@ -493,6 +480,7 @@ class _RightCheckoutWidget extends StatelessWidget {
 
     return BlocBuilder<TableCubit, TableState>(
       builder: (context, state) {
+        appLogger.info("checkOutRemainingPrice ui: ", state.checkOutRemainingPrice.toString());
         return SizedBox(
           width: context.dynamicWidth(.2),
           child: Column(
@@ -551,7 +539,7 @@ class _RightCheckoutWidget extends StatelessWidget {
                                           state: state, paymentType: paymentType);
                                     },
                                     child: Text(
-                                      paymentType.getServerValue(paymentType.value),
+                                      PaymentType.getServerValue(paymentType.value),
                                       style: CustomFontStyle.buttonTextStyle,
                                     )),
                               ),
@@ -589,4 +577,112 @@ class _PriceProductAmountTitles extends StatelessWidget {
   }
 }
 
-mixin NumberKeyBoardMixin on StatelessWidget {}
+class _ServiceFeeInfoWidget extends StatelessWidget {
+  const _ServiceFeeInfoWidget();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<TableCubit, TableState>(
+      builder: ((context, state) {
+        return Container(
+          width: 200,
+          height: state.isServiceFeeExpanded
+              ? state.selectedTable!.serviceFee.length > 3
+                  ? 150
+                  : state.selectedTable!.serviceFee.length < 3
+                      ? 50
+                      : 80
+              : 0,
+          color: Colors.black12,
+          child: CustomScrollView(
+            slivers: [
+              SliverList.list(
+                  children: state.isServiceFeeExpanded
+                      ? state.selectedTable!.serviceFee
+                          .map((item) => Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 4),
+                                child: Row(children: [
+                                  const SizedBox(
+                                    width: 50,
+                                    child: Text('1'),
+                                  ),
+                                  SizedBox(
+                                    width: context.dynamicWidth(0.1),
+                                    child: Text('%${item.percentile}'),
+                                  ),
+                                  SizedBox(
+                                    width: context.dynamicWidth(0.07),
+                                    child: Text('${item.amount}'),
+                                  ),
+                                ]),
+                              ))
+                          .toList()
+                      : []),
+            ],
+          ),
+        );
+      }),
+    );
+  }
+}
+
+class _ServeInfoWidget extends StatelessWidget {
+  const _ServeInfoWidget();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<TableCubit, TableState>(builder: (context, state) {
+      return Container(
+        width: 200,
+        height: state.isServeExpanded
+            ? state.serveList.length > 3
+                ? 150
+                : state.serveList.length < 3
+                    ? 50
+                    : 80
+            : 0,
+        color: Colors.black12,
+        child: ListView(
+          children: state.isServeExpanded
+              ? state.serveList
+                  .map((item) => Container(
+                        padding: const EdgeInsets.only(top: 3, bottom: 3),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.only(left: 2, right: 2),
+                              width: 50,
+                              child: const Text('1',
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold)),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.only(left: 2, right: 2),
+                              width: MediaQuery.of(context).size.width * .1,
+                              child: Text('${item.productName}',
+                                  style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold)),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.only(left: 2, right: 2),
+                              width: MediaQuery.of(context).size.width * .07,
+                              child: Text('${item.priceAfterTax}',
+                                  style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold)),
+                            ),
+                          ],
+                        ),
+                      ))
+                  .toList()
+              : [],
+        ),
+      );
+    });
+  }
+}

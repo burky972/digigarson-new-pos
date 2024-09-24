@@ -14,9 +14,7 @@ class MainRightButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: context.dynamicWidth(.08),
-      constraints: const BoxConstraints(
-        minHeight: 70,
-      ),
+      constraints: const BoxConstraints(minHeight: 70),
       padding: const AppPadding.extraMinAll(),
       decoration: BoxDecoration(
           color:

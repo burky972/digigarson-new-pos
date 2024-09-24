@@ -17,7 +17,7 @@ class _BottomButtonFields extends StatelessWidget {
           buttonText: 'Add',
           onTap: () => context
               .read<ProductCubit>()
-              .addNewProduct(context.read<CategoryCubit>().selectedCategory!.id!),
+              .addNewProduct(context.read<CategoryCubit>().selectedSubCategory!.id!),
         ),
         LightBlueButton(
           buttonText: 'Delete',

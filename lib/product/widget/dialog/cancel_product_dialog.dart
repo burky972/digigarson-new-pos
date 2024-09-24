@@ -54,6 +54,10 @@ class CancelProductDialog {
           onKeyPressed: (value) {
             _handleKeyPress(context, controller, focusNode, value, limit);
           },
+          onClose: () {
+            _overlayEntry?.remove();
+            _overlayEntry = null;
+          },
         ),
       ),
     );

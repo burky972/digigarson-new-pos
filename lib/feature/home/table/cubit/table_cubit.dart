@@ -7,9 +7,14 @@ import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
 import 'package:a_pos_flutter/feature/home/table/model/table_request_model.dart';
 import 'package:a_pos_flutter/feature/home/table/service/i_table_service.dart';
 import 'package:a_pos_flutter/feature/home/table/service/table_service.dart';
+import 'package:a_pos_flutter/product/enums/customer_count/customer_count_type.dart';
 import 'package:a_pos_flutter/product/global/model/branch/branch_model.dart';
+import 'package:a_pos_flutter/product/global/model/catering/catering_cancel_model.dart';
+import 'package:a_pos_flutter/product/global/model/catering/catering_model.dart';
+import 'package:a_pos_flutter/product/global/model/customer_count/customer_count_model.dart';
 import 'package:a_pos_flutter/product/global/model/order/new_order_model.dart';
 import 'package:a_pos_flutter/product/global/model/print/print_invoice_model.dart';
+import 'package:a_pos_flutter/product/global/model/service_fee/service_fee_request_model.dart';
 import 'package:a_pos_flutter/product/widget/invoices/invoice_widget.dart';
 import 'package:a_pos_flutter/product/widget/printer/printer_widget.dart';
 import 'package:core/base/exception/exception.dart';
@@ -40,6 +45,8 @@ class TableCubit extends ITableCubit {
   double newOrderProductAmount = 1.0;
   double selectedProductItemsTotalPrice = 0.0;
   List<OrderProductModel> newOrderProducts = [];
+  TextEditingController customerCountController = TextEditingController();
+
   // bool isCalculated = false;
   @override
   void init() {
@@ -50,6 +57,8 @@ class TableCubit extends ITableCubit {
   void changeIsTableSaving(bool value) => emit(state.copyWith(isTableSaving: value));
   void addIdToDeletedTableIds(String id) => deletedTableIds.add(id);
   void addIdToNewAddedTableIds(String id) => newAddedTableIds.add(id);
+
+  void setIsQuickService(bool value) => emit(state.copyWith(isQuickService: value));
 
   /// get table api request
   @override
@@ -77,7 +86,7 @@ class TableCubit extends ITableCubit {
           }
         }
         if (tableModel_.section != null) {
-          // Table'ı map'e section ID'si altında ekliyoruz
+          // Table 'ı map'e section ID'si altında ekliyoruz
           if (tablesBySection.containsKey(tableModel_.section)) {
             tablesBySection[tableModel_.section]!.add(tableModel_);
           } else {
@@ -136,18 +145,23 @@ class TableCubit extends ITableCubit {
   /// delete all tables
   @override
   Future<bool> deleteAllTables() async {
-    emit(state.copyWith(states: TableStates.loading));
+    emit(state.copyWith(states: TableStates.loading, exception: null)); // Reset exception
     final response = await _tableService.deleteAllTables();
-    response.fold((err) {
-      appLogger.info('Table CUBIT DELETE ALL TABLES', '${err.message} ${err.statusCode}');
-      emit(state.copyWith(
+    return response.fold(
+      (err) {
+        appLogger.info('Table CUBIT DELETE ALL TABLES Failure', '${err.message} ${err.statusCode}');
+        emit(state.copyWith(
           states: TableStates.error,
-          exception: () => AppException(message: err.message, statusCode: err.statusCode)));
-    }, (r) async {
-      appLogger.info('Table CUBIT DELETE ALL TABLES', 'Success');
-      emit(state.copyWith(states: TableStates.completed));
-    });
-    return response.isRight();
+          exception: () => AppException(message: err.message, statusCode: err.statusCode),
+        ));
+        return false;
+      },
+      (r) {
+        appLogger.info('Table CUBIT DELETE ALL TABLES', 'Success');
+        emit(state.copyWith(states: TableStates.completed, exception: null));
+        return true;
+      },
+    );
   }
 
   /// set selected new product
@@ -266,9 +280,11 @@ class TableCubit extends ITableCubit {
         selectedTable: table,
         originalOrderProduct: null,
         newOrderProductAmount: 0));
+    getServeList();
     calculateTotalTax();
     calculateSubPrice();
     calculateTotalPrice();
+    customerCountController.text = table.customerCount.toString();
   }
 
   /// set new order products
@@ -282,9 +298,6 @@ class TableCubit extends ITableCubit {
     }
 
     final updatedProducts = List<OrderProductModel>.from(state.newProducts.products);
-    // int existingIndex = updatedProducts.indexWhere((p) => p.productName == product.productName);
-
-    // Yeni ürün eklenirken de item'ların fiyatlarını dahil et
     product = product.copyWith(price: product.price! + selectedProductItemsTotalPrice);
     updatedProducts.add(product);
     // }
@@ -294,9 +307,9 @@ class TableCubit extends ITableCubit {
 
     final updatedNewProducts = NewOrderModel(
         products: updatedProducts,
-        tableId: state.selectedTable!.id.toString(),
+        tableId: state.selectedTable?.id.toString(),
         totalTax: totalTax.toInt(),
-        totalPrice: state.selectedTable!.totalPrice ?? 0.0);
+        totalPrice: state.selectedTable?.totalPrice ?? 0.0);
 
     final updatedNewOrderProducts = List<OrderProductModel>.from(updatedProducts);
 
@@ -537,15 +550,40 @@ class TableCubit extends ITableCubit {
     List<Product> initialProducts = [];
     for (var order in state.selectedTable!.orders) {
       initialProducts.addAll(order.products
-          .where((product) => product != null && product.quantity != product.paidQuantity)
+          .where((product) =>
+              product != null &&
+              product.quantity != product.paidQuantity &&
+              product.serveInfo?.isServe != true)
           .whereType<Product>());
     }
 
+    appLogger.error('setInitialCheckoutProducts: ',
+        'Table CUBIT SET INITIAL PRODUCTS: ${state.selectedTable?.remainingPrice}');
     emit(state.copyWith(
         willPaidProducts: initialProducts,
         paidProducts: [],
         totalDue: 0.0,
         checkOutRemainingPrice: state.selectedTable!.remainingPrice ?? 0.0));
+  }
+
+  /// set new order products for checkOut view
+  void setInitialQuickCheckoutProducts() {
+    if (state.selectedTable == null || state.selectedTable!.orders.isEmpty) {
+      appLogger.error(TAG, 'Table CUBIT SET INITIAL PRODUCTS: No selected table or orders');
+      return;
+    }
+    List<Product> initialProducts = [];
+    for (var order in state.selectedTable!.orders) {
+      initialProducts.addAll(order.products
+          .where((product) => product != null && product.quantity != product.paidQuantity)
+          .whereType<Product>());
+    }
+
+    emit(state.copyWith(
+        willPaidProducts: [],
+        paidProducts: initialProducts,
+        totalDue: state.selectedTable!.remainingPrice ?? 0.0,
+        checkOutRemainingPrice: 0.0));
   }
 
   /// add product to paid products in checkout view
@@ -604,23 +642,39 @@ class TableCubit extends ITableCubit {
   void setTotalDue(double totalDue) {
     setInitialCheckoutProducts();
     double newRemainingPrice = state.checkOutRemainingPrice - totalDue;
+    appLogger.error('setTotalDue:newRemainingPrice: ', ' $newRemainingPrice');
+    appLogger.error('setTotalDue: checkOutRemainingPrice', ' ${state.checkOutRemainingPrice}');
     emit(state.copyWith(totalDue: totalDue, checkOutRemainingPrice: newRemainingPrice));
   }
 
   /// set checkout input
   void setCheckoutInput(String value) {
+    appLogger.warning("1- setCheckoutInput-> value:", value);
+    appLogger.warning("1- setCheckoutInput-> checkoutInput:", checkoutInput);
     final newInput = checkoutInput + value;
+    appLogger.warning("1- setCheckoutInput-> newInput:", newInput);
     final remainingPrice = state.selectedTable?.remainingPrice ?? 0;
+    appLogger.warning("1- setCheckoutInput-> remainingPrice:", remainingPrice.toString());
 
     if (double.tryParse(newInput) != null) {
       final inputAmount = double.parse(newInput);
+      appLogger.warning("1- setCheckoutInput-> inputAmount:", inputAmount.toString());
       if (inputAmount <= remainingPrice) {
+        appLogger.warning("1- setCheckoutInput-if> inputAmount:", inputAmount.toString());
         checkoutInput = newInput;
-        emit(state.copyWith(checkoutInput: checkoutInput, totalDue: inputAmount));
+        appLogger.warning("2- setCheckoutInput-> checkoutInput:", checkoutInput.toString());
+
+        emit(state.copyWith(
+            checkoutInput: checkoutInput,
+            totalDue: inputAmount,
+            checkOutRemainingPrice: remainingPrice));
       } else {
+        appLogger.warning("1- setCheckoutInput-else> inputAmount:", inputAmount.toString());
         // If the entered value is greater than the remaining amount, set it to the remaining amount
         checkoutInput = remainingPrice.toStringAsFixed(2);
-        emit(state.copyWith(checkoutInput: checkoutInput, totalDue: remainingPrice));
+        appLogger.warning("2- setCheckoutInput-> checkoutInput:", checkoutInput.toString());
+        emit(state.copyWith(
+            checkoutInput: checkoutInput, totalDue: remainingPrice, checkOutRemainingPrice: 0.0));
       }
     }
   }
@@ -629,5 +683,200 @@ class TableCubit extends ITableCubit {
   void clearCheckoutInput() {
     checkoutInput = '';
     emit(state.copyWith(checkoutInput: ''));
+  }
+
+  /// close table
+  @override
+  Future<bool> closeTable(String tableId) async {
+    emit(state.copyWith(states: TableStates.loading));
+    final response = await _tableService.closeTable(tableId: tableId);
+    response.fold((l) {
+      emit(state.copyWith(states: TableStates.error));
+    }, (r) {
+      emit(state.copyWith(states: TableStates.completed));
+    });
+    return response.isRight();
+  }
+
+  void setServeExpanded(bool value) {
+    emit(state.copyWith(isServeExpanded: value));
+  }
+
+  void setServiceFeeExpanded(bool value) {
+    emit(state.copyWith(isServiceFeeExpanded: value));
+  }
+
+  void setCoverExpanded(bool value) {
+    emit(state.copyWith(isCoverExpanded: value));
+  }
+
+  ///--------------------------------------------------------customer count--------------------------------------------------------
+  @override
+  Future<bool> patchCustomerCount(
+      CustomerCountType type, CustomerCountModel customerCountModel) async {
+    emit(state.copyWith(states: TableStates.loading));
+    final response = await _tableService.patchCustomerCount(
+        tableId: state.selectedTable!.id!, type: type, customerCountModel: customerCountModel);
+
+    return response.fold((l) {
+      emit(state.copyWith(states: TableStates.error));
+      return false;
+    }, (r) {
+      TableModel updatedTable = state.selectedTable!.updateFromJson(r.data);
+      _updateTableState(updatedTable);
+      // Update the customerCountController
+      customerCountController.text = state.selectedTable!.customerCount.toString();
+      return true;
+    });
+  }
+
+  setCustomerCount(String text) {
+    customerCountController.text = text;
+  }
+
+  //*******************************Catering*******************************/
+  List<Product> serveList = [];
+  void getServeList() {
+    if (state.isQuickService) return;
+    serveList = [];
+    if (state.selectedTable == null) return;
+    if (state.selectedTable!.orders.isNotEmpty) {
+      for (var product in state.selectedTable!.orders.first.products) {
+        if (product == null) continue;
+        if (product.serveInfo == null) continue;
+        if (product.serveInfo!.isServe) {
+          serveList.add(product);
+        }
+      }
+    }
+
+    emit(state.copyWith(serveList: serveList));
+  }
+
+  /// Cancel Catering
+  @override
+  Future<bool> cancelCatering({required CateringCancelModel cateringCancelModel}) async {
+    emit(state.copyWith(states: TableStates.loading));
+    final response = await _tableService.cancelCatering(cateringCancelModel: cateringCancelModel);
+    return response.fold(
+      (l) {
+        emit(state.copyWith(states: TableStates.error));
+        return false;
+      },
+      (r) async {
+        TableModel updatedTable = state.selectedTable!.updateFromJson(r.data);
+        _updateTableState(updatedTable);
+        getServeList();
+        return true;
+      },
+    );
+  }
+
+  /// Post Catering
+  @override
+  Future<bool> postCatering({required CateringModel cateringModel}) async {
+    emit(state.copyWith(states: TableStates.loading));
+    final response = await _tableService.postCatering(cateringModel: cateringModel);
+    return response.fold((l) {
+      emit(state.copyWith(states: TableStates.error));
+      return false;
+    }, (r) async {
+      TableModel updatedTable = state.selectedTable!.updateFromJson(r.data);
+      _updateTableState(updatedTable);
+      getServeList();
+      return true;
+    });
+  }
+
+  /// post Service Fee
+
+  @override
+  Future<bool> postServiceFee({required ServiceFeeRequestModel serviceFeeRequestModel}) async {
+    emit(state.copyWith(states: TableStates.loading));
+    final response = await _tableService.postServiceFee(
+        tableId: state.selectedTable!.id!, serviceFeeRequestModel: serviceFeeRequestModel);
+    return response.fold((l) {
+      emit(state.copyWith(states: TableStates.error));
+      return false;
+    }, (r) async {
+      TableModel updatedTable = state.selectedTable!.updateFromJson(r.data);
+      _updateTableState(updatedTable);
+      return true;
+    });
+  }
+
+  @override
+  Future<bool> deleteServiceFee({required String serviceId}) async {
+    emit(state.copyWith(states: TableStates.loading));
+    final response = await _tableService.deleteServiceFee(
+        tableId: state.selectedTable!.id!, serviceId: serviceId);
+    return response.fold((l) {
+      emit(state.copyWith(states: TableStates.error));
+      return false;
+    }, (r) async {
+      TableModel updatedTable = state.selectedTable!.updateFromJson(r.data);
+      _updateTableState(updatedTable);
+      return true;
+    });
+  }
+  //**************************COVER ********************************//
+
+  @override
+  Future<bool> deleteTableCover({required String coverId}) async {
+    emit(state.copyWith(states: TableStates.loading));
+    final response =
+        await _tableService.deleteTableCover(coverId: coverId, tableId: state.selectedTable!.id!);
+    return response.fold((l) {
+      emit(state.copyWith(states: TableStates.error));
+      return false;
+    }, (r) {
+      TableModel updatedTable = state.selectedTable!.updateFromJson(r.data);
+      _updateTableState(updatedTable);
+      return true;
+    });
+  }
+
+  @override
+  Future<bool> postTableCover({required CoverRequestModel coverRequestModel}) async {
+    emit(state.copyWith(states: TableStates.loading));
+    final response = await _tableService.postTableCover(
+        coverModel: coverRequestModel, tableId: state.selectedTable!.id!);
+    return response.fold((l) {
+      emit(state.copyWith(states: TableStates.error));
+      return false;
+    }, (r) {
+      // Update the selected table with the new data
+      TableModel updatedTable = state.selectedTable!.updateFromJson(r.data);
+      _updateTableState(updatedTable);
+      return true;
+    });
+  }
+
+  //! update table state when updating table values after service response(serviceFee-cover-catering,etc..)
+  void _updateTableState(TableModel updatedTable) {
+    // Update the tableModel list
+    final updatedTableModel = state.tableModel.map((table) {
+      return table.id == updatedTable.id ? updatedTable : table;
+    }).toList();
+
+    // Update the tablesBySection map
+    final updatedTablesBySection = Map<String, List<TableModel>>.from(state.tablesBySectionList!);
+    if (updatedTablesBySection.containsKey(updatedTable.section)) {
+      updatedTablesBySection[updatedTable.section!] =
+          updatedTablesBySection[updatedTable.section]!.map((table) {
+        return table.id == updatedTable.id ? updatedTable : table;
+      }).toList();
+    }
+
+    emit(state.copyWith(
+      states: TableStates.completed,
+      selectedTable: updatedTable,
+      tableModel: updatedTableModel,
+      tablesBySectionList: () => updatedTablesBySection,
+    ));
+
+    calculateTotalTax();
+    calculateSubPrice();
+    calculateTotalPrice();
   }
 }

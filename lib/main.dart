@@ -15,6 +15,7 @@ import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/cubit/pr
 import 'package:a_pos_flutter/feature/home/checks/cubit/check_cubit.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
 import 'package:a_pos_flutter/product/global/cubit/global_cubit.dart';
+import 'package:a_pos_flutter/product/global/cubit/quick_service/quick_service_cubit.dart';
 import 'package:core/language/language_manager.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';

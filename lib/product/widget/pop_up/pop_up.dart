@@ -1,6 +1,10 @@
 import 'dart:async';
 
+import 'package:a_pos_flutter/language/locale_keys.g.dart';
+import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
+import 'package:a_pos_flutter/product/widget/button/light_blue_button.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 showOrderWarningDialog(BuildContext context, String title, {bool? secondClose}) {
@@ -154,17 +158,9 @@ showErrorDialog(BuildContext context, String title, {bool? secondClose}) {
 //! pop op without closing depends on the duration- only ok,Cancel button on center bottom
 showCloseTableDialog(BuildContext context, {required void Function()? onOkPressed}) {
   AwesomeDialog(
-    // dismissOnTouchOutside: false,
-    btnOk: TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-    btnCancel: TextButton(
-      onPressed: onOkPressed,
-      style: const ButtonStyle(
-        backgroundColor: WidgetStatePropertyAll(
-          Color(0xFF7DB6F5),
-        ),
-      ),
-      child: const Text('Ok'),
-    ),
+    dismissOnTouchOutside: false,
+    btnOk: LightBlueButton(onTap: () => Navigator.pop(context), buttonText: 'Cancel'),
+    btnCancel: LightBlueButton(buttonText: 'Ok', onTap: onOkPressed),
     width: 550,
     context: context,
     animType: AnimType.leftSlide,
@@ -178,7 +174,7 @@ showCloseTableDialog(BuildContext context, {required void Function()? onOkPresse
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            'Masayı sıfırlamak istediğinize emin misiniz?',
+            LocaleKeys.sureCleanTable.tr(),
             textAlign: TextAlign.center,
             style: Theme.of(context)
                 .textTheme
@@ -186,30 +182,11 @@ showCloseTableDialog(BuildContext context, {required void Function()? onOkPresse
                 ?.copyWith(color: const Color(0xff616161), fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 24),
-          Text.rich(
-            textAlign: TextAlign.center,
-            TextSpan(
-                text: 'Masada kayıtlı olan bilgiler kaybolacaktır. ',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge
-                    ?.copyWith(color: const Color(0xff616161)),
-                children: [
-                  TextSpan(
-                      text: 'Bu işlem sonunda adisyon kaydedilmeyecektir. ',
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge
-                          ?.copyWith(fontWeight: FontWeight.bold, color: const Color(0xff616161))),
-                  TextSpan(
-                      text:
-                          'Adisyonun kaydedilmesini istiyorsanız siparişi tamamla butonuna tıklayınız!',
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge
-                          ?.copyWith(color: const Color(0xff616161))),
-                ]),
-          ),
+          Text(
+            LocaleKeys.sureCleanTableContent,
+            style: CustomFontStyle.titlesTextStyle
+                .copyWith(fontSize: 18, color: const Color(0xff616161)),
+          ).tr(),
           const SizedBox(height: 12),
         ],
       ),

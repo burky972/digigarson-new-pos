@@ -1,12 +1,19 @@
 import 'package:a_pos_flutter/feature/home/checks/cubit/check_cubit.dart';
 import 'package:a_pos_flutter/feature/home/checks/cubit/check_state.dart';
 import 'package:a_pos_flutter/feature/home/checks/model/single_check_model.dart';
+import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
 import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
-import 'package:a_pos_flutter/product/constant/app/app_constant.dart';
+import 'package:a_pos_flutter/product/enums/button_action/button_action_enum.dart';
 import 'package:a_pos_flutter/product/enums/payment_type/enum.dart';
+import 'package:a_pos_flutter/product/extension/context/context.dart';
+import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
 import 'package:a_pos_flutter/product/global/getters/getter.dart';
+import 'package:a_pos_flutter/product/global/service/response_action_service.dart';
 import 'package:a_pos_flutter/product/responsive/border.dart';
+import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
+import 'package:a_pos_flutter/product/widget/button/light_blue_button.dart';
 import 'package:a_pos_flutter/product/widget/keyboard/re_open_custom_keyboard.dart';
+import 'package:a_pos_flutter/product/widget/pop_up/pop_up.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -77,23 +84,22 @@ class OldCheckDialog {
     Overlay.of(context).insert(_overlayEntry!);
   }
 
-  void showPutDialog(BuildContext context, SingleCheckModel? order, {int? index}) {
+  void show(BuildContext context, SingleCheckModel? order, {int? index}) {
     payments = [];
     amountControllers = [];
     amountFocusNode = [];
     selectedPaymentMethod = [];
     remaining = 0.0;
     total = 0.0;
-
     currency = 'USD';
-    total = order!.totalPrice!;
-    for (var pay in order.payments!) {
-      amountControllers.add(TextEditingController(text: order.payments?.first.amount.toString()));
-      amountFocusNode.add(FocusNode());
-      selectedPaymentMethod.add(PaymentType.allTypes[pay.type! - 1].toString());
-      payments.add(Payment(type: pay.type, amount: pay.amount, currency: pay.currency, id: ''));
-    }
+    total = order!.totalPrice! + order.totalTax!;
 
+    for (var pay in order.payments!) {
+      amountControllers.add(TextEditingController(text: pay.amount.toString()));
+      amountFocusNode.add(FocusNode());
+      selectedPaymentMethod.add(PaymentType.allTypes[pay.type! - 1].name);
+      payments.add(Payment(type: pay.type, amount: pay.amount, currency: pay.currency));
+    }
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -103,41 +109,36 @@ class OldCheckDialog {
               return AlertDialog(
                 title: Text(
                   'Total: $total    |    Remaining: $remaining',
-                  style: TextStyle(
-                    fontSize: 17,
-                    color: Colors.indigo.shade800,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: CustomFontStyle.generalTextStyle
+                      .copyWith(color: context.colorScheme.tertiary, fontWeight: FontWeight.bold),
                 ),
                 content: Container(
-                    width: MediaQuery.of(context).size.width * .3,
-                    height: MediaQuery.of(context).size.height * .3,
+                    width: context.dynamicWidth(.3),
+                    height: context.dynamicHeight(.3),
                     constraints: const BoxConstraints(
-                        minWidth: 400, maxWidth: 450, minHeight: 300, maxHeight: 500),
+                        minWidth: 400, maxWidth: 450, minHeight: 320, maxHeight: 500),
                     child: ListView.builder(
                       itemCount: payments.length + 1,
                       itemBuilder: (context, index) {
                         if (index == payments.length) {
-                          return ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                amountControllers.add(TextEditingController());
-                                amountFocusNode.add(FocusNode());
-                                selectedPaymentMethod
-                                    .add(AppConstants.payment_types_list[0].toString());
-                                payments.add(Payment(
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 12),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  amountControllers.add(TextEditingController());
+                                  amountFocusNode.add(FocusNode());
+                                  selectedPaymentMethod.add(PaymentType.allTypes[0].name);
+                                  payments.add(Payment(
                                     type: 1,
                                     amount: double.parse("0"),
                                     currency: currency,
-                                    id: ''));
-                              });
-                            },
-                            style: ElevatedButton.styleFrom(
-                              textStyle: const TextStyle(
-                                  color: Colors.indigo, fontWeight: FontWeight.bold),
-                              maximumSize: const Size(65, 50),
+                                  ));
+                                });
+                              },
+                              style: ElevatedButton.styleFrom(maximumSize: const Size(65, 60)),
+                              child: const Text('Add New', style: CustomFontStyle.buttonTextStyle),
                             ),
-                            child: const Text('Add New'),
                           );
                         }
                         return ListTile(
@@ -145,26 +146,29 @@ class OldCheckDialog {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              DropdownButton<String>(
+                              DropdownButton<PaymentType>(
                                 key: UniqueKey(),
-                                value: selectedPaymentMethod[index],
-                                items: AppConstants.payment_types_list.map((String method) {
-                                  return DropdownMenuItem<String>(
+                                value: PaymentType.values
+                                    .firstWhere((e) => e.name == selectedPaymentMethod[index]),
+                                items: PaymentType.allTypes.map((PaymentType method) {
+                                  return DropdownMenuItem<PaymentType>(
                                     value: method,
-                                    child: Text(method),
+                                    child: Text(method.name),
                                   );
                                 }).toList(),
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedPaymentMethod[index] = value!;
-                                    payments[index].type =
-                                        AppConstants.payment_types_list.indexOf(value) + 1;
-                                  });
+                                onChanged: (PaymentType? value) {
+                                  if (value != null) {
+                                    setState(() {
+                                      selectedPaymentMethod[index] = value.name;
+                                      payments[index].type =
+                                          PaymentType.allTypes.indexOf(value) + 1;
+                                    });
+                                  }
                                 },
                               ),
                               const SizedBox(width: 20),
                               Container(
-                                width: MediaQuery.of(context).size.width * .15,
+                                width: context.dynamicWidth(.15),
                                 constraints: const BoxConstraints(minWidth: 100, maxWidth: 150),
                                 decoration: BoxDecoration(
                                     color: Colors.white,
@@ -215,79 +219,34 @@ class OldCheckDialog {
                 actions: <Widget>[
                   BlocBuilder<CheckCubit, CheckState>(
                     builder: (context, state) {
-                      return InkWell(
+                      return LightBlueButton(
+                        buttonText: 'Change',
                         onTap: () async {
-                          // if (remaining == 0.0) {
-                          //   PutPaymentModel paymentPut = PutPaymentModel(payments: payments);
-                          //   showOrderWarningDialog(context, 'Order is being updated...');
-                          //   bool return_ = await context.read<CheckCubit>().oldCheckPut(
-                          //       // userModel: context.read<GlobalCubit>().user,
-                          //       id: state.selectOrder!.orderId.toString(),
-                          //       paymentPut: paymentPut);
+                          TableCubit tableCubit = context.read<TableCubit>();
+                          if (remaining == 0.0) {
+                            SingleCheckModel paymentPut = state.selectedCheck!.copyWith(
+                              payments: payments,
+                              totalPriceAfterTax: total,
+                            );
 
-                          //   if (return_) {
-                          //     Navigator.of(context).pop();
-                          //     await context.read<CheckCubit>().getAllCheck(
-                          //         caseId: context.read<CaseCubit>().cases!.id.toString());
-                          //     showOrderSuccessDialog(
-                          //         context, "Order has been updated successfully.",
-                          //         secondClose: true);
-                          //   } else {
-                          //     Navigator.of(context).pop();
-                          //     showOrderErrorDialog(context, 'ERROR! Order was not updated',
-                          //         secondClose: true);
-                          //   }
-                          // } else {
-                          //   showOrderErrorDialog(
-                          //       context, 'ERROR! You have entered too little or too much.');
-                          // }
+                            showOrderWarningDialog(context, 'Check is being updated...');
+                            bool return_ = await context.read<CheckCubit>().updateCheck(
+                                checkId: state.selectedCheck!.id.toString(),
+                                checkModel: paymentPut);
+                            await ResponseActionService.getTableAndNavigate(
+                                context: context,
+                                response: return_,
+                                tableCubit: tableCubit,
+                                action: ButtonAction.changePrice);
+                          } else {
+                            showOrderErrorDialog(
+                                context, 'ERROR! You have entered too little or too much.');
+                          }
                         },
-                        child: Container(
-                          width: MediaQuery.of(context).size.width * .08,
-                          constraints: const BoxConstraints(
-                              minWidth: 55, maxWidth: 65, minHeight: 30, maxHeight: 45),
-                          padding: const EdgeInsets.all(3),
-                          decoration: BoxDecoration(
-                              color: Colors.black12,
-                              borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(5), topRight: Radius.circular(5)),
-                              border: BorderConstants.borderAllSmall),
-                          child: const Center(
-                            child: Text(
-                              "Change",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  color: Colors.indigo, fontSize: 15, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ),
                       );
                     },
                   ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * .08,
-                      constraints: const BoxConstraints(
-                          minWidth: 50, maxWidth: 55, minHeight: 30, maxHeight: 45),
-                      padding: const EdgeInsets.all(3),
-                      decoration: BoxDecoration(
-                          color: Colors.black12,
-                          borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(5), topRight: Radius.circular(5)),
-                          border: BorderConstants.borderAllSmall),
-                      child: const Center(
-                        child: Text(
-                          "Close",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: Colors.indigo, fontSize: 15, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                  ),
+                  LightBlueButton(buttonText: 'Close', onTap: () => Navigator.of(context).pop()),
                 ],
               );
             },
@@ -300,15 +259,11 @@ class OldCheckDialog {
     for (var txt in amountControllers) {
       try {
         total_ += double.parse(double.parse(txt.text).toStringAsFixed(2));
-      } catch (e) {
-        appLogger.error("remainingTotal: ", e.toString());
-      }
+      } catch (e) {}
     }
     try {
       remaining = double.parse((total - total_).toStringAsFixed(2));
-    } catch (e) {
-      appLogger.error("remainingTotal: ", e.toString());
-    }
+    } catch (e) {}
     return remaining;
   }
 }

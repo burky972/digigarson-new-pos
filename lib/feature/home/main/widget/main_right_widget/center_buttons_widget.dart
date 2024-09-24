@@ -1,8 +1,16 @@
 import 'package:a_pos_flutter/feature/back_office/launch/view/back_office_launch_view.dart';
+import 'package:a_pos_flutter/feature/home/checks/cubit/check_cubit.dart';
 import 'package:a_pos_flutter/feature/home/main/widget/main_right_widget/main_right_button.dart';
 import 'package:a_pos_flutter/feature/home/checks/view/check_view.dart';
+import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
+import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
+import 'package:a_pos_flutter/feature/home/table/view/table_view.dart';
+import 'package:a_pos_flutter/language/locale_keys.g.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
+import 'package:a_pos_flutter/product/widget/dialog/expense_dialog.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CenterButtonsWidget extends StatelessWidget {
   const CenterButtonsWidget({super.key});
@@ -17,20 +25,23 @@ class CenterButtonsWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              const MainRightButton(text: 'Take Out'),
+              MainRightButton(text: LocaleKeys.takeOut.tr()),
               InkWell(
                 onTap: () {
+                  context.read<CheckCubit>().setSelectedCheck(null);
                   Navigator.push(context, MaterialPageRoute(builder: (_) => const CheckView()));
                 },
-                child: const MainRightButton(text: 'Re-Open'),
+                child: MainRightButton(text: LocaleKeys.reOpen.tr()),
               ),
             ],
           ),
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              MainRightButton(text: 'Pick Up'),
-              MainRightButton(text: 'Expense'),
+              const MainRightButton(text: 'Pick Up'),
+              InkWell(
+                  onTap: () => ExpenseDialog().show(context),
+                  child: const MainRightButton(text: 'Expense')),
             ],
           ),
           //!TODO: create custom widget and delete all same decoration codes!
@@ -44,11 +55,17 @@ class CenterButtonsWidget extends StatelessWidget {
               const MainRightButton(text: 'Open Drawer')
             ],
           ),
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              MainRightButton(text: 'Quick Service'),
-              MainRightButton(text: 'Reservation'),
+              InkWell(
+                  onTap: () {
+                    context.read<TableCubit>().setIsQuickService(true);
+                    context.read<TableCubit>().setSelectedTable(TableModel.empty());
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const TableView()));
+                  },
+                  child: MainRightButton(text: LocaleKeys.quickService.tr())),
+              MainRightButton(text: LocaleKeys.reservation.tr()),
             ],
           ),
           Row(

@@ -1,0 +1,1 @@
+enum CustomerCountType { save, reset }

@@ -1,6 +1,7 @@
 import 'package:a_pos_flutter/feature/home/order/cubit/order_cubit.dart';
 import 'package:a_pos_flutter/feature/home/order/model/pay_request_model.dart';
 import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
+import 'package:a_pos_flutter/product/global/model/quick_service/quick_service_request_model.dart';
 import 'package:core/core.dart';
 
 abstract class IOrderCubit extends BaseCubit<OrderState> {
@@ -13,4 +14,5 @@ abstract class IOrderCubit extends BaseCubit<OrderState> {
       {required MoveProduct moveTable, required String tableId, required String targetTableId});
   Future moveProducts(
       {required MoveProduct moveProduct, required String tableId, required String targetTableId});
+  Future<bool> postQuickService({required QuickServiceRequestModel quickServiceModel});
 }

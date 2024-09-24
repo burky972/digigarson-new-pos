@@ -287,7 +287,7 @@ class DioClient {
         // We are adding error message and status code to BaseResponseModel.
         return BaseResponseModel(
           serverException: ServerException(
-            message: dioError.response?.data?['error'] ?? dioError.message,
+            message: dioError.response?.data?['error'] ?? dioError.message.toString(),
             statusCode: dioError.response?.statusCode.toString() ?? 'unknown',
           ),
         );
@@ -319,6 +319,26 @@ class DioClient {
       return BaseResponseModel(
           serverException:
               ServerException(message: ' FormatException${e.message}', statusCode: '505'));
+    } on DioException catch (dioError) {
+      APosLogger.instance.error('patch RESPONSE DATA:', '${dioError.response?.data.toString()}');
+      if (dioError.response?.statusCode == 401) {
+        await refreshTokenService();
+        return await patch(
+          uri,
+          data: data,
+          queryParameters: queryParameters,
+          options: options,
+          cancelToken: cancelToken,
+        );
+      } else {
+        // We are adding error message and status code to BaseResponseModel.
+        return BaseResponseModel(
+          serverException: ServerException(
+            message: dioError.response?.data?['error'] ?? dioError.message,
+            statusCode: dioError.response?.statusCode.toString() ?? 'unknown',
+          ),
+        );
+      }
     } catch (e) {
       rethrow;
     }

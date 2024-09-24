@@ -23,12 +23,12 @@ class CheckState extends BaseState {
 
   CheckState copyWith({
     CheckStates? states,
-    SingleCheckModel? selectedCheck,
+    SingleCheckModel? Function()? selectedCheck,
     List<CheckModel>? checkModelList,
   }) {
     return CheckState(
       states: states ?? this.states,
-      selectedCheck: selectedCheck ?? this.selectedCheck,
+      selectedCheck: selectedCheck != null ? selectedCheck() : this.selectedCheck,
       checkModelList: checkModelList ?? this.checkModelList,
     );
   }

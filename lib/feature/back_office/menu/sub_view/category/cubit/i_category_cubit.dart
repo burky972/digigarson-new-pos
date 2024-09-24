@@ -8,7 +8,7 @@ abstract class ICategoryCubit extends BaseCubit<CategoryState> {
   Future getCategories();
   Future postCategories({required CategoryModel categoryModel});
   Future putCategories({required CategoryModel categoryModel, required String categoryId});
-  Future patchCategories({required String categoryId});
+  Future<bool> patchCategories({required String categoryId});
   void setSelectedCategory(CategoryModel category);
   void cleanCategoryImage();
   Future<void> getCategoryImage();

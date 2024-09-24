@@ -39,6 +39,11 @@ class TableState extends BaseState {
     required this.checkOutRemainingPrice,
     required this.checkoutInput,
     required this.allProductsList,
+    required this.isQuickService,
+    required this.serveList,
+    required this.isServeExpanded,
+    required this.isServiceFeeExpanded,
+    required this.isCoverExpanded,
   });
 
   factory TableState.initial() {
@@ -73,6 +78,11 @@ class TableState extends BaseState {
       checkOutRemainingPrice: 0.0,
       checkoutInput: '0.0',
       allProductsList: const [],
+      isQuickService: false,
+      serveList: const [],
+      isServeExpanded: false,
+      isServiceFeeExpanded: false,
+      isCoverExpanded: false,
     );
   }
 
@@ -106,6 +116,11 @@ class TableState extends BaseState {
   final double checkOutRemainingPrice;
   final String checkoutInput;
   final List<Product> allProductsList;
+  final List<Product> serveList;
+  final bool isQuickService;
+  final bool isServeExpanded;
+  final bool isServiceFeeExpanded;
+  final bool isCoverExpanded;
 
   @override
   List<Object?> get props => [
@@ -138,6 +153,11 @@ class TableState extends BaseState {
         checkOutRemainingPrice,
         checkoutInput,
         allProductsList,
+        isQuickService,
+        serveList,
+        isServeExpanded,
+        isServiceFeeExpanded,
+        isCoverExpanded
       ];
 
   TableState copyWith({
@@ -171,6 +191,11 @@ class TableState extends BaseState {
     double? checkOutRemainingPrice,
     String? checkoutInput,
     List<Product>? allProductsList,
+    bool? isQuickService,
+    List<Product>? serveList,
+    bool? isServeExpanded,
+    bool? isServiceFeeExpanded,
+    bool? isCoverExpanded,
   }) {
     return TableState(
       states: states ?? this.states,
@@ -205,6 +230,11 @@ class TableState extends BaseState {
       checkOutRemainingPrice: checkOutRemainingPrice ?? this.checkOutRemainingPrice,
       checkoutInput: checkoutInput ?? this.checkoutInput,
       allProductsList: allProductsList ?? this.allProductsList,
+      isQuickService: isQuickService ?? this.isQuickService,
+      serveList: serveList ?? this.serveList,
+      isServeExpanded: isServeExpanded ?? this.isServeExpanded,
+      isServiceFeeExpanded: isServiceFeeExpanded ?? this.isServiceFeeExpanded,
+      isCoverExpanded: isCoverExpanded ?? this.isCoverExpanded,
     );
   }
 }

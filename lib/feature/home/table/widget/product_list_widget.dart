@@ -5,7 +5,7 @@ class _ProductListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isViewAll = context.read<CategoryCubit>().selectedCategory == null ? true : false;
+    bool isViewAll = context.read<CategoryCubit>().selectedSubCategory == null ? true : false;
     return Row(
       children: [
         Container(
@@ -19,8 +19,9 @@ class _ProductListWidget extends StatelessWidget {
           child: BlocBuilder<TableCubit, TableState>(
             builder: (context, state) {
               TableCubit tableCubit = context.read<TableCubit>();
-              List<MapEntry<ButtonAction, String>> rightVerticalButtonList =
-                  ButtonAction.buttonLabels.entries.toList().sublist(0, 10);
+              List<MapEntry<ButtonAction, String>> rightVerticalButtonList = state.isQuickService
+                  ? []
+                  : ButtonAction.buttonLabels.entries.toList().sublist(0, 12);
 
               return ListView(
                 children: rightVerticalButtonList.map((entry) {
@@ -44,14 +45,16 @@ class _ProductListWidget extends StatelessWidget {
         /// ALL Product list
         BlocConsumer<CategoryCubit, CategoryState>(
           listener: (context, state) {
-            if (state.selectedCategory == null) {
+            if (state.selectedSubCategory == null) {
               isViewAll = true;
             } else {
               isViewAll = false;
             }
           },
-          listenWhen: (previous, current) => previous.selectedCategory != current.selectedCategory,
-          buildWhen: (previous, current) => previous.selectedCategory != current.selectedCategory,
+          listenWhen: (previous, current) =>
+              previous.selectedSubCategory != current.selectedSubCategory,
+          buildWhen: (previous, current) =>
+              previous.selectedSubCategory != current.selectedSubCategory,
           builder: (context, state) {
             return BlocBuilder<ProductCubit, ProductState>(
                 builder: ((context, state) => state.states == ProductStates.loading
@@ -79,7 +82,7 @@ class _ProductListWidget extends StatelessWidget {
                               ? state.allProducts.length
                               : state
                                       .categorizedProducts?[
-                                          context.read<CategoryCubit>().selectedCategory?.id]
+                                          context.read<CategoryCubit>().selectedSubCategory?.id]
                                       ?.length ??
                                   0,
                           itemBuilder: (context, index) {
@@ -87,7 +90,7 @@ class _ProductListWidget extends StatelessWidget {
                                 ? state.allProducts[index] ?? ProductModel.empty()
                                 : state.categorizedProducts?[context
                                         .read<CategoryCubit>()
-                                        .selectedCategory
+                                        .selectedSubCategory
                                         ?.id]![index] ??
                                     ProductModel.empty();
 
@@ -104,138 +107,104 @@ class _ProductListWidget extends StatelessWidget {
                                             topLeft: Radius.circular(5),
                                             topRight: Radius.circular(5)),
                                         border: BorderConstants.borderAllSmall),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        SizedBox(
-                                          height: 80,
-                                          child: product.image == null || product.image!.isEmpty
-                                              ? Assets.icon.icLogo.image()
-                                              : Image.network(
-                                                  product.image!,
-                                                  loadingBuilder: (BuildContext context,
-                                                      Widget child,
-                                                      ImageChunkEvent? loadingProgress) {
-                                                    if (loadingProgress == null) {
-                                                      return child;
-                                                    } else {
-                                                      return Center(
-                                                        child: CircularProgressIndicator(
-                                                          value:
-                                                              loadingProgress.expectedTotalBytes !=
-                                                                      null
-                                                                  ? loadingProgress
-                                                                          .cumulativeBytesLoaded /
-                                                                      (loadingProgress
-                                                                              .expectedTotalBytes ??
-                                                                          1)
-                                                                  : null,
-                                                        ),
-                                                      );
-                                                    }
-                                                  },
-                                                  errorBuilder: (BuildContext context, Object error,
-                                                      StackTrace? stackTrace) {
-                                                    return const Text(
-                                                        'An error occurred while loading the image.');
-                                                  },
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        context.read<ProductCubit>().setSelectedProduct(
+                                            product, product.prices?.first ?? PriceModel.empty());
+                                        context.read<TableCubit>().setNewOrderProducts(
+                                            OrderProductModel(
+                                                uniqueTimestamp: DateTime.now().toIso8601String(),
+                                                id: product.id ?? '',
+                                                isFirst: false,
+                                                product: product.id!,
+                                                productName: product.title!,
+                                                quantity: product.prices?.first.amount ?? 1,
+                                                categoryId: product.category!,
+                                                price: product.prices!.first.price ?? 1,
+                                                tax: product.prices!.first.vatRate ?? 0.0,
+                                                priceId: product.prices?.first.id ?? '',
+                                                priceAfterTax: 0.0, //todo check priceAfterTax
+                                                cancelStatus: CancelStatus.empty(),
+                                                serveInfo: ServeInfoModel.empty(),
+                                                priceName: product.prices!.first.priceName!,
+                                                priceType:
+                                                    product.prices?.first.priceType ?? 'REGULAR',
+                                                note: "",
+                                                options: const []),
+                                            1.0);
+                                      },
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          SizedBox(
+                                            height: 80,
+                                            child: product.image == null || product.image!.isEmpty
+                                                ? Assets.icon.icLogo.image()
+                                                : Image.network(
+                                                    product.image!,
+                                                    loadingBuilder: (BuildContext context,
+                                                        Widget child,
+                                                        ImageChunkEvent? loadingProgress) {
+                                                      if (loadingProgress == null) {
+                                                        return child;
+                                                      } else {
+                                                        return Center(
+                                                          child: CircularProgressIndicator(
+                                                            value: loadingProgress
+                                                                        .expectedTotalBytes !=
+                                                                    null
+                                                                ? loadingProgress
+                                                                        .cumulativeBytesLoaded /
+                                                                    (loadingProgress
+                                                                            .expectedTotalBytes ??
+                                                                        1)
+                                                                : null,
+                                                          ),
+                                                        );
+                                                      }
+                                                    },
+                                                    errorBuilder: (BuildContext context,
+                                                        Object error, StackTrace? stackTrace) {
+                                                      return const Text(
+                                                          'An error occurred while loading the image.');
+                                                    },
+                                                  ),
+                                          ),
+                                          Stack(
+                                            alignment: Alignment.bottomRight,
+                                            children: <Widget>[
+                                              SizedBox(
+                                                width: 150,
+                                                height: 82.0,
+                                                child: Text(
+                                                  product.title!,
+                                                  textAlign: TextAlign.start,
+                                                  style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 18.0,
+                                                      fontWeight: FontWeight.bold),
                                                 ),
-                                        ),
-                                        Stack(
-                                          alignment: Alignment.bottomRight,
-                                          children: <Widget>[
-                                            SizedBox(
-                                              width: 150,
-                                              height: 82.0,
-                                              child: Text(
-                                                product.title!,
-                                                textAlign: TextAlign.start,
-                                                style: const TextStyle(
+                                              ),
+                                              Container(
+                                                padding: const EdgeInsets.only(
+                                                    left: 2, right: 2, bottom: 0, top: 0),
+                                                decoration: BoxDecoration(
                                                     color: Colors.white,
-                                                    fontSize: 18.0,
-                                                    fontWeight: FontWeight.bold),
+                                                    borderRadius:
+                                                        const BorderRadius.all(Radius.circular(5)),
+                                                    border: BorderConstants.borderAllSmall),
+                                                child: Text(
+                                                    product.prices?.first.price.toString() ?? '',
+                                                    style: TextStyle(
+                                                        fontSize: 17.0,
+                                                        color: Colors.black.withOpacity(0.8),
+                                                        fontWeight: FontWeight.bold)),
                                               ),
-                                            ),
-                                            Container(
-                                              padding: const EdgeInsets.only(
-                                                  left: 2, right: 2, bottom: 0, top: 0),
-                                              decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  borderRadius:
-                                                      const BorderRadius.all(Radius.circular(5)),
-                                                  border: BorderConstants.borderAllSmall),
-                                              child: Text(
-                                                  product.prices?.first.price.toString() ?? '',
-                                                  style: TextStyle(
-                                                      fontSize: 17.0,
-                                                      color: Colors.black.withOpacity(0.8),
-                                                      fontWeight: FontWeight.bold)),
-                                            ),
-                                            Container(
-                                              width: 150,
-                                              height: 82.0,
-                                              padding: const EdgeInsets.only(
-                                                  left: 2, right: 2, bottom: 0, top: 0),
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  context.read<ProductCubit>().setSelectedProduct(
-                                                      product,
-                                                      product.prices?.first ?? PriceModel.empty());
-                                                  context.read<TableCubit>().setNewOrderProducts(
-                                                      OrderProductModel(
-                                                          uniqueTimestamp:
-                                                              DateTime.now().toIso8601String(),
-                                                          id: product.id ?? '',
-                                                          isFirst: false,
-                                                          product: product.id!,
-                                                          productName: product.title!,
-                                                          quantity:
-                                                              product.prices?.first.amount ?? 1,
-                                                          categoryId: product.category!,
-                                                          price: product.prices!.first.price ?? 1,
-                                                          tax: product.prices!.first.vatRate ?? 0.0,
-                                                          priceId: product.prices?.first.id ?? '',
-                                                          cancelStatus: CancelStatus.empty(),
-                                                          priceName:
-                                                              product.prices!.first.priceName!,
-                                                          priceType:
-                                                              product.prices?.first.priceType ??
-                                                                  'REGULAR',
-                                                          note: "",
-                                                          options: const []),
-                                                      1.0);
-                                                  // context
-                                                  //     .read<TableCubit>()
-                                                  //     .setNewOrderAmount("1", true);
-                                                  // Provider.of<TableListProvider>(context, listen: false)
-                                                  //     .setSelectedOptionItemClear();
-                                                  // Provider.of<TableListProvider>(context, listen: false)
-                                                  //     .setSelectedPrice(
-                                                  //         productList[index].prices.first);
-                                                  // if (productList[index].options.isNotEmpty) {
-                                                  //   Iterable<Options_> option = myBranchProvider
-                                                  //       .myBranch!.options
-                                                  //       .where((option) =>
-                                                  //           option.sId ==
-                                                  //           productList[index].options.first.optionId);
-                                                  //   Provider.of<TableListProvider>(context,
-                                                  //           listen: false)
-                                                  //       .setSelectedOption(
-                                                  //           option.isNotEmpty ? option.first : null);
-                                                  //   Provider.of<TableListProvider>(context,
-                                                  //           listen: false)
-                                                  //       .setSelectedOptionId(
-                                                  //           productList[index].options.first.optionId);
-                                                  // }
-                                                  // ProductDetailDialog()
-                                                  //     .showOptionsDialog(context, false);
-                                                },
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ));
@@ -247,42 +216,6 @@ class _ProductListWidget extends StatelessWidget {
       ],
     );
   }
-}
-
-void addNewOrderProduct(ProductModel productList, String note, BuildContext context) {
-  if (note.isEmpty) {
-    if (context.read<TableCubit>().newProducts.products.any((element) =>
-        (element.priceId == productList.prices?.first.id && element.product == productList.id))) {
-      int index = context
-          .read<TableCubit>()
-          .newProducts
-          .products
-          .indexWhere((element) => element.product == productList.id);
-
-      if (index >= 0) {
-        double quantity = context.read<TableCubit>().newProducts.products[index].quantity ?? 0;
-        quantity += context.read<TableCubit>().state.newOrderProductAmount;
-        return;
-      }
-    }
-  }
-  context.read<TableCubit>().newProducts.products.add(OrderProductModel(
-      id: productList.id ?? '',
-      isFirst: false,
-      product: productList.id!,
-      categoryId: productList.category!,
-      tax: productList.prices?.first.vatRate ?? 0,
-      quantity: context.read<TableCubit>().state.newOrderProductAmount == 0
-          ? 1
-          : context.read<TableCubit>().state.newOrderProductAmount,
-      priceId: productList.prices?.first.id ?? '',
-      price: double.parse(productList.prices?.first.price!.toString() ?? '0'),
-      note: note,
-      priceName: productList.prices?.first.priceName.toString() ?? '',
-      priceType: productList.prices!.first.priceType ?? 'REGULAR',
-      productName: productList.title ?? '',
-      cancelStatus: CancelStatus.empty(),
-      options: const []));
 }
 
 Future<void> handleButtonAction(
@@ -309,13 +242,60 @@ Future<void> handleButtonAction(
         builder: (context) => const MoveTableProductDialog(isTransfer: false),
       );
       break;
+    case 4:
+      if (state.selectedTable?.orders != null && state.selectedTable!.orders.isNotEmpty) {
+        CoverDialog().show(context);
+      }
+      break;
+
+    /// Edit Customer Count
+    case 5:
+      if (state.selectedTable?.orders != null && state.selectedTable!.orders.isNotEmpty) {
+        tableCubit.setCustomerCount(state.selectedTable!.customerCount.toString());
+        EditCustomerCountDialog().show(context);
+      }
+
+    /// close table
+    case 8:
+      if (state.selectedTable == null || state.newOrderProduct == null) return;
+      tableCubit.setInitialCheckoutProducts();
+      showCloseTableDialog(context, onOkPressed: () async {
+        bool isClosed = await tableCubit.closeTable(state.selectedTable!.id!);
+        ResponseActionService.getTableAndNavigate(
+          context: context,
+          response: isClosed,
+          tableCubit: tableCubit,
+          action: ButtonAction.closeTable,
+        );
+      });
+      break;
 
     /// checkout
     case 9:
-      appLogger.info('TAG', 'CASE 9 - ${state.newOrderProduct?.productName}');
-      if (state.selectedTable == null || state.newOrderProduct == null) return;
+      if (state.selectedTable == null ||
+          state.newOrderProduct == null ||
+          state.selectedTable?.orders == null ||
+          state.selectedTable?.orders.isEmpty == true) return;
       tableCubit.setInitialCheckoutProducts();
       NewCheckoutDialog.show(context);
+      break;
+    case 10:
+      appLogger.warning("TAG", "10 list product clicked");
+    case 12:
+      appLogger.warning("TAG", "12 list product clicked");
+    case 11:
+      appLogger.warning("TAG", "11 clicked");
+      // New Sale
+      if (state.newProducts.products.isEmpty) return;
+
+      final response = await context.read<TableCubit>().postTableNewOrder(context);
+      ResponseActionService.getTableAndNavigate(
+        context: context,
+        response: response,
+        tableCubit: tableCubit,
+        action: ButtonAction.newSale,
+      );
+
       break;
 
     default:

@@ -46,6 +46,12 @@ class _TableLayoutViewState extends State<TableLayoutView>
     context.read<SectionCubit>().getSections();
     _loadAllTableStates();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      setState(() {
+        // Disable button if "Object" tab is selected (index 1)
+        isButtonEnabled = _tabController.index != 1;
+      });
+    });
   }
 
   @override
@@ -334,18 +340,25 @@ class _TableLayoutViewState extends State<TableLayoutView>
                             children: [
                               LightBlueButton(
                                 buttonText: 'Add',
-                                onTap: () => context.read<SectionCubit>().addNewSection(),
+                                onTap: () => isButtonEnabled
+                                    ? context.read<SectionCubit>().addNewSection()
+                                    : null,
                               ),
                               BlocBuilder<TableCubit, TableState>(
                                 builder: (context, state) {
                                   return LightBlueButton(
                                     buttonText: 'Del',
-                                    onTap: () {
-                                      (state.tablesBySectionList?[selectedSectionId]?.length ?? 0) >
-                                              0
-                                          ? showOrderErrorDialog(context, 'Section has Tables!')
-                                          : context.read<SectionCubit>().deleteSection();
-                                    },
+                                    onTap: isButtonEnabled
+                                        ? () {
+                                            (state.tablesBySectionList?[selectedSectionId]
+                                                            ?.length ??
+                                                        0) >
+                                                    0
+                                                ? showOrderErrorDialog(
+                                                    context, 'Section has Tables!')
+                                                : context.read<SectionCubit>().deleteSection();
+                                          }
+                                        : null,
                                   );
                                 },
                               ),
@@ -480,6 +493,8 @@ mixin TableLayoutMixin on State<TableLayoutView> {
   GlobalKey rightPanelKey = GlobalKey();
 
   late TabController _tabController;
+  bool isButtonEnabled = true;
+
   Map<String, List<TableItem>> tableStates = {};
   String? selectedSection;
   bool _isLoading = false;
@@ -669,12 +684,7 @@ mixin TableLayoutMixin on State<TableLayoutView> {
     }
 
     // Show a success message once all operations are completed
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        backgroundColor: Colors.red,
-        content: Text('All table states saved!'),
-      ),
-    );
+    showOrderSuccessDialog(context, 'All table states saved!');
 
     // Reset table states and fetch updated data
 

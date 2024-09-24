@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/cubit/category_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/model/category_model.dart';
-import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/cubit/product_cubit.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/responsive/border.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
 import 'package:a_pos_flutter/product/widget/button/light_blue_button.dart';
@@ -55,7 +55,7 @@ class _MenuGroupViewState extends State<CategoryView> with AutomaticKeepAliveCli
             height: context.dynamicHeight(0.35),
             child: BlocBuilder<CategoryCubit, CategoryState>(
               builder: (context, state) {
-                final imageString = state.selectedCategory?.image;
+                final imageString = state.selectedSubCategory?.image;
                 return Column(
                   children: [
                     const SizedBox(height: 10),
@@ -83,6 +83,48 @@ class _MenuGroupViewState extends State<CategoryView> with AutomaticKeepAliveCli
                                   flex: 2,
                                   child: Column(
                                     children: [
+                                      const SizedBox(height: 10),
+                                      Flexible(
+                                        child: Row(
+                                          children: [
+                                            const Expanded(flex: 2, child: Text('Category Name')),
+                                            Expanded(
+                                              flex: 3,
+                                              child: DropdownButton<CategoryModel>(
+                                                value: state.mainCategories.firstWhere(
+                                                  (category) =>
+                                                      category.id ==
+                                                      state.selectedSubCategory?.parentCategory,
+                                                  orElse: () => CategoryModel.empty(),
+                                                ),
+                                                isExpanded: true,
+                                                items: state.mainCategories
+                                                    .map<DropdownMenuItem<CategoryModel>>(
+                                                        (CategoryModel value) {
+                                                  return DropdownMenuItem<CategoryModel>(
+                                                    value: value,
+                                                    child: Text(value.title ?? ''),
+                                                  );
+                                                }).toList(),
+                                                onChanged: (CategoryModel? newValue) {
+                                                  appLogger.info('NEW VALUE: ',
+                                                      newValue?.id.toString() ?? 'xx');
+                                                  if (newValue != null) {
+                                                    context
+                                                        .read<CategoryCubit>()
+                                                        .setSelectedCategory(newValue);
+                                                    context
+                                                        .read<CategoryCubit>()
+                                                        .updateParentCategory(newValue.id);
+                                                  }
+                                                },
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 10),
+
                                       Flexible(
                                         child: Row(
                                           children: [
@@ -90,26 +132,19 @@ class _MenuGroupViewState extends State<CategoryView> with AutomaticKeepAliveCli
                                             Expanded(
                                                 flex: 3,
                                                 child: TextField(
-                                                  controller:
-                                                      context.read<CategoryCubit>().titleController,
+                                                  controller: context
+                                                      .read<CategoryCubit>()
+                                                      .subTitleController,
                                                   onChanged: (value) {
                                                     context
                                                         .read<CategoryCubit>()
-                                                        .updateSelectedCategoryTitle(value);
+                                                        .updateSelectedSubCategoryTitle(value);
                                                   },
                                                 )),
                                           ],
                                         ),
                                       ),
-                                      const SizedBox(height: 10),
-                                      const Flexible(
-                                        child: Row(
-                                          children: [
-                                            Expanded(flex: 2, child: Text('Group Description')),
-                                            Expanded(flex: 3, child: TextField()),
-                                          ],
-                                        ),
-                                      ),
+
                                       const SizedBox(height: 10),
 
                                       ///Printer1 dropdownButton
@@ -361,15 +396,16 @@ class _MenuGroupViewState extends State<CategoryView> with AutomaticKeepAliveCli
                                           children: [
                                             LightBlueButton(
                                               buttonText: 'Browse',
-                                              onTap: () =>
-                                                  context.read<CategoryCubit>().getCategoryImage(),
+                                              onTap: () => context
+                                                  .read<CategoryCubit>()
+                                                  .getSubCategoryImage(),
                                             ),
                                             const SizedBox(width: 4),
                                             LightBlueButton(
                                               buttonText: 'Clean',
                                               onTap: () => context
                                                   .read<CategoryCubit>()
-                                                  .cleanCategoryImage(),
+                                                  .cleanSubCategoryImage(),
                                             ),
                                           ],
                                         ),

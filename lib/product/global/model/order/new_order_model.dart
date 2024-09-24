@@ -68,11 +68,14 @@ class OrderProductModel extends BaseModel<OrderProductModel> {
   final String? priceType;
   final String? priceName;
   final double? quantity;
+  final double? paidQuantity;
   final double? price;
+  final double? priceAfterTax;
   final String? priceId;
   final String? note;
   final List<Options> options;
   final CancelStatus cancelStatus;
+  final ServeInfoModel serveInfo;
 
   OrderProductModel({
     this.uniqueTimestamp,
@@ -81,15 +84,18 @@ class OrderProductModel extends BaseModel<OrderProductModel> {
     this.product,
     this.productName,
     this.quantity,
+    this.paidQuantity,
     this.categoryId,
     this.tax,
     this.price,
+    required this.priceAfterTax,
     this.priceId,
     this.priceName,
     this.priceType,
     this.note,
     required this.options,
     required this.cancelStatus,
+    required this.serveInfo,
   });
 
   factory OrderProductModel.fromJson(Map<String, dynamic> json) =>
@@ -105,14 +111,18 @@ class OrderProductModel extends BaseModel<OrderProductModel> {
         product,
         productName,
         quantity,
+        paidQuantity,
         categoryId,
         tax,
         price,
+        priceAfterTax,
         priceId,
         priceName,
         priceType,
         note,
-        options
+        options,
+        cancelStatus,
+        serveInfo
       ];
 
   OrderProductModel copyWith({
@@ -122,15 +132,18 @@ class OrderProductModel extends BaseModel<OrderProductModel> {
     String? product,
     String? productName,
     double? quantity,
+    double? paidQuantity,
     String? categoryId,
     double? tax,
     double? price,
+    double? priceAfterTax,
     String? priceId,
     String? priceName,
     String? priceType,
     String? note,
     List<Options>? options,
     CancelStatus? cancelStatus,
+    ServeInfoModel? serveInfo,
   }) {
     return OrderProductModel(
       uniqueTimestamp: uniqueTimestamp ?? this.uniqueTimestamp,
@@ -139,15 +152,18 @@ class OrderProductModel extends BaseModel<OrderProductModel> {
       product: product ?? this.product,
       productName: productName ?? this.productName,
       quantity: quantity ?? this.quantity,
+      paidQuantity: paidQuantity ?? this.paidQuantity,
       categoryId: categoryId ?? this.categoryId,
       tax: tax ?? this.tax,
       price: price ?? this.price,
+      priceAfterTax: priceAfterTax ?? this.priceAfterTax,
       priceId: priceId ?? this.priceId,
       priceName: priceName ?? this.priceName,
       priceType: priceType ?? this.priceType,
       note: note ?? this.note,
       options: options ?? this.options,
       cancelStatus: cancelStatus ?? this.cancelStatus,
+      serveInfo: serveInfo ?? this.serveInfo,
     );
   }
 }
@@ -275,68 +291,29 @@ class DeleteDiscount {
       discountId: json["discountId"].toString());
 }
 
-class NewCover {
-  String tableId;
-  String title;
-  double price;
-  double perc;
-  int type;
-  int quantity;
+@JsonSerializable(includeIfNull: false)
+class CoverRequestModel extends BaseModel<CoverRequestModel> {
+  final String? type;
+  final String? title;
+  final double? value;
+  final int? quantity;
 
-  NewCover({
-    required this.tableId,
+  CoverRequestModel({
     required this.title,
     required this.type,
+    required this.value,
     required this.quantity,
-    required this.price,
-    required this.perc,
   });
 
-  factory NewCover.fromJson(String str) => NewCover.fromMap(json.decode(str));
+  factory CoverRequestModel.fromJson(Map<String, dynamic> json) =>
+      _$CoverRequestModelFromJson(json);
 
-  Map<String, dynamic> toMap() => {
-        "price": price,
-        "perc": perc,
-        "tableId": tableId,
-        "type": type,
-        "quantity": quantity,
-        "title": title,
-      };
+  @override
+  CoverRequestModel fromJson(Map<String, dynamic> json) => CoverRequestModel.fromJson(json);
 
-  String toJson() => json.encode(toMap());
+  @override
+  List<Object?> get props => [title, type, value, quantity];
 
-  factory NewCover.fromMap(Map<String, dynamic> json) => NewCover(
-      price: double.parse(json["price"].toString()),
-      perc: double.parse(json["perc"].toString()),
-      tableId: json["tableId"].toString(),
-      title: json["title"].toString(),
-      type: int.parse(json["type"].toString()),
-      quantity: int.parse(json["quantity"].toString()));
-}
-
-class DeleteCover {
-  String tableId;
-  String coverId;
-  double coverPrice;
-
-  DeleteCover({
-    required this.tableId,
-    required this.coverId,
-    required this.coverPrice,
-  });
-
-  factory DeleteCover.fromJson(String str) => DeleteCover.fromMap(json.decode(str));
-
-  Map<String, dynamic> toMap() => {
-        "coverPrice": coverPrice,
-        "tableId": tableId,
-        "coverId": coverId,
-      };
-
-  String toJson() => json.encode(toMap());
-
-  factory DeleteCover.fromMap(Map<String, dynamic> json) => DeleteCover(
-      coverPrice: double.parse(json["coverPrice"].toString()),
-      tableId: json["tableId"].toString(),
-      coverId: json["coverId"].toString());
+  @override
+  Map<String, dynamic> toJson() => _$CoverRequestModelToJson(this);
 }

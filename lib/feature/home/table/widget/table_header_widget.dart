@@ -127,6 +127,7 @@ class _TableHeaderWidgetState extends State<TableHeaderWidget> {
                   context.read<BranchCubit>().setMainCategorySelected(null);
                   context.read<BranchCubit>().setFilter('');
                   context.read<TableCubit>().clearNewOrderProducts();
+                  context.read<TableCubit>().setIsQuickService(false);
                   context.read<TableCubit>().setSelectedEditProduct(null);
                   Navigator.pushAndRemoveUntil(context,
                       MaterialPageRoute(builder: (_) => const MainView()), (route) => false);

@@ -1,6 +1,7 @@
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/cubit/category_cubit.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_state.dart';
+import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
 import 'package:a_pos_flutter/feature/home/table/widget/table_header_widget.dart';
 import 'package:a_pos_flutter/feature/home/table/widget/table_left_widget.dart';
 import 'package:a_pos_flutter/feature/home/table/widget/table_right_widget.dart';
@@ -43,7 +44,7 @@ class _TableViewState extends State<TableView> with _TableMixin {
                         width: context.dynamicWidth(.38),
                         height: context.height - 60,
                         child: TableLeftWidget(
-                          tableModel: state.selectedTable!,
+                          tableModel: state.selectedTable ?? TableModel.empty(),
                         ),
                       );
                     },
@@ -75,5 +76,6 @@ mixin _TableMixin on State<TableView> {
   void initState() {
     super.initState();
     context.read<CategoryCubit>().setSelectedCategory(null);
+    context.read<CategoryCubit>().setSelectedSubCategory(null);
   }
 }
