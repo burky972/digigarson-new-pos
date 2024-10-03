@@ -26,21 +26,7 @@ class LoggingInterceptor extends Interceptor {
         'statusCode: ${response.statusCode}, method: ${response.requestOptions.method}, path: ${response.requestOptions.path}');
 
     String responseAsString = response.data.toString();
-
-    /// If response data is too long, split it into multiple lines
-    if (responseAsString.length > maxCharactersPerLine) {
-      int iterations = (responseAsString.length / maxCharactersPerLine).floor();
-      for (int i = 0; i <= iterations; i++) {
-        int endingIndex = i * maxCharactersPerLine + maxCharactersPerLine;
-        if (endingIndex > responseAsString.length) {
-          endingIndex = responseAsString.length;
-        }
-        APosLogger.instance.info('response data SHORT:',
-            responseAsString.substring(i * maxCharactersPerLine, endingIndex));
-      }
-    } else {
-      APosLogger.instance.info('response data:', responseAsString);
-    }
+    APosLogger.instance.info('response data:', responseAsString);
 
     handler.next(response); // Continue the response
   }

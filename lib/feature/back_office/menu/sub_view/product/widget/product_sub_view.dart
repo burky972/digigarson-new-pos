@@ -118,7 +118,7 @@ class _MiddleProductTableWidget extends StatelessWidget {
                                     ...productsToDisplay.map((product) {
                                       return TableRow(
                                         decoration: BoxDecoration(
-                                          color: product.id == state.selectedProduct?.id!
+                                          color: product.id == state.selectedProduct?.id
                                               ? context.colorScheme.tertiary
                                               : null,
                                         ),

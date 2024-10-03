@@ -1,6 +1,7 @@
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/cubit/i_option_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/cubit/option_state.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/model/option_model.dart';
+import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/model/option_request_model.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/service/i_option_service.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/service/option_service.dart';
 import 'package:a_pos_flutter/product/global/getters/getter.dart';
@@ -251,7 +252,28 @@ class OptionCubit extends IOptionCubit {
 
     // If there is a new option, send a POST request
     for (var option in newOptions) {
-      await postOptions(optionModel: option!);
+      await postOptions(
+          optionModel: OptionRequestModel(
+        name: option?.name,
+        specialName: option?.specialName,
+        chooseLimit: option?.chooseLimit,
+        state: option?.state,
+        items: option?.items == null || option!.items!.isEmpty
+            ? []
+            : option.items!
+                .map((item) => ItemRequestModel(
+                    priceType: item.priceType,
+                    itemName: item.itemName,
+                    price: item.price,
+                    lunchPrice: item.lunchPrice,
+                    happyHourPrice: item.happyHourPrice,
+                    deliveryPrice: item.deliveryPrice,
+                    takeOutPrice: item.takeOutPrice,
+                    product: item.product,
+                    amount: item.amount,
+                    vatRate: item.vatRate))
+                .toList(),
+      ));
     }
 
     // If there is a change in the existing options, send a PUT request
@@ -334,7 +356,7 @@ class OptionCubit extends IOptionCubit {
               return i.copyWith(id: () => null);
             }
             return i.copyWith(id: () => null);
-          }).toList(); //13
+          }).toList();
           final updatedOption = option.copyWith(items: updatedItems);
           appLogger.info('saveItemChanges', 'UPDATED ITEM: ${updatedOption.toJson().toString()}');
           for (var element in updatedOption.items ?? []) {
@@ -399,9 +421,8 @@ class OptionCubit extends IOptionCubit {
 
   /// postOptions
   @override
-  Future postOptions({required OptionModel optionModel}) async {
-    OptionModel newOptionModel = optionModel.copyWith(id: () => null);
-    final response = await _optionService.postOptions(optionModel: newOptionModel);
+  Future postOptions({required OptionRequestModel optionModel}) async {
+    final response = await _optionService.postOptions(optionModel: optionModel);
     response.fold((l) {
       emit(state.copyWith(states: OptionStates.error));
     }, (r) async {

@@ -1,4 +1,5 @@
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/model/option_model.dart';
+import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/model/option_request_model.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/service/i_option_service.dart';
 import 'package:a_pos_flutter/product/utils/helper/api_response_handler.dart';
 import 'package:a_pos_flutter/product/utils/helper/typedef.dart';
@@ -16,7 +17,7 @@ class OptionService implements IOptionService {
 
   /// POST Options
   @override
-  BaseResponseData<BaseResponseModel> postOptions({required OptionModel optionModel}) async {
+  BaseResponseData<BaseResponseModel> postOptions({required OptionRequestModel optionModel}) async {
     BaseResponseModel responseModel = await DioClient.instance.post(
       NetworkConstants.option,
       data: optionModel.toJson(),
