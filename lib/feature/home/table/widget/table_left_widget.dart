@@ -21,6 +21,7 @@ import 'package:a_pos_flutter/product/widget/dialog/move_table_product_dialog.da
 import 'package:a_pos_flutter/product/widget/dialog/new_checkout_dialog.dart';
 import 'package:a_pos_flutter/product/widget/dialog/quick_service_checkout_dialog.dart';
 import 'package:a_pos_flutter/product/widget/dialog/service_fee_dialog.dart';
+import 'package:a_pos_flutter/product/widget/dialog/special_item_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -529,9 +530,9 @@ class _TableLeftWidgetState extends State<TableLeftWidget> {
         // Split
         break;
       case 13:
-        appLogger.warning("TAG", "13 clicked");
 
-        // Special Item
+        //TODO:  Special Item
+        SpecialItemDialog().show(context);
         break;
       case 14:
         // Duplicate

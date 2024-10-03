@@ -5,7 +5,6 @@ import 'package:a_pos_flutter/language/locale_keys.g.dart';
 import 'package:a_pos_flutter/product/enums/service_type/enum.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
-import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/global/model/order/new_order_model.dart';
 import 'package:a_pos_flutter/product/responsive/border.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
@@ -127,270 +126,260 @@ class CoverDialog {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return PopScope(
-          onPopInvoked: (bool didPop) {
-            if (didPop) {
-              toggleFullScreen();
-              return;
-            }
-          },
-          child: BlocBuilder<TableCubit, TableState>(
-            builder: (context, state) {
-              return StatefulBuilder(builder: (context, setState) {
-                return AlertDialog(
-                  title: Row(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          setState(() {
-                            title = ServiceFeeType.AMOUNT.value;
-                          });
-                        },
-                        child: Text(
-                          LocaleKeys.coverAdd.tr(),
-                          style: TextStyle(
-                            fontSize: 17,
-                            color: title == ServiceFeeType.AMOUNT.value
-                                ? Colors.green.shade700
-                                : context.colorScheme.tertiary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      const Text(
-                        "|",
+        return BlocBuilder<TableCubit, TableState>(
+          builder: (context, state) {
+            return StatefulBuilder(builder: (context, setState) {
+              return AlertDialog(
+                title: Row(
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          title = ServiceFeeType.AMOUNT.value;
+                        });
+                      },
+                      child: Text(
+                        LocaleKeys.coverAdd.tr(),
                         style: TextStyle(
                           fontSize: 17,
-                          color: Colors.black87,
+                          color: title == ServiceFeeType.AMOUNT.value
+                              ? Colors.green.shade700
+                              : context.colorScheme.tertiary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(
-                        width: 10,
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    const Text(
+                      "|",
+                      style: TextStyle(
+                        fontSize: 17,
+                        color: Colors.black87,
+                        fontWeight: FontWeight.bold,
                       ),
-                      InkWell(
-                        onTap: () {
-                          setState(() {
-                            title = ServiceFeeType.PERCENT.value;
-                          });
-                        },
-                        child: Text(
-                          LocaleKeys.coverShow.tr(),
-                          style: TextStyle(
-                            fontSize: 17,
-                            color: title == ServiceFeeType.PERCENT.value
-                                ? Colors.green.shade700
-                                : context.colorScheme.tertiary,
-                            fontWeight: FontWeight.bold,
-                          ),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          title = ServiceFeeType.PERCENT.value;
+                        });
+                      },
+                      child: Text(
+                        LocaleKeys.coverShow.tr(),
+                        style: TextStyle(
+                          fontSize: 17,
+                          color: title == ServiceFeeType.PERCENT.value
+                              ? Colors.green.shade700
+                              : context.colorScheme.tertiary,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ],
-                  ),
-                  content: Container(
-                    width: context.dynamicWidth(.5),
-                    constraints: BoxConstraints(
-                      minWidth: 530,
-                      maxWidth: 550,
-                      maxHeight: title == ServiceFeeType.AMOUNT.value ? 220 : 300,
                     ),
-                    child: title == ServiceFeeType.AMOUNT.value
-                        ? ListView(
-                            children: [
-                              type == ServiceFeeType.PERCENT.value
-                                  ? Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            postCover(context, state, 2.5);
-                                          },
-                                          style: ElevatedButton.styleFrom(),
-                                          child: const Text('%2.5'),
-                                        ),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            postCover(context, state, 5);
-                                          },
-                                          child: const Text('%5'),
-                                        ),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            postCover(context, state, 7.5);
-                                          },
-                                          child: const Text('%7.5'),
-                                        ),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            postCover(context, state, 10);
-                                          },
-                                          child: const Text('%10'),
-                                        ),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            // postService(context, state, 20);
-                                            postCover(context, state, 20);
-                                          },
-                                          child: const Text('%20'),
-                                        ),
-                                      ],
-                                    )
-                                  : const SizedBox(),
-                              const SizedBox(height: 10),
-                              Row(
-                                children: [
-                                  /// note text field
-                                  Container(
-                                    width: context.dynamicWidth(.35),
-                                    constraints: const BoxConstraints(minWidth: 150, maxWidth: 250),
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: const BorderRadius.all(Radius.circular(5)),
-                                        border: BorderConstants.borderAllSmall),
-                                    child: TextField(
-                                      onTap: () {
-                                        showCustomKeyKeyboard(context, _noteController, _noteNode);
-                                      },
-                                      controller: _noteController,
-                                      focusNode: _noteNode,
-                                      keyboardType: TextInputType.none,
-                                      decoration: const InputDecoration(
-                                          hintText: 'Note...', contentPadding: AppPadding.minAll()),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 20),
-                                  Container(
-                                    width: context.dynamicWidth(.15),
-                                    constraints: const BoxConstraints(minWidth: 110, maxWidth: 160),
-                                    child: Padding(
-                                      padding: const EdgeInsetsDirectional.only(start: 5),
-                                      child: AnimatedCounter(
-                                        key: ValueKey(initialValue),
-                                        counter:
-                                            initialValue.toInt() > 0 ? initialValue.toInt() : 1,
-                                        onKeyPressed: (qty) {
-                                          setState(() {
-                                            initialValue = int.parse(qty.toString());
-                                          });
+                  ],
+                ),
+                content: Container(
+                  width: context.dynamicWidth(.5),
+                  constraints: BoxConstraints(
+                    minWidth: 530,
+                    maxWidth: 550,
+                    maxHeight: title == ServiceFeeType.AMOUNT.value ? 220 : 300,
+                  ),
+                  child: title == ServiceFeeType.AMOUNT.value
+                      ? ListView(
+                          children: [
+                            type == ServiceFeeType.PERCENT.value
+                                ? Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          postCover(context, state, 2.5);
                                         },
+                                        style: ElevatedButton.styleFrom(),
+                                        child: const Text('%2.5'),
                                       ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              Row(
-                                children: [
-                                  /// amount textfield
-                                  Container(
-                                    width: context.dynamicWidth(.1),
-                                    constraints: const BoxConstraints(minWidth: 100, maxWidth: 150),
-                                    decoration: BoxDecoration(
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          postCover(context, state, 5);
+                                        },
+                                        child: const Text('%5'),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          postCover(context, state, 7.5);
+                                        },
+                                        child: const Text('%7.5'),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          postCover(context, state, 10);
+                                        },
+                                        child: const Text('%10'),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          // postService(context, state, 20);
+                                          postCover(context, state, 20);
+                                        },
+                                        child: const Text('%20'),
+                                      ),
+                                    ],
+                                  )
+                                : const SizedBox(),
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                /// note text field
+                                Container(
+                                  width: context.dynamicWidth(.35),
+                                  constraints: const BoxConstraints(minWidth: 150, maxWidth: 250),
+                                  decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: const BorderRadius.all(Radius.circular(5)),
-                                      border: BorderConstants.borderAllSmall,
-                                    ),
-                                    child: TextField(
-                                      onTap: () {
-                                        showCustomNumberKeyKeyboard(
-                                            context, _amountController, _amountNode, _overlayEntry);
-                                      },
-                                      controller: _amountController,
-                                      focusNode: _amountNode,
-                                      keyboardType: TextInputType.none,
-                                      decoration: const InputDecoration(
-                                          hintText: 'Amount...',
-                                          contentPadding: AppPadding.minAll()),
-                                    ),
+                                      border: BorderConstants.borderAllSmall),
+                                  child: TextField(
+                                    onTap: () {
+                                      showCustomKeyKeyboard(context, _noteController, _noteNode);
+                                    },
+                                    controller: _noteController,
+                                    focusNode: _noteNode,
+                                    keyboardType: TextInputType.none,
+                                    decoration: const InputDecoration(
+                                        hintText: 'Note...', contentPadding: AppPadding.minAll()),
                                   ),
-                                  const SizedBox(
-                                    width: 5,
-                                  ),
-
-                                  /// percent / amount buttons
-                                  Padding(
-                                    padding: const AppPadding.extraMinAll(),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        _PercentButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                type = ServiceFeeType.PERCENT.value;
-                                              });
-                                            },
-                                            type: type),
-                                        const SizedBox(width: 5),
-                                        _AmountButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                type = ServiceFeeType.AMOUNT.value;
-                                              });
-                                            },
-                                            type: type),
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              )
-                            ],
-                          )
-                        : Scrollbar(
-                            thumbVisibility: true,
-                            trackVisibility: true,
-                            thickness: 10,
-                            controller: _scrollController,
-                            child: ListView.separated(
-                              controller: _scrollController,
-                              itemCount: state.selectedTable!.cover.length,
-                              separatorBuilder: (BuildContext context, int index) => const Padding(
-                                padding: EdgeInsets.only(left: 10.0, right: 20.0),
-                                child: Divider(),
-                              ),
-                              itemBuilder: (BuildContext context, int index) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(left: 5.0, right: 5.0),
-                                  child: ListTile(
-                                    title: Text(
-                                        'Amount: ${state.selectedTable!.cover[index].price!.toStringAsFixed(2)}, Note: ${state.selectedTable!.cover[index].title.toString()}'),
-                                    trailing: IconButton(
-                                      icon: const Icon(Icons.delete),
-                                      onPressed: () {
-                                        deleteCover(context,
-                                            state.selectedTable!.cover[index].id.toString());
+                                ),
+                                const SizedBox(width: 20),
+                                Container(
+                                  width: context.dynamicWidth(.15),
+                                  constraints: const BoxConstraints(minWidth: 110, maxWidth: 160),
+                                  child: Padding(
+                                    padding: const EdgeInsetsDirectional.only(start: 5),
+                                    child: AnimatedCounter(
+                                      key: ValueKey(initialValue),
+                                      counter: initialValue.toInt() > 0 ? initialValue.toInt() : 1,
+                                      onKeyPressed: (qty) {
+                                        setState(() {
+                                          initialValue = int.parse(qty.toString());
+                                        });
                                       },
                                     ),
                                   ),
-                                );
-                              },
+                                ),
+                              ],
                             ),
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                /// amount textfield
+                                Container(
+                                  width: context.dynamicWidth(.1),
+                                  constraints: const BoxConstraints(minWidth: 100, maxWidth: 150),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: const BorderRadius.all(Radius.circular(5)),
+                                    border: BorderConstants.borderAllSmall,
+                                  ),
+                                  child: TextField(
+                                    onTap: () {
+                                      showCustomNumberKeyKeyboard(
+                                          context, _amountController, _amountNode, _overlayEntry);
+                                    },
+                                    controller: _amountController,
+                                    focusNode: _amountNode,
+                                    keyboardType: TextInputType.none,
+                                    decoration: const InputDecoration(
+                                        hintText: 'Amount...', contentPadding: AppPadding.minAll()),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 5,
+                                ),
+
+                                /// percent / amount buttons
+                                Padding(
+                                  padding: const AppPadding.extraMinAll(),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      _PercentButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              type = ServiceFeeType.PERCENT.value;
+                                            });
+                                          },
+                                          type: type),
+                                      const SizedBox(width: 5),
+                                      _AmountButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              type = ServiceFeeType.AMOUNT.value;
+                                            });
+                                          },
+                                          type: type),
+                                    ],
+                                  ),
+                                )
+                              ],
+                            )
+                          ],
+                        )
+                      : Scrollbar(
+                          thumbVisibility: true,
+                          trackVisibility: true,
+                          thickness: 10,
+                          controller: _scrollController,
+                          child: ListView.separated(
+                            controller: _scrollController,
+                            itemCount: state.selectedTable!.cover.length,
+                            separatorBuilder: (BuildContext context, int index) => const Padding(
+                              padding: EdgeInsets.only(left: 10.0, right: 20.0),
+                              child: Divider(),
+                            ),
+                            itemBuilder: (BuildContext context, int index) {
+                              return Padding(
+                                padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+                                child: ListTile(
+                                  title: Text(
+                                      'Amount: ${state.selectedTable!.cover[index].price!.toStringAsFixed(2)}, Note: ${state.selectedTable!.cover[index].title.toString()}'),
+                                  trailing: IconButton(
+                                    icon: const Icon(Icons.delete),
+                                    onPressed: () {
+                                      deleteCover(
+                                          context, state.selectedTable!.cover[index].id.toString());
+                                    },
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                  ),
-                  actions: <Widget>[
-                    title == ServiceFeeType.AMOUNT.value
-                        ? LightBlueButton(
-                            buttonText: LocaleKeys.save.tr(),
-                            onTap: () {
-                              try {
-                                postCover(
-                                    context,
-                                    state,
-                                    double.parse(_amountController.text.isEmpty
-                                        ? "0.0"
-                                        : _amountController.text));
-                              } catch (e) {}
-                            })
-                        : const SizedBox(),
-                    LightBlueButton(
-                        buttonText: LocaleKeys.close.tr(), onTap: () => Navigator.pop(context)),
-                  ],
-                );
-              });
-            },
-          ),
+                        ),
+                ),
+                actions: <Widget>[
+                  title == ServiceFeeType.AMOUNT.value
+                      ? LightBlueButton(
+                          buttonText: LocaleKeys.save.tr(),
+                          onTap: () {
+                            try {
+                              postCover(
+                                  context,
+                                  state,
+                                  double.parse(_amountController.text.isEmpty
+                                      ? "0.0"
+                                      : _amountController.text));
+                            } catch (e) {}
+                          })
+                      : const SizedBox(),
+                  LightBlueButton(
+                      buttonText: LocaleKeys.close.tr(), onTap: () => Navigator.pop(context)),
+                ],
+              );
+            });
+          },
         );
       },
     );

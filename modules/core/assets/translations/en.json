@@ -437,7 +437,15 @@
   "enterExpenseTitle": "Please enter Expense Title",
   "expenseDescription":"Expense Description",
   "expenseAmount":"Expense Amount",
-  "expenseTitle":"Expense Title"
-
+  "expenseTitle":"Expense Title",
+  "specialItem": "Special Item",
+  "itemName": "Item Name",
+  "qty": "Qty.", 
+  "printers" : "Printers",
+  "hot" : "Hot",
+  "cold" : "Cold",
+  "freeze" : "Freeze",
+  "kitchen" : "Kitchen",
+  "receipt" : "Receipt"
 
 }

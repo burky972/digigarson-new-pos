@@ -183,8 +183,15 @@
   "enterExpenseTitle": "Lütfen Masraf Adı Girin",
   "expenseDescription":"Masraf Açıklaması",
   "expenseAmount":"Masraf Tutarı",
-  "expenseTitle":"Masraf Adı"
-
-
+  "expenseTitle":"Masraf Adı",
+  "specialItem": "Özel Ürün",
+  "itemName": "Ürün Adı",
+  "qty": "Miktar",
+  "printers" : "Yazıcılar",
+  "hot" : "Sıcak ",
+  "cold" : "Soğuk",
+  "freeze" : "Donmuş",
+  "kitchen" : "Mutfak",
+  "receipt" : "Fiş"
 
 }
