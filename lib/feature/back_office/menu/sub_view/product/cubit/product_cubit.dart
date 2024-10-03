@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
-
+import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/model/option_model.dart';
+import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/service/i_option_service.dart';
+import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/service/option_service.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/cubit/i_product_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/model/product_model.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/service/i_product_service.dart';
@@ -17,17 +19,23 @@ import 'package:image_picker/image_picker.dart';
 part 'product_state.dart';
 
 class ProductCubit extends IProductCubit {
-  ProductCubit() : super(ProductState.initial());
+  ProductCubit() : super(ProductState.initial()) {
+    init();
+  }
   final TextEditingController productNameController = TextEditingController();
   final TextEditingController? productPriceController = TextEditingController();
   final TextEditingController? taxController = TextEditingController();
   List<ProductModel> originalProducts = [];
   int firstProductsLength = 0;
+  Map<String, List<ProductOptionModel>> productOptionsMap = {};
   Map<String, List<ProductModel>>? originalCategorizedProducts = {};
 
   final IProductService _productService = ProductService();
+  final IOptionService _optionService = OptionService();
   @override
-  void init() {}
+  Future<void> init() async {
+    await Future.wait([getProducts(), getOptions()]);
+  }
 
   @override
   ProductModel? get product => state.product;
@@ -72,7 +80,18 @@ class ProductCubit extends IProductCubit {
               rank: pro.rank))
           .toList();
 
-      emit(state.copyWith(allProducts: originalProducts, states: ProductStates.completed));
+      // 2. Ürünlerin optionslarını Map'e ekleme
+      for (var product in originalProducts) {
+        if (product.options != null && product.options!.isNotEmpty) {
+          productOptionsMap[product.id!] = product.options!;
+        }
+      }
+
+      emit(state.copyWith(
+        allProducts: originalProducts,
+        productOptions: productOptionsMap,
+        states: ProductStates.completed,
+      ));
       categorizeProducts();
       state.allProducts.isNotEmpty
           ? setSelectedProduct(
@@ -250,6 +269,10 @@ class ProductCubit extends IProductCubit {
     productNameController.text = product.title ?? '';
     productPriceController?.text = product.prices?.first.price.toString() ?? '0.0';
     taxController?.text = product.prices?.first.vatRate.toString() ?? '0.0';
+    // if (product.options?.isNotEmpty == true) {
+    //   var option = getProductOptions(product);
+    //   emit(state.copyWith(selectedOption: () => product.options?.first));
+    // }
     emit(state.copyWith(selectedProduct: () => product));
   }
 
@@ -258,7 +281,6 @@ class ProductCubit extends IProductCubit {
     final isProductsInCategory = state.categorizedProducts?[categoryId];
     final productsInCategory =
         isProductsInCategory?.isNotEmpty == true ? isProductsInCategory!.first : ProductModel();
-    appLogger.info('SELECTED PRODUCT: ', '$categoryId ${productsInCategory.toJson()}');
 
     emit(state.copyWith(selectedProduct: () => productsInCategory));
     productNameController.text = productsInCategory.title ?? '';
@@ -412,8 +434,11 @@ class ProductCubit extends IProductCubit {
           orElse: () => ProductModel.empty(),
         );
 
+        bool areOptionsDifferent =
+            _areOptionsDifferent(originalProduct.options, updatedProduct.options);
+
         // Mevcut ürün güncelleme: originalProduct ve updatedProduct aynı değilse
-        if (updatedProduct != originalProduct) {
+        if ((updatedProduct != originalProduct) || areOptionsDifferent) {
           if (state.selectedProduct?.image != null &&
               (state.selectedProduct!.image!.length < 500)) {
             ProductModel newProductModel = updatedProduct.copyWith(image: () => null);
@@ -429,6 +454,189 @@ class ProductCubit extends IProductCubit {
       originalCategorizedProducts = Map.from(state.categorizedProducts!);
     }
   }
+
+  // Options listesinin farklı olup olmadığını kontrol eden fonksiyon
+  bool _areOptionsDifferent(
+      List<ProductOptionModel>? originalOptions, List<ProductOptionModel>? updatedOptions) {
+    if (originalOptions == null || updatedOptions == null) {
+      return originalOptions?.isNotEmpty == true || updatedOptions?.isNotEmpty == true;
+    }
+
+    if (originalOptions.map((option) => option.id) != updatedOptions.map((e) => e.id)) {
+      return true;
+    }
+
+    for (int i = 0; i < originalOptions.length; i++) {
+      if (originalOptions[i] != updatedOptions[i]) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  void getProductOptions(ProductModel product) async {
+    await getOptions().then((value) {
+      List<OptionModel?> optionList = state.allOptions
+          .where(
+              (option) => product.options!.any((productOption) => productOption.id == option!.id))
+          .toList();
+      emit(state.copyWith(
+          productOptionList: optionList,
+          selectedOption: () => optionList.isNotEmpty ? optionList.first : null));
+    });
+  }
+
+  void toggleOptionToProduct(String productId, ProductOptionModel option, String categoryId) {
+    appLogger.info(
+        "first Product with Options", state.selectedProduct!.options?.length.toString() ?? '0');
+
+    // Create a new map to avoid directly mutating the state
+    final updatedProductOptions = Map<String, List<ProductOptionModel>>.from(state.productOptions);
+
+    if (!updatedProductOptions.containsKey(productId)) {
+      updatedProductOptions[productId] = [];
+    }
+
+    final currentOptions = updatedProductOptions[productId] ?? [];
+
+    // Toggle option
+    if (currentOptions.contains(option)) {
+      currentOptions.remove(option);
+    } else {
+      currentOptions.add(option);
+    }
+
+    // Update the product options in the new map
+    updatedProductOptions[productId] = currentOptions;
+
+    final updatedProduct = state.selectedProduct!.copyWith(
+      options: [...currentOptions],
+    );
+
+    final updatedAllProducts = state.allProducts
+        .map((product) => product?.id == state.selectedProduct!.id ? updatedProduct : product)
+        .toList();
+
+    final updatedCategorizedProducts =
+        Map<String, List<ProductModel>>.from(state.categorizedProducts!);
+
+    final productsInCategory = updatedCategorizedProducts[categoryId] ?? [];
+    updatedCategorizedProducts[categoryId] = productsInCategory
+        .map((product) => product.id == state.selectedProduct!.id ? updatedProduct : product)
+        .toList();
+    productOptionsMap = updatedProductOptions;
+    getProductOptions(updatedProduct);
+
+    // Emit the new state with a completely new map for product options
+    emit(state.copyWith(
+      allProducts: updatedAllProducts,
+      categorizedProducts: updatedCategorizedProducts,
+      productOptions: updatedProductOptions, // Updated map for product options
+      selectedProduct: () => updatedProduct,
+    ));
+
+    appLogger.info(
+        "Updated Product with Options", updatedProduct.options?.length.toString() ?? '0');
+  }
+
+  // Helper method to get selected options for a specific product
+  List<ProductOptionModel> getSelectedOptionsForProduct(String productId) {
+    return productOptionsMap[productId] ?? [];
+  }
+
+  void updateProductMaxOptions(int maxOptions) {
+    if (state.selectedProduct == null) return;
+
+    final updatedProduct = state.selectedProduct!.copyWith();
+
+    final updatedProducts = state.allProducts.map((product) {
+      return product?.id == updatedProduct.id ? updatedProduct : product;
+    }).toList();
+
+    emit(state.copyWith(
+      selectedProduct: () => updatedProduct,
+      allProducts: updatedProducts,
+    ));
+  }
+
+//*----------GET OPTIONS FOR PRODUCT VIEW--------*-
+  /// getOptions
+  Future getOptions() async {
+    final response = await _optionService.getOptions();
+    response.fold((l) {}, (r) {
+      List<OptionModel?> options = (r.data as List).map((e) => OptionModel.fromJson(e)).toList();
+      emit(state.copyWith(allOptions: options, states: ProductStates.completed));
+      options.isNotEmpty ? setSelectedOption(options.first ?? OptionModel.empty()) : null;
+    });
+  }
+
+  List<Item> _initialItems = [];
+
+  void initializeItems(List<Item> items) {
+    _initialItems = List.from(items);
+    emit(state.copyWith(selectedItems: _initialItems));
+  }
+
+  /// SET SELECTED OPTION
+  void setSelectedOption(OptionModel option) {
+    emit(state.copyWith(selectedOption: () => option));
+  }
+
+  /// set multi items
+
+  void toggleItem(Item item) {
+    final selectedItems = List<Item>.from(state.selectedItems);
+    if (selectedItems.map((i) => i.id).contains(item.id)) {
+      selectedItems.removeWhere((i) => i.id == item.id);
+    } else {
+      selectedItems.add(item);
+    }
+    emit(state.copyWith(selectedItems: selectedItems));
+  }
+
+  void resetSelectedItems() {
+    _initialItems = [];
+    emit(state.copyWith(selectedItems: []));
+  }
+
+  void setSelectedItems(List<Item> items) {
+    emit(state.copyWith(selectedItems: items));
+  }
+
+  void setSelectedProductQuantity(int? digit) {
+    int? currentQuantity = state.selectedProductQuantity;
+    int? newQuantity;
+
+    if (currentQuantity == null || currentQuantity == 0) {
+      newQuantity = digit ?? 0;
+    } else if (digit == null) {
+      currentQuantity = null;
+    } else {
+      String combined = '$currentQuantity$digit';
+      newQuantity = int.parse(combined).clamp(0, 99);
+
+      if (int.parse(combined) > 99) {
+        newQuantity = digit;
+      }
+    }
+
+    emit(state.copyWith(
+      selectedProductQuantity: () => newQuantity,
+      remainingQuantity: () => newQuantity,
+    ));
+  }
+
+  void decrementRemainingQuantity() {
+    if ((state.remainingQuantity ?? -1) > 0) {
+      emit(state.copyWith(remainingQuantity: () => (state.remainingQuantity ?? -1) - 1));
+    }
+    if ((state.remainingQuantity ?? -1) == 0) {
+      emit(state.copyWith(remainingQuantity: () => null, selectedProductQuantity: () => null));
+    }
+  }
+
+  bool get hasRemainingQuantity => (state.remainingQuantity ?? -1) > 0;
 }
 
 typedef BaseResponseCubit = Either<ServerException, BaseResponseModel<dynamic>>;

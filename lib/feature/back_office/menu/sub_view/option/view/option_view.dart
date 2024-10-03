@@ -3,6 +3,7 @@ import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/cubit/opt
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/model/option_model.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/responsive/border.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
@@ -366,17 +367,15 @@ class _TableCellTextWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TableCell(
-      child: GestureDetector(
-        onTap: () => context.read<OptionCubit>().setSelectedItem(item),
-        child: Padding(
-          padding: const AppPadding.minAll(),
-          child: Center(
-            child: Text(
-              text,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
+    return TableRowInkWell(
+      onTap: () => context.read<OptionCubit>().setSelectedItem(item),
+      child: Padding(
+        padding: const AppPadding.minAll(),
+        child: Center(
+          child: Text(
+            text,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ),

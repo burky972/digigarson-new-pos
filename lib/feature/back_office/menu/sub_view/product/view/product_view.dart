@@ -1,10 +1,6 @@
 import 'dart:convert';
-
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/cubit/category_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/model/category_model.dart';
-import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/cubit/option_cubit.dart';
-import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/cubit/option_state.dart';
-import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/model/option_model.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/cubit/product_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/model/product_model.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
@@ -26,58 +22,43 @@ class ProductView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const AppPadding.minAll(),
-      child: BlocBuilder<CategoryCubit, CategoryState>(
-        builder: (context, state) {
-          return BlocBuilder<ProductCubit, ProductState>(
-            builder: (context, state) {
-              return Column(
+        padding: const AppPadding.minAll(),
+        child: Column(
+          children: [
+            SizedBox(
+              height: context.dynamicHeight(0.8),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    height: context.dynamicHeight(0.8),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        /// Categories List
-                        _CategoryListWidget(),
-                        Expanded(
-                          child: _MiddleProductTableWidget(),
-                        )
-                      ],
-                    ),
-                  ),
-                  const Spacer(),
-                  const _BottomButtonFields(),
+                  /// Categories List
+                  _CategoryListWidget(),
+                  Expanded(
+                    child: _MiddleProductTableWidget(),
+                  )
                 ],
-              );
-            },
-          );
-        },
-      ),
-    );
+              ),
+            ),
+            const Spacer(),
+            const _BottomButtonFields(),
+          ],
+        ));
   }
 }
 
 class _TableCellTextWidget extends StatelessWidget {
-  const _TableCellTextWidget({required this.onTap, required this.text});
-  final VoidCallback onTap;
+  const _TableCellTextWidget({required this.text});
   final String text;
 
   @override
   Widget build(BuildContext context) {
-    return TableCell(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Padding(
-          padding: const AppPadding.minAll(),
-          child: Center(
-            child: Text(
-              text,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
+    return Padding(
+      padding: const AppPadding.minAll(),
+      child: Center(
+        child: Text(
+          text,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
     );
@@ -91,19 +72,17 @@ class _MiddleTableCellTextWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TableCell(
-      child: GestureDetector(
-        onTap: () => context
-            .read<ProductCubit>()
-            .setSelectedProduct(product, product.prices?.first ?? const PriceModel()),
-        child: Padding(
-          padding: const AppPadding.minAll(),
-          child: Center(
-            child: Text(
-              text,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
+    return TableRowInkWell(
+      onTap: () => context
+          .read<ProductCubit>()
+          .setSelectedProduct(product, product.prices?.first ?? const PriceModel()),
+      child: Padding(
+        padding: const AppPadding.minAll(),
+        child: Center(
+          child: Text(
+            text,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ),

@@ -25,7 +25,8 @@ class _BottomButtonFields extends StatelessWidget {
             ),
             LightBlueButton(
               buttonText: 'Save',
-              onTap: () async => await optionCubit.saveItemChanges(),
+              onTap: () async =>
+                  await optionCubit.saveItemChanges().whenComplete(() => optionCubit.getOptions()),
             ),
             const LightBlueButton(buttonText: 'Export'),
             LightBlueButton(buttonText: 'Exit', onTap: () => Navigator.pop(context)),

@@ -1,3 +1,4 @@
+import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/cubit/product_cubit.dart';
 import 'package:a_pos_flutter/feature/home/checks/model/re_open_model.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_state.dart';
@@ -55,10 +56,28 @@ class NewOrderProductListWidget extends StatelessWidget {
                               ? context.colorScheme.tertiary
                               : Colors.white,
                           child: InkWell(
-                            onDoubleTap: () {
+                            onDoubleTap: () async {
+                              context.read<ProductCubit>().resetSelectedItems();
+                              if (product.options.isNotEmpty) {
+                                context
+                                    .read<ProductCubit>()
+                                    .setSelectedItems(product.options.first.items);
+                              }
                               showDialog(
                                 context: context,
-                                builder: (context) => OptionCheckDialog(product: product),
+                                builder: (context) => OptionCheckDialog(
+                                  product: product,
+                                  isForce: product.options.isNotEmpty,
+                                  isExistProduct: true,
+                                  onUpdate: (updatedOptions, selectedItems) {
+                                    context.read<TableCubit>().updateNewOrderProducts(
+                                          product,
+                                          product.uniqueTimestamp!,
+                                          updatedOptions,
+                                          selectedItems,
+                                        );
+                                  },
+                                ),
                               );
                             },
                             child: Column(children: [
@@ -100,9 +119,12 @@ class _NewProductList extends StatelessWidget {
           width: MediaQuery.of(context).size.width * headTitle[0].width,
           child: Row(
             children: [
+              /// delete product
               InkWell(
                 onTap: () {
+                  if (product.options.isNotEmpty) {}
                   context.read<TableCubit>().removeNewOrderProduct(product);
+                  context.read<ProductCubit>().resetSelectedItems();
                 },
                 child: Container(
                   constraints: const BoxConstraints(
@@ -150,45 +172,7 @@ class _NewProductList extends StatelessWidget {
 
         ///* WHEN click on product price!!
         InkWell(
-            onTap: () {
-              // tableListProvider.setSelectedOptionItemClear();
-              // tableListProvider.setSelectedProductClear();
-              // List<OrderProductModel> product = [];
-              // product.add(tableListProvider.NewProducts.products[i]);
-              // tableListProvider.setSendFirst(
-              //     tableListProvider.NewProducts.products[i].isFirst);
-              // Iterable<Products> pro = Provider.of<MyBranchProvider>(
-              //         context,
-              //         listen: false)
-              //     .myBranch!
-              //     .products
-              //     .where((element) => element.sId == product.first.product);
-              // tableListProvider.setSelectedProductEdit(product.first, pro);
-              // if (pro.isNotEmpty) {
-              //   var price = pro.first.prices
-              //       .where((price) => price.sId == product.first.priceId);
-
-              //   tableListProvider.setSelectedPriceEdit(
-              //       price.length > 0 ? price.first : null);
-              // }
-              // if (product.first.options.length > 0) {
-              //   Iterable<Options_> option = Provider.of<MyBranchProvider>(
-              //           context,
-              //           listen: false)
-              //       .myBranch!
-              //       .options
-              //       .where((option) =>
-              //           option.sId == product.first.options.first.optionId);
-              //   Provider.of<TableListProvider>(context, listen: false)
-              //       .setSelectedOption(
-              //           option.isNotEmpty ? option.first : null);
-              //   Provider.of<TableListProvider>(context, listen: false)
-              //       .setSelectedOptionId(
-              //           product.first.options.first.optionId);
-              // }
-              // ProductDetailDialog()
-              //     .showOptionsDialog(context, true, index: i);
-            },
+            onTap: () {},
             child: Container(
               padding: const EdgeInsets.only(left: 3, right: 3),
               width: MediaQuery.of(context).size.width * headTitle[2].width,
@@ -238,11 +222,26 @@ class _ItemListWidget extends StatelessWidget {
                               width: MediaQuery.of(context).size.width * headTitle[0].width,
                               child: Row(
                                 children: [
+                                  /// delete product's items
                                   InkWell(
                                     onTap: () {
-                                      context
-                                          .read<TableCubit>()
-                                          .removeItemFromProduct(product, item);
+                                      /// check if at least 1 option is required for product
+                                      if ((context
+                                                  .read<ProductCubit>()
+                                                  .state
+                                                  .selectedProduct
+                                                  ?.options
+                                                  ?.length ??
+                                              -1) >
+                                          0) {
+                                        context
+                                            .read<TableCubit>()
+                                            .removeItemFromProduct(product, item, true);
+                                      } else {
+                                        context
+                                            .read<TableCubit>()
+                                            .removeItemFromProduct(product, item, false);
+                                      }
                                     },
                                     child: Container(
                                       constraints: const BoxConstraints(

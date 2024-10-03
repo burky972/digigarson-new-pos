@@ -35,9 +35,7 @@ class _TableWidget extends StatelessWidget {
                     _TableCellTitleText(title: 'Quick Service'),
                   ],
                 ),
-                ...state.subCategories.asMap().entries.map((entry) {
-                  // int index = entry.key;
-                  CategoryModel category = entry.value;
+                ...state.subCategories.map((category) {
                   return TableRow(
                     decoration: BoxDecoration(
                       color: category == state.selectedSubCategory
@@ -50,23 +48,34 @@ class _TableWidget extends StatelessWidget {
                         listenWhen: (previous, current) =>
                             previous.selectedSubCategory?.title !=
                             current.selectedSubCategory?.title,
-                        child: _TableCellContentText(
-                            onTap: () =>
-                                context.read<CategoryCubit>().setSelectedSubCategory(category),
-                            content: category.title ?? ''),
+                        child: TableRowInkWell(
+                          onTap: () =>
+                              context.read<CategoryCubit>().setSelectedSubCategory(category),
+                          child: _TableCellContentText(content: category.title ?? ''),
+                        ),
                       ),
-                      _TableCellContentText(
-                        // onTap: () => widget.onRowTap(index),
-                        onTap: () => {},
-                        content: '',
+                      TableRowInkWell(
+                        onTap: () => context.read<CategoryCubit>().setSelectedSubCategory(category),
+                        child: const _TableCellContentText(
+                          content: '',
+                        ),
                       ),
-                      _TableUnOnPressedCheckBox(
-                        value: false,
-                        onTap: () {},
+                      TableRowInkWell(
+                        onTap: () => context
+                            .read<CategoryCubit>()
+                            .toggleActiveStatus(category.id.toString(), OrderType.DINE_IN),
+                        child: _TableUnOnPressedCheckBox(
+                          value: category.activeList?.contains(OrderType.DINE_IN.value) ?? false,
+                        ),
                       ),
-                      _TableUnOnPressedCheckBox(
-                        value: false,
-                        onTap: () {},
+                      TableRowInkWell(
+                        onTap: () => context
+                            .read<CategoryCubit>()
+                            .toggleActiveStatus(category.id.toString(), OrderType.QUICK_SERVICE),
+                        child: _TableUnOnPressedCheckBox(
+                          value:
+                              category.activeList?.contains(OrderType.QUICK_SERVICE.value) ?? false,
+                        ),
                       ),
                     ],
                   );
@@ -95,24 +104,18 @@ class _TableCellTitleText extends StatelessWidget {
 }
 
 class _TableCellContentText extends StatelessWidget {
-  const _TableCellContentText({required this.onTap, required this.content});
-  final VoidCallback onTap;
+  const _TableCellContentText({required this.content});
   final String content;
 
   @override
   Widget build(BuildContext context) {
-    return TableCell(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Padding(
-          padding: const AppPadding.minAll(),
-          child: Center(
-            child: Text(
-              content,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
+    return Padding(
+      padding: const AppPadding.minAll(),
+      child: Center(
+        child: Text(
+          content,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
     );
@@ -120,23 +123,17 @@ class _TableCellContentText extends StatelessWidget {
 }
 
 class _TableUnOnPressedCheckBox extends StatelessWidget {
-  const _TableUnOnPressedCheckBox({required this.value, required this.onTap});
+  const _TableUnOnPressedCheckBox({required this.value});
   final bool? value;
-  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return TableCell(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Padding(
-          padding: const AppPadding.minAll(),
-          child: Center(
-            child: Checkbox(
-              value: value,
-              onChanged: null,
-            ),
-          ),
+    return Padding(
+      padding: const AppPadding.minAll(),
+      child: Center(
+        child: Checkbox(
+          value: value,
+          onChanged: null,
         ),
       ),
     );

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/cubit/category_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/cubit/product_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/model/product_model.dart';
@@ -15,6 +17,8 @@ import 'package:a_pos_flutter/product/widget/dialog/cover_dialog.dart';
 import 'package:a_pos_flutter/product/widget/dialog/edit_customer_count_dialog.dart';
 import 'package:a_pos_flutter/product/widget/dialog/move_table_product_dialog.dart';
 import 'package:a_pos_flutter/product/widget/dialog/new_checkout_dialog.dart';
+import 'package:a_pos_flutter/product/widget/dialog/option_check_dialog.dart';
+import 'package:a_pos_flutter/product/widget/dialog/option_multiple_product_dialog.dart';
 import 'package:a_pos_flutter/product/widget/pop_up/pop_up.dart';
 import 'package:flutter/material.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';

@@ -1,8 +1,10 @@
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/cubit/option_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/cubit/option_state.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/model/option_model.dart';
+import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/cubit/product_cubit.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/responsive/border.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
@@ -69,13 +71,17 @@ class _OptionGroupsViewState extends State<OptionGroupsView> with AutomaticKeepA
                               option == state.selectedOption ? context.colorScheme.tertiary : null,
                         ),
                         children: [
-                          _TableCellText(
+                          TableRowInkWell(
                             onTap: () => optionCubit.setSelectedOption(option),
-                            text: option.name.toString(),
+                            child: _TableCellText(
+                              text: option.name.toString(),
+                            ),
                           ),
-                          _TableCellText(
+                          TableRowInkWell(
                             onTap: () => optionCubit.setSelectedOption(option),
-                            text: option.specialName.toString(),
+                            child: _TableCellText(
+                              text: option.specialName.toString(),
+                            ),
                           ),
                         ],
                       );
@@ -184,24 +190,18 @@ class _OptionGroupsViewState extends State<OptionGroupsView> with AutomaticKeepA
 }
 
 class _TableCellText extends StatelessWidget {
-  const _TableCellText({required this.onTap, required this.text});
-  final VoidCallback onTap;
+  const _TableCellText({required this.text});
   final String text;
   @override
   Widget build(BuildContext context) {
-    return TableCell(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Padding(
-          padding: const AppPadding.minAll(),
-          child: Center(
-            child: Text(
-              text,
-              style: CustomFontStyle.menuTextStyle,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
+    return Padding(
+      padding: const AppPadding.minAll(),
+      child: Center(
+        child: Text(
+          text,
+          style: CustomFontStyle.menuTextStyle,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
     );

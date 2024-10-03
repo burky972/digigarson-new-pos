@@ -10,6 +10,13 @@ class ProductState extends BaseState {
     required this.productImage,
     required this.selectedColor,
     required this.categorizedProducts,
+    required this.productOptions,
+    required this.allOptions,
+    required this.selectedOption,
+    required this.productOptionList,
+    required this.selectedItems,
+    required this.selectedProductQuantity,
+    required this.remainingQuantity,
   });
 
   factory ProductState.initial() {
@@ -21,6 +28,13 @@ class ProductState extends BaseState {
       productImage: null,
       selectedColor: null,
       categorizedProducts: {},
+      productOptions: {},
+      allOptions: [],
+      selectedOption: null,
+      productOptionList: [],
+      selectedItems: [],
+      selectedProductQuantity: null,
+      remainingQuantity: null,
     );
   }
 
@@ -31,6 +45,13 @@ class ProductState extends BaseState {
   final File? productImage;
   final Color? selectedColor;
   final Map<String, List<ProductModel>>? categorizedProducts;
+  final Map<String, List<ProductOptionModel>> productOptions;
+  final List<OptionModel?> allOptions;
+  final List<OptionModel?> productOptionList; // product's option list
+  final OptionModel? selectedOption;
+  final List<Item> selectedItems;
+  final int? selectedProductQuantity;
+  final int? remainingQuantity;
 
   @override
   List<Object?> get props => [
@@ -40,7 +61,14 @@ class ProductState extends BaseState {
         selectedProduct,
         productImage,
         selectedColor,
-        categorizedProducts
+        categorizedProducts,
+        productOptions,
+        allOptions,
+        selectedOption,
+        productOptionList,
+        selectedItems,
+        selectedProductQuantity,
+        remainingQuantity,
       ];
 
   ProductState copyWith({
@@ -51,6 +79,13 @@ class ProductState extends BaseState {
     File? Function()? productImage,
     Color? Function()? selectedColor,
     Map<String, List<ProductModel>>? categorizedProducts,
+    Map<String, List<ProductOptionModel>>? productOptions,
+    List<OptionModel?>? allOptions,
+    OptionModel? Function()? selectedOption,
+    List<OptionModel?>? productOptionList,
+    List<Item>? selectedItems,
+    int? Function()? selectedProductQuantity,
+    int? Function()? remainingQuantity,
   }) {
     return ProductState(
       states: states ?? this.states,
@@ -60,6 +95,15 @@ class ProductState extends BaseState {
       productImage: productImage != null ? productImage() : this.productImage,
       selectedColor: selectedColor != null ? selectedColor() : this.selectedColor,
       categorizedProducts: categorizedProducts ?? this.categorizedProducts,
+      productOptions: productOptions ?? this.productOptions,
+      allOptions: allOptions ?? this.allOptions,
+      selectedOption: selectedOption != null ? selectedOption() : this.selectedOption,
+      productOptionList: productOptionList ?? this.productOptionList,
+      selectedItems: selectedItems ?? this.selectedItems,
+      selectedProductQuantity: selectedProductQuantity != null
+          ? selectedProductQuantity()
+          : this.selectedProductQuantity,
+      remainingQuantity: remainingQuantity != null ? remainingQuantity() : this.remainingQuantity,
     );
   }
 }

@@ -1,8 +1,6 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:core/base/model/base_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
-
 part 'product_model.g.dart';
 
 @JsonSerializable(includeIfNull: false)
@@ -14,8 +12,8 @@ class ProductModel extends BaseModel<ProductModel> {
   final List<PriceModel>? prices;
   final String? description;
   @JsonKey(name: 'active_list')
-  final List<dynamic>? activeList;
-  final List<dynamic>? options;
+  final List<int>? activeList;
+  final List<ProductOptionModel>? options;
   final bool? favorite;
   final bool? opportunity;
   final List<dynamic>? allergen;
@@ -90,8 +88,8 @@ class ProductModel extends BaseModel<ProductModel> {
     String? category,
     List<PriceModel>? prices,
     String? description,
-    List<dynamic>? activeList,
-    List<dynamic>? options,
+    List<int>? activeList,
+    List<ProductOptionModel>? options,
     bool? favorite,
     bool? opportunity,
     List<dynamic>? allergen,
@@ -182,6 +180,40 @@ class PriceModel extends Equatable {
       orderType: orderType ?? this.orderType,
       vatRate: vatRate ?? this.vatRate,
       price: price ?? this.price,
+    );
+  }
+}
+
+@JsonSerializable(includeIfNull: false)
+class ProductOptionModel extends BaseModel<ProductOptionModel> {
+  ProductOptionModel({
+    required this.id,
+    required this.isForcedChoice,
+  });
+  @JsonKey(name: '_id')
+  final String id;
+  @JsonKey(name: 'is_forced_choice')
+  final bool isForcedChoice;
+
+  factory ProductOptionModel.fromJson(Map<String, dynamic> json) =>
+      _$ProductOptionModelFromJson(json);
+
+  @override
+  ProductOptionModel fromJson(Map<String, dynamic> json) => _$ProductOptionModelFromJson(json);
+
+  @override
+  List<Object?> get props => [id, isForcedChoice];
+
+  @override
+  Map<String, dynamic> toJson() => _$ProductOptionModelToJson(this);
+
+  ProductOptionModel copyWith({
+    String? id,
+    bool? isForcedChoice,
+  }) {
+    return ProductOptionModel(
+      id: id ?? this.id,
+      isForcedChoice: isForcedChoice ?? this.isForcedChoice,
     );
   }
 }

@@ -320,7 +320,6 @@ class CoverDialog {
                                             onPressed: () {
                                               setState(() {
                                                 type = ServiceFeeType.PERCENT.value;
-                                                appLogger.info("type:", " $type");
                                               });
                                             },
                                             type: type),
@@ -329,7 +328,6 @@ class CoverDialog {
                                             onPressed: () {
                                               setState(() {
                                                 type = ServiceFeeType.AMOUNT.value;
-                                                appLogger.info("type:", " $type");
                                               });
                                             },
                                             type: type),

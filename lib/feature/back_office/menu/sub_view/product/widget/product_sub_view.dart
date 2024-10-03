@@ -118,7 +118,7 @@ class _MiddleProductTableWidget extends StatelessWidget {
                                     ...productsToDisplay.map((product) {
                                       return TableRow(
                                         decoration: BoxDecoration(
-                                          color: product == state.selectedProduct
+                                          color: product.id == state.selectedProduct?.id!
                                               ? context.colorScheme.tertiary
                                               : null,
                                         ),
@@ -130,7 +130,11 @@ class _MiddleProductTableWidget extends StatelessWidget {
                                             listener: (context, state) {},
                                             listenWhen: (previous, current) =>
                                                 previous.selectedProduct?.title !=
-                                                current.selectedProduct?.title,
+                                                    current.selectedProduct?.title ||
+                                                previous.selectedProduct?.options !=
+                                                    current.selectedProduct?.options ||
+                                                previous.selectedProduct?.options!.length !=
+                                                    current.selectedProduct?.options!.length,
                                             child: _MiddleTableCellTextWidget(
                                               product: product,
                                               text: product.title ?? '',
@@ -188,8 +192,9 @@ class _MiddleProductTableWidget extends StatelessWidget {
                         ),
                       ),
                     ),
-                    //! right small Table Option Widget !!
-                    const RightOptionTableWidget()
+                    RightOptionTableWidget(
+                      key: ValueKey(state.selectedProduct?.id),
+                    ),
                   ],
                 ),
               ),
@@ -213,8 +218,15 @@ class RightOptionTableWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final ScrollController smallTableScrollController = ScrollController();
     final ScrollController smallTableHorizontalController = ScrollController();
-    return BlocBuilder<OptionCubit, OptionState>(
+
+    return BlocBuilder<ProductCubit, ProductState>(
       builder: (context, state) {
+        final selectedProduct = state.selectedProduct;
+        String productId = selectedProduct?.id ?? '';
+        var selectedOptionIds = state.productOptions[productId] ?? [];
+        if (selectedProduct == null) {
+          return const Center(child: Text('No product selected'));
+        }
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Column(
@@ -249,8 +261,10 @@ class RightOptionTableWidget extends StatelessWidget {
                                 _TableCellTitleWidget(title: 'Maximum Options'),
                               ],
                             ),
-                            ...state.allOptions.asMap().entries.map((entry) {
-                              OptionModel option = entry.value ?? OptionModel.empty();
+                            ...state.allOptions.map((option) {
+                              bool isSelected = selectedOptionIds
+                                  .any((selectedOption) => selectedOption.id == option?.id);
+
                               return TableRow(
                                 decoration: BoxDecoration(
                                   color: option == state.selectedOption
@@ -262,20 +276,31 @@ class RightOptionTableWidget extends StatelessWidget {
                                     child: Padding(
                                       padding: const AppPadding.minAll(),
                                       child: Checkbox(
-                                        value: false,
-                                        onChanged: (value) {},
+                                        value: isSelected,
+                                        onChanged: (value) {
+                                          context.read<ProductCubit>().toggleOptionToProduct(
+                                                productId,
+                                                ProductOptionModel(
+                                                    id: option!.id!, isForcedChoice: false),
+                                                context
+                                                    .read<CategoryCubit>()
+                                                    .selectedSubCategory!
+                                                    .id!,
+                                              );
+                                        },
                                       ),
                                     ),
                                   ),
-                                  _TableCellTextWidget(
+                                  TableRowInkWell(
                                     onTap: () =>
-                                        context.read<OptionCubit>().setSelectedOption(option),
-                                    text: option.name!,
+                                        context.read<ProductCubit>().setSelectedOption(option),
+                                    child: _TableCellTextWidget(text: option!.name!),
                                   ),
-                                  _TableCellTextWidget(
+                                  TableRowInkWell(
                                     onTap: () =>
-                                        context.read<OptionCubit>().setSelectedOption(option),
-                                    text: option.chooseLimit.toString(),
+                                        context.read<ProductCubit>().setSelectedOption(option),
+                                    child:
+                                        _TableCellTextWidget(text: option.chooseLimit.toString()),
                                   ),
                                 ],
                               );

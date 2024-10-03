@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/cubit/category_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/model/category_model.dart';
+import 'package:a_pos_flutter/product/enums/order_type/order_type.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
 import 'package:a_pos_flutter/product/global/getters/getter.dart';
@@ -249,14 +250,14 @@ class _MenuGroupViewState extends State<CategoryView> with AutomaticKeepAliveCli
                                           child: Row(
                                             children: [
                                               Checkbox(
-                                                // value: widget.data[widget.selectedRowIndex!]['dinIn'],
-                                                value: false,
-                                                onChanged: (value) {
-                                                  // if (value != null) {
-                                                  //   setState(() {
-                                                  //     widget.onCheckboxChanged('dinIn', value);
-                                                  //   });
-                                                  // }
+                                                value: state.selectedSubCategory?.activeList
+                                                        ?.contains(OrderType.DINE_IN.value) ??
+                                                    false,
+                                                onChanged: (var val) {
+                                                  context.read<CategoryCubit>().toggleActiveStatus(
+                                                      state.selectedSubCategory?.id.toString() ??
+                                                          '',
+                                                      OrderType.DINE_IN);
                                                 },
                                               ),
                                               const SizedBox(width: 8),
@@ -269,16 +270,8 @@ class _MenuGroupViewState extends State<CategoryView> with AutomaticKeepAliveCli
                                           child: Row(
                                             children: [
                                               Checkbox(
-                                                // value: widget.data[widget.selectedRowIndex!]['takeOut'],
                                                 value: false,
-
-                                                onChanged: (value) {
-                                                  // if (value != null) {
-                                                  //   setState(() {
-                                                  //     widget.onCheckboxChanged('takeOut', value);
-                                                  //   });
-                                                  // }
-                                                },
+                                                onChanged: (value) {},
                                               ),
                                               const SizedBox(width: 8),
                                               const Text('Take Out'),
@@ -290,17 +283,8 @@ class _MenuGroupViewState extends State<CategoryView> with AutomaticKeepAliveCli
                                           child: Row(
                                             children: [
                                               Checkbox(
-                                                // value: widget.data[widget.selectedRowIndex!]
-                                                // ['delivery'],
                                                 value: false,
-
-                                                onChanged: (value) {
-                                                  // if (value != null) {
-                                                  //   setState(() {
-                                                  //     widget.onCheckboxChanged('delivery', value);
-                                                  //   });
-                                                  // }
-                                                },
+                                                onChanged: (value) {},
                                               ),
                                               const SizedBox(width: 8),
                                               const Text('Delivery'),
@@ -312,17 +296,19 @@ class _MenuGroupViewState extends State<CategoryView> with AutomaticKeepAliveCli
                                           child: Row(
                                             children: [
                                               Checkbox(
-                                                // value: widget.data[widget.selectedRowIndex!]
-                                                //     ['quickService'],
-                                                value: false,
-                                                onChanged: (value) {
-                                                  // if (value != null) {
-                                                  //   setState(() {
-                                                  //     widget.onCheckboxChanged('quickService', value);
-                                                  //   });
-                                                  // }
-                                                },
-                                              ),
+                                                  value: state.selectedSubCategory?.activeList
+                                                          ?.contains(
+                                                              OrderType.QUICK_SERVICE.value) ??
+                                                      false,
+                                                  onChanged: (value) {
+                                                    context
+                                                        .read<CategoryCubit>()
+                                                        .toggleActiveStatus(
+                                                            state.selectedSubCategory?.id
+                                                                    .toString() ??
+                                                                '',
+                                                            OrderType.QUICK_SERVICE);
+                                                  }),
                                               const SizedBox(width: 8),
                                               const Text('Quick Service'),
                                             ],
@@ -333,15 +319,8 @@ class _MenuGroupViewState extends State<CategoryView> with AutomaticKeepAliveCli
                                           child: Row(
                                             children: [
                                               Checkbox(
-                                                // value: widget.data[widget.selectedRowIndex!]['bar'],
                                                 value: false,
-                                                onChanged: (value) {
-                                                  // if (value != null) {
-                                                  //   setState(() {
-                                                  //     widget.onCheckboxChanged('bar', value);
-                                                  //   });
-                                                  // }
-                                                },
+                                                onChanged: (value) {},
                                               ),
                                               const SizedBox(width: 8),
                                               const Text('Bar'),

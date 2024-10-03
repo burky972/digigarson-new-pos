@@ -242,27 +242,6 @@ class OptionCubit extends IOptionCubit {
     ));
   }
 
-  // Future<void> addNewOption() async {
-  //   //If there is a selected option or the title of the last option is empty, do not perform the operation.
-  //   if (state.allOptions.isNotEmpty &&
-  //       (state.allOptions.last?.name == null ||
-  //           state.allOptions.last!.name!.isEmpty ||
-  //           state.selectedOption == null)) return;
-
-  //   // clear text controllers
-  //   optionNameController.clear();
-  //   optionDescController.clear();
-
-  //   // Create new option and add
-  //   final newOption = OptionModel.empty();
-  //   final updatedOptions = List<OptionModel>.from(state.allOptions)..add(newOption);
-
-  //   emit(state.copyWith(
-  //     allOptions: updatedOptions,
-  //     selectedOption: newOption,
-  //   ));
-  // }
-
   /// SAVE CHANGES AND REQUEST TO POST OPTION SERVICE
   @override
   Future<void> saveChanges() async {
@@ -355,8 +334,12 @@ class OptionCubit extends IOptionCubit {
               return i.copyWith(id: () => null);
             }
             return i.copyWith(id: () => null);
-          }).toList();
+          }).toList(); //13
           final updatedOption = option.copyWith(items: updatedItems);
+          appLogger.info('saveItemChanges', 'UPDATED ITEM: ${updatedOption.toJson().toString()}');
+          for (var element in updatedOption.items ?? []) {
+            appLogger.info('saveItemChanges', 'UPDATED ITEM: ${element.toJson().toString()}');
+          }
           await putOptions(optionId: optionId!, optionModel: updatedOption);
         }
       }
@@ -421,20 +404,26 @@ class OptionCubit extends IOptionCubit {
     final response = await _optionService.postOptions(optionModel: newOptionModel);
     response.fold((l) {
       emit(state.copyWith(states: OptionStates.error));
-    }, (r) {
+    }, (r) async {
       OptionModel option = OptionModel.fromJson(r.data);
       emit(state.copyWith(option: option, states: OptionStates.completed));
+      await getOptions();
     });
   }
 
   /// putOptions
   @override
   Future putOptions({required OptionModel optionModel, required String optionId}) async {
-    final response = await _optionService.putOptions(optionId: optionId, optionModel: optionModel);
+    final modifiedOptionModel = optionModel.copyWith(
+      items: optionModel.items?.map((item) => item.copyWith(id: null)).toList(),
+    );
+    final response =
+        await _optionService.putOptions(optionId: optionId, optionModel: modifiedOptionModel);
     response.fold((l) {
       emit(state.copyWith(states: OptionStates.error));
-    }, (r) {
+    }, (r) async {
       OptionModel option = OptionModel.fromJson(r.data);
+      await getOptions();
       emit(state.copyWith(option: option, states: OptionStates.completed));
     });
   }

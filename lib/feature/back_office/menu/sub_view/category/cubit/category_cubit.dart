@@ -4,6 +4,7 @@ import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/cubit/i
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/model/category_model.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/service/category_service.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/service/i_category_service.dart';
+import 'package:a_pos_flutter/product/enums/order_type/order_type.dart';
 import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/global/service/global_service.dart';
 import 'package:core/core.dart';
@@ -72,17 +73,6 @@ class CategoryCubit extends ICategoryCubit {
       firstCategoriesLength = categoryList.length;
       // Original categories are deep copied here
       originalCategories = processedCategories.map((category) => category.copyWith()).toList();
-
-      // originalCategories = categoryList
-      //     .map((category) => CategoryModel(
-      //           parentCategory: category.parentCategory,
-      //           id: category.id,
-      //           title: category.title,
-      //           image: category.image,
-      //           isSubCategory: category.isSubCategory,
-      //           activeList: category.activeList,
-      //         ))
-      //     .toList();
     });
   }
 
@@ -160,7 +150,7 @@ class CategoryCubit extends ICategoryCubit {
           title: '',
           isSubCategory: false,
           image: '',
-          activeList: const [1],
+          activeList: const [],
         )),
     ));
     emit(state.copyWith(selectedCategory: () => state.mainCategories.last));
@@ -181,10 +171,9 @@ class CategoryCubit extends ICategoryCubit {
           parentCategory: state.selectedCategory?.id,
           isSubCategory: true,
           image: '',
-          activeList: const [1],
+          activeList: const [],
         )),
     ));
-    appLogger.warning('WARMOMG: ', '${state.selectedCategory?.id}');
     emit(state.copyWith(selectedSubCategory: () => state.subCategories.last));
   }
 
@@ -276,10 +265,10 @@ class CategoryCubit extends ICategoryCubit {
           (originalSubCategory.title != subCategory.title ||
               originalSubCategory.image != subCategory.image ||
               originalSubCategory.parentCategory != subCategory.parentCategory ||
-              originalSubCategory.isSubCategory != subCategory.isSubCategory)) {
+              originalSubCategory.isSubCategory != subCategory.isSubCategory ||
+              originalSubCategory.activeList != subCategory.activeList)) {
         // Ensure that a POST request hasn't already been made
         if (!postedList.contains(subCategory.title ?? "")) {
-          appLogger.info('SUBCATEGORY (PUT): ', subCategory.toJson().toString());
           CategoryModel newSubCategory = subCategory.copyWith(parentCategoryTitle: () => null);
           if (state.selectedSubCategory!.image!.length < 500) {
             CategoryModel newCateModel = newSubCategory.copyWith(image: () => null);
@@ -500,6 +489,74 @@ class CategoryCubit extends ICategoryCubit {
     emit(state.copyWith(
       subCategories: updatedCategories,
       selectedSubCategory: () => updatedCategory,
+    ));
+  }
+
+  /// toggle checkBox for active list
+//TODO: CHEK TO MAKE THIS CODE BETTER!
+  void toggleActiveStatus(String categoryId, OrderType orderType) {
+    // If the selected category exists and has been newly added, only process the selected category
+    if (state.selectedSubCategory != null &&
+        !originalSubCategories.map((e) => e.id).contains(state.selectedSubCategory!.id)) {
+      appLogger.info('ORIGINAL SUBCATEGORIES', 'NOT FOUND');
+
+      List<int> updatedActiveList = List.from(state.selectedSubCategory!.activeList ?? []);
+
+      if (updatedActiveList.contains(orderType.value)) {
+        updatedActiveList.remove(orderType.value);
+      } else {
+        updatedActiveList.add(orderType.value);
+      }
+      final updatedSelectedSubCategory = state.selectedSubCategory!.copyWith(
+        activeList: updatedActiveList,
+      );
+
+      final updatedSubCategories =
+          List<CategoryModel>.from(state.subCategories.map((category) => category));
+      final selectedIndex =
+          updatedSubCategories.indexWhere((category) => category == state.selectedSubCategory);
+
+      if (selectedIndex != -1) {
+        updatedSubCategories[selectedIndex] = updatedSelectedSubCategory;
+      } else {
+        updatedSubCategories.add(updatedSelectedSubCategory);
+      }
+
+      emit(state.copyWith(
+        subCategories: updatedSubCategories,
+        selectedSubCategory: () => updatedSelectedSubCategory,
+      ));
+
+      return;
+    }
+
+    // If the selected category does not exist, process all categories
+    if (state.selectedSubCategory == null || state.selectedSubCategory!.id != categoryId) {
+      return;
+    }
+
+    // If the selected category exists, process all categories
+    final updatedSubCategories = state.subCategories.map((category) {
+      if (category.id == categoryId) {
+        List<int> updatedActiveList = List.from(category.activeList ?? []);
+        if (updatedActiveList.contains(orderType.value)) {
+          updatedActiveList.remove(orderType.value);
+        } else {
+          updatedActiveList.add(orderType.value);
+        }
+        return category.copyWith(activeList: updatedActiveList);
+      }
+      return category;
+    }).toList();
+
+    final updatedSelectedSubCategory = updatedSubCategories.firstWhere(
+      (category) => category.id == categoryId,
+      orElse: () => state.selectedSubCategory!,
+    );
+
+    emit(state.copyWith(
+      subCategories: updatedSubCategories,
+      selectedSubCategory: () => updatedSelectedSubCategory,
     ));
   }
 

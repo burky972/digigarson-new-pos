@@ -23,6 +23,7 @@ class _LeftSideOptionGroupTable extends StatelessWidget {
                 children: state.allOptions
                     .map((option) => GestureDetector(
                           onTap: () {
+                            appLogger.info('onTap', 'option: ${option?.toJson()}');
                             optionCubit.setSelectedOption(option ?? OptionModel.empty());
                           },
                           child: Container(

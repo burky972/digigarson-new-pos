@@ -12,11 +12,7 @@ class TableButtonWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: (context.dynamicWidth(.32) + (context.dynamicWidth(.06) - 60)) / 4,
-      constraints: const BoxConstraints(
-        minWidth: 60,
-        maxWidth: 110,
-        minHeight: 55,
-      ),
+      constraints: const BoxConstraints(minWidth: 60, maxWidth: 110, minHeight: 35, maxHeight: 50),
       decoration: BoxDecoration(
           color: Colors.black12,
           borderRadius:

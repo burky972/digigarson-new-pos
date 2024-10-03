@@ -1,5 +1,6 @@
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/model/option_model.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/cubit/product_cubit.dart';
+import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
 import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
@@ -10,19 +11,17 @@ import 'package:a_pos_flutter/product/widget/button/light_blue_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class OptionCheckDialog extends StatelessWidget {
-  const OptionCheckDialog({
+class OptionMultipleProductDialog extends StatelessWidget {
+  const OptionMultipleProductDialog({
     super.key,
     required this.product,
     required this.isForce,
     this.isExistProduct = false,
-    required this.onUpdate,
   });
 
   final OrderProductModel product;
   final bool isForce;
   final bool isExistProduct;
-  final Function(List<Options>, List<Item>) onUpdate;
 
   @override
   Widget build(BuildContext context) {
@@ -37,11 +36,11 @@ class OptionCheckDialog extends StatelessWidget {
 
         return Dialog(
           child: SizedBox(
+            height: context.height,
             width: context.dynamicWidth(0.75),
-            height: context.dynamicHeight(0.9),
-            child: ListView(
-              // mainAxisSize: MainAxisSize.min,
-              // crossAxisAlignment: CrossAxisAlignment.start,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 /// Top option title
                 Container(
@@ -81,7 +80,7 @@ class OptionCheckDialog extends StatelessWidget {
                     ],
                   ),
                 ),
-                // const Spacer(),
+                const Spacer(),
 
                 /// bottom button fields
                 Padding(
@@ -90,26 +89,37 @@ class OptionCheckDialog extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       LightBlueButton(
-                        buttonText: 'Enter',
-                        onTap: () {
-                          if (state.selectedItems.isNotEmpty) {
-                            final updatedOptions = [
-                              Options(
-                                optionId: selectedProductOption.id ?? '',
-                                name: selectedProductOption.name ?? '',
-                                items: state.selectedItems
-                                    .map((item) =>
-                                        item.copyWith(priceType: 'REGULAR', itemId: item.id))
-                                    .toList(),
-                              )
-                            ];
+                          buttonText: 'Enter (${state.remainingQuantity})',
+                          onTap: () {
+                            if (state.selectedItems.isNotEmpty) {
+                              final updatedOptions = [
+                                Options(
+                                  optionId: selectedProductOption.id ?? '',
+                                  name: selectedProductOption.name ?? '',
+                                  items: state.selectedItems
+                                      .map((item) =>
+                                          item.copyWith(priceType: 'REGULAR', itemId: item.id))
+                                      .toList(),
+                                )
+                              ];
+                              context.read<TableCubit>().setNewMultipleOrderProducts(
+                                    product,
+                                    1.0,
+                                    updatedOptions,
+                                  );
 
-                            onUpdate(updatedOptions, state.selectedItems);
-                            context.read<ProductCubit>().resetSelectedItems();
-                            Navigator.pop(context);
-                          }
-                        },
-                      ),
+                              context.read<ProductCubit>().decrementRemainingQuantity();
+
+                              if (context.read<ProductCubit>().hasRemainingQuantity) {
+                                context.read<ProductCubit>().resetSelectedItems();
+                              } else {
+                                context.read<ProductCubit>().setSelectedProductQuantity(null);
+                                context.read<ProductCubit>().setSelectedItems([]);
+                                context.read<ProductCubit>().resetSelectedItems();
+                                Navigator.pop(context);
+                              }
+                            }
+                          }),
                       LightBlueButton(
                         buttonText: 'Void',
                         onTap: () {},
@@ -118,6 +128,7 @@ class OptionCheckDialog extends StatelessWidget {
                           buttonText: 'Close',
                           onTap: () {
                             context.read<ProductCubit>().resetSelectedItems();
+                            context.read<ProductCubit>().setSelectedProductQuantity(null);
                             Navigator.pop(context);
                           }),
                     ],
@@ -173,9 +184,8 @@ class _OptionGroupGridView extends StatelessWidget {
                 isSelected: isForce
                     ? options[index]?.id == state.selectedOption?.id
                     : state.allOptions[index] == state.selectedOption,
-                onTapped: () => options.length == 1
-                    ? null
-                    : context.read<ProductCubit>().setSelectedOption(state.allOptions[index]!),
+                onTapped: () =>
+                    context.read<ProductCubit>().setSelectedOption(state.allOptions[index]!),
               );
             },
           ),

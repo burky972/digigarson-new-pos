@@ -96,7 +96,7 @@ class SectionWidget extends StatelessWidget {
               //     previous.selectedSection?.id != current.selectedSection?.id,
               builder: (context, state) {
                 return SizedBox(
-                  height: 500,
+                  height: 400,
                   child: AvailableTablesWidget(
                     sectionId: state.selectedSection!.id!,
                   ),

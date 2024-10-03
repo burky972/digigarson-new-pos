@@ -1,6 +1,4 @@
-import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:flutter/material.dart';
-
 import 'dart:async';
 import 'dart:convert';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/cubit/category_cubit.dart';
@@ -413,11 +411,6 @@ class _BottomButtonFields extends StatelessWidget {
           onTap: context.read<CategoryCubit>().state.selectedCategory == null
               ? null
               : () async {
-                  appLogger.info('DELETE CATEGORY',
-                      'ID: ${context.read<CategoryCubit>().selectedCategory?.id}');
-                  appLogger.info('DELETE CATEGORY',
-                      'TITLE: ${context.read<CategoryCubit>().state.selectedCategory?.title ?? "X"}');
-
                   await patchCategory(context);
                 },
         ),
@@ -500,15 +493,15 @@ class _TableWidget extends StatelessWidget {
                         listener: (context, state) {},
                         listenWhen: (previous, current) =>
                             previous.selectedCategory?.title != current.selectedCategory?.title,
-                        child: _TableCellContentText(
-                            onTap: () =>
-                                context.read<CategoryCubit>().setSelectedCategory(category),
-                            content: category.title ?? ''),
+                        child: TableRowInkWell(
+                          onTap: () => context.read<CategoryCubit>().setSelectedCategory(category),
+                          child: _TableCellContentText(content: category.title ?? ''),
+                        ),
                       ),
-                      _TableCellContentText(
-                          // onTap: () => widget.onRowTap(index),
-                          onTap: () => {},
-                          content: category.parentCategory ?? ''),
+                      TableRowInkWell(
+                        onTap: () => context.read<CategoryCubit>().setSelectedCategory(category),
+                        child: _TableCellContentText(content: category.parentCategory ?? ''),
+                      ),
                       _TableUnOnPressedCheckBox(
                         value: false,
                         onTap: () {},
@@ -544,24 +537,18 @@ class _TableCellTitleText extends StatelessWidget {
 }
 
 class _TableCellContentText extends StatelessWidget {
-  const _TableCellContentText({required this.onTap, required this.content});
-  final VoidCallback onTap;
+  const _TableCellContentText({required this.content});
   final String content;
 
   @override
   Widget build(BuildContext context) {
-    return TableCell(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Padding(
-          padding: const AppPadding.minAll(),
-          child: Center(
-            child: Text(
-              content,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
+    return Padding(
+      padding: const AppPadding.minAll(),
+      child: Center(
+        child: Text(
+          content,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
     );

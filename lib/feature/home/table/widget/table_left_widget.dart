@@ -1,4 +1,5 @@
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/model/option_model.dart';
+import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/cubit/product_cubit.dart';
 import 'package:a_pos_flutter/feature/home/checks/model/re_open_model.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_state.dart';
@@ -513,7 +514,6 @@ class _TableLeftWidgetState extends State<TableLeftWidget> {
     );
   }
 
-  Future<void> handleQuickServiceSale() async {}
   Future<void> handleButtonAction(
       ButtonAction action, BuildContext context, TableState state) async {
     TableCubit tableCubit = context.read<TableCubit>();
@@ -801,10 +801,7 @@ class _NumberButtonState extends State<NumberButton> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-        onTap: () {
-          // Provider.of<TableListProvider>(context, listen: false)
-          //     .setNewOrderAmount(widget.txt, widget.txt.toLowerCase() == "c");
-        },
+        onTap: () {},
         child: TableLeftNumberContainerWidget(
           text: widget.txt,
           textColor: widget.color,
@@ -819,19 +816,29 @@ class TableLeftNumberContainerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      constraints: const BoxConstraints(minWidth: 10, maxWidth: 42, minHeight: 10, maxHeight: 42),
-      decoration: BoxDecoration(
-          color: Colors.black12,
-          borderRadius:
-              const BorderRadius.only(topLeft: Radius.circular(5), topRight: Radius.circular(5)),
-          border: BorderConstants.borderAllSmall),
-      child: Center(
-        child: Text(
-          text,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              color: textColor ?? Colors.lightGreen, fontSize: 16, fontWeight: FontWeight.bold),
+    return InkWell(
+      onTap: () {
+        if (text.trim() == "C") {
+          context.read<ProductCubit>().setSelectedProductQuantity(null);
+          return;
+        }
+        int quantity = int.parse(text);
+        context.read<ProductCubit>().setSelectedProductQuantity(quantity);
+      },
+      child: Container(
+        constraints: const BoxConstraints(minWidth: 10, maxWidth: 42, minHeight: 10, maxHeight: 42),
+        decoration: BoxDecoration(
+            color: Colors.black12,
+            borderRadius:
+                const BorderRadius.only(topLeft: Radius.circular(5), topRight: Radius.circular(5)),
+            border: BorderConstants.borderAllSmall),
+        child: Center(
+          child: Text(
+            text,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                color: textColor ?? Colors.lightGreen, fontSize: 16, fontWeight: FontWeight.bold),
+          ),
         ),
       ),
     );

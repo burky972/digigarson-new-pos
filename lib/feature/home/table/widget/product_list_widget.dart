@@ -5,6 +5,127 @@ class _ProductListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    OrderProductModel createOrderProductModel(ProductModel product, String randomNumber) {
+      return OrderProductModel(
+        uniqueTimestamp: DateTime.now().millisecondsSinceEpoch.toString() + randomNumber,
+        id: product.id ?? '',
+        isFirst: false,
+        product: product.id!,
+        productName: product.title!,
+        quantity: product.prices?.first.amount ?? 1,
+        categoryId: product.category!,
+        price: product.prices!.first.price ?? 1,
+        tax: product.prices!.first.vatRate ?? 0.0,
+        priceId: product.prices?.first.id ?? '',
+        priceAfterTax: 0.0,
+        cancelStatus: CancelStatus.empty(),
+        serveInfo: ServeInfoModel.empty(),
+        priceName: product.prices!.first.priceName!,
+        priceType: product.prices?.first.priceType ?? 'REGULAR',
+        note: "",
+        options: const [],
+      );
+    }
+
+    void showOptionMultipleProductDialog(
+        BuildContext context, OrderProductModel product, ProductState state) {
+      showDialog(
+        context: context,
+        builder: (context) => OptionMultipleProductDialog(
+          product: product,
+          isForce: state.selectedProduct?.options?.isNotEmpty ?? false,
+        ),
+      );
+    }
+
+    void showOptionCheckDialog(
+        BuildContext context, OrderProductModel product, ProductState state) {
+      showDialog(
+        context: context,
+        builder: (context) => OptionCheckDialog(
+          product: product,
+          isForce: state.selectedProduct?.options?.isNotEmpty ?? false,
+          isExistProduct: false,
+          onUpdate: (updatedOptions, selectedItems) {
+            context.read<TableCubit>().setNewMultipleOrderProducts(
+                  product.copyWith(
+                    options: updatedOptions,
+                    quantity: 1,
+                  ),
+                  1,
+                  updatedOptions,
+                );
+          },
+        ),
+      );
+    }
+
+    // void onProductTap(BuildContext context, ProductModel product, ProductState state) {
+    //   context
+    //       .read<ProductCubit>()
+    //       .setSelectedProduct(product, product.prices?.first ?? PriceModel.empty());
+
+    //   final orderProduct = createOrderProductModel(product);
+
+    //   if (product.options != null && product.options!.isNotEmpty) {
+    //     context.read<ProductCubit>().getProductOptions(product);
+
+    //     if ((state.selectedProductQuantity ?? -1) > 0) {
+    //       showOptionMultipleProductDialog(context, orderProduct, state);
+    //     } else {
+    //       showOptionCheckDialog(context, orderProduct, state);
+    //     }
+    //   } else {
+    //     //TODO: CHECK HERE IF USER ADD 10 PRODUCT WO OPTIONS ADDING GOOD BUT UPDATING IS A PROBLEM!
+    //     // if ((state.selectedProductQuantity ?? -1) > 0) {
+    //     // for (var i = 0; i < state.selectedProductQuantity!; i++) {
+    //     //   context.read<TableCubit>().setNewOrderProducts(orderProduct, 1.0);
+    //     // }
+    //     // context.read<ProductCubit>().setSelectedProductQuantity(null);
+    //     // } else {
+    //     context.read<TableCubit>().setNewOrderProducts(orderProduct, 1.0);
+    //     context.read<ProductCubit>().setSelectedProductQuantity(null);
+    //     // }
+    //   }
+    // }
+
+    void onProductTap(
+        BuildContext context, ProductModel product, ProductState state, String randomId) {
+      context
+          .read<ProductCubit>()
+          .setSelectedProduct(product, product.prices?.first ?? PriceModel.empty());
+
+      final orderProduct = createOrderProductModel(
+        product,
+        Random().nextInt(10000).toString(),
+      );
+
+      if (product.options != null && product.options!.isNotEmpty) {
+        context.read<ProductCubit>().getProductOptions(product);
+
+        if ((state.selectedProductQuantity ?? -1) > 0) {
+          showOptionMultipleProductDialog(context, orderProduct, state);
+        } else {
+          showOptionCheckDialog(context, orderProduct, state);
+        }
+      } else {
+        if ((state.selectedProductQuantity ?? -1) > 0) {
+          for (var i = 0; i < state.selectedProductQuantity!; i++) {
+            randomId += Random().nextInt(10000).toString();
+            final uniqueOrderProduct = orderProduct.copyWith(
+              uniqueTimestamp: DateTime.now().millisecondsSinceEpoch.toString() + randomId,
+            );
+            context.read<TableCubit>().setNewOrderProducts(uniqueOrderProduct, 1.0);
+          }
+          context.read<ProductCubit>().setSelectedProductQuantity(null);
+        } else {
+          context.read<TableCubit>().setNewOrderProducts(orderProduct, 1.0);
+        }
+      }
+      // Reset the quantity after adding all products
+      // context.read<ProductCubit>().setSelectedProductQuantity(null);
+    }
+
     bool isViewAll = context.read<CategoryCubit>().selectedSubCategory == null ? true : false;
     return Row(
       children: [
@@ -109,29 +230,8 @@ class _ProductListWidget extends StatelessWidget {
                                         border: BorderConstants.borderAllSmall),
                                     child: GestureDetector(
                                       onTap: () {
-                                        context.read<ProductCubit>().setSelectedProduct(
-                                            product, product.prices?.first ?? PriceModel.empty());
-                                        context.read<TableCubit>().setNewOrderProducts(
-                                            OrderProductModel(
-                                                uniqueTimestamp: DateTime.now().toIso8601String(),
-                                                id: product.id ?? '',
-                                                isFirst: false,
-                                                product: product.id!,
-                                                productName: product.title!,
-                                                quantity: product.prices?.first.amount ?? 1,
-                                                categoryId: product.category!,
-                                                price: product.prices!.first.price ?? 1,
-                                                tax: product.prices!.first.vatRate ?? 0.0,
-                                                priceId: product.prices?.first.id ?? '',
-                                                priceAfterTax: 0.0, //todo check priceAfterTax
-                                                cancelStatus: CancelStatus.empty(),
-                                                serveInfo: ServeInfoModel.empty(),
-                                                priceName: product.prices!.first.priceName!,
-                                                priceType:
-                                                    product.prices?.first.priceType ?? 'REGULAR',
-                                                note: "",
-                                                options: const []),
-                                            1.0);
+                                        onProductTap(context, product, state,
+                                            Random().nextInt(10000).toString());
                                       },
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.center,
