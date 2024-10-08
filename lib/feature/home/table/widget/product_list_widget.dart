@@ -18,12 +18,14 @@ class _ProductListWidget extends StatelessWidget {
         tax: product.prices!.first.vatRate ?? 0.0,
         priceId: product.prices?.first.id ?? '',
         priceAfterTax: 0.0,
+        selectedOptions: const [],
         cancelStatus: CancelStatus.empty(),
         serveInfo: ServeInfoModel.empty(),
         priceName: product.prices!.first.priceName!,
         priceType: product.prices?.first.priceType ?? 'REGULAR',
         note: "",
         options: const [],
+        isOptionForced: (product.options?.isNotEmpty ?? false) ? true : false,
       );
     }
 
@@ -49,7 +51,7 @@ class _ProductListWidget extends StatelessWidget {
           onUpdate: (updatedOptions, selectedItems) {
             context.read<TableCubit>().setNewMultipleOrderProducts(
                   product.copyWith(
-                    options: updatedOptions,
+                    selectedOptions: updatedOptions,
                     quantity: 1,
                   ),
                   1,
@@ -59,35 +61,6 @@ class _ProductListWidget extends StatelessWidget {
         ),
       );
     }
-
-    // void onProductTap(BuildContext context, ProductModel product, ProductState state) {
-    //   context
-    //       .read<ProductCubit>()
-    //       .setSelectedProduct(product, product.prices?.first ?? PriceModel.empty());
-
-    //   final orderProduct = createOrderProductModel(product);
-
-    //   if (product.options != null && product.options!.isNotEmpty) {
-    //     context.read<ProductCubit>().getProductOptions(product);
-
-    //     if ((state.selectedProductQuantity ?? -1) > 0) {
-    //       showOptionMultipleProductDialog(context, orderProduct, state);
-    //     } else {
-    //       showOptionCheckDialog(context, orderProduct, state);
-    //     }
-    //   } else {
-    //     //TODO: CHECK HERE IF USER ADD 10 PRODUCT WO OPTIONS ADDING GOOD BUT UPDATING IS A PROBLEM!
-    //     // if ((state.selectedProductQuantity ?? -1) > 0) {
-    //     // for (var i = 0; i < state.selectedProductQuantity!; i++) {
-    //     //   context.read<TableCubit>().setNewOrderProducts(orderProduct, 1.0);
-    //     // }
-    //     // context.read<ProductCubit>().setSelectedProductQuantity(null);
-    //     // } else {
-    //     context.read<TableCubit>().setNewOrderProducts(orderProduct, 1.0);
-    //     context.read<ProductCubit>().setSelectedProductQuantity(null);
-    //     // }
-    //   }
-    // }
 
     void onProductTap(
         BuildContext context, ProductModel product, ProductState state, String randomId) {
@@ -101,6 +74,7 @@ class _ProductListWidget extends StatelessWidget {
       );
 
       if (product.options != null && product.options!.isNotEmpty) {
+        appLogger.info('options', product.options!.toString());
         context.read<ProductCubit>().getProductOptions(product);
 
         if ((state.selectedProductQuantity ?? -1) > 0) {
@@ -230,6 +204,7 @@ class _ProductListWidget extends StatelessWidget {
                                         border: BorderConstants.borderAllSmall),
                                     child: GestureDetector(
                                       onTap: () {
+                                        debugPrint('onProductTap initilaized!!!');
                                         onProductTap(context, product, state,
                                             Random().nextInt(10000).toString());
                                       },
@@ -384,7 +359,7 @@ Future<void> handleButtonAction(
     case 12:
       appLogger.warning("TAG", "12 list product clicked");
     case 11:
-      appLogger.warning("TAG", "11 clicked");
+
       // New Sale
       if (state.newProducts.products.isEmpty) return;
 

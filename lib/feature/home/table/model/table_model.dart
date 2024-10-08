@@ -710,16 +710,19 @@ class Options {
     required this.optionId,
     required this.name,
     required this.items,
+    required this.selectedItems,
   });
 
   String? optionId;
   String? name;
   late List<Item> items;
+  late List<Item> selectedItems;
   factory Options.empty() {
     return Options(
       optionId: '',
       name: '',
       items: [],
+      selectedItems: [],
     );
   }
 
@@ -756,11 +759,13 @@ class Options {
     String? optionId,
     String? name,
     List<Item>? items,
+    List<Item>? selectedItems,
   }) {
     return Options(
       optionId: optionId ?? this.optionId,
       name: name ?? this.name,
       items: items ?? this.items,
+      selectedItems: selectedItems ?? this.selectedItems,
     );
   }
 }

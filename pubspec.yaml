@@ -22,7 +22,7 @@ dependencies:
   # Utilities
   equatable: ^2.0.5
   json_annotation: ^4.9.0
-  logger: ^2.3.0
+  # logger: ^2.3.0
   fpdart: ^1.1.0
   uuid: ^4.4.2
 

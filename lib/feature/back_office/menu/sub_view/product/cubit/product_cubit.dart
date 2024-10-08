@@ -108,7 +108,6 @@ class ProductCubit extends IProductCubit {
     productModel = productModel.copyWith(
       id: () => null,
     );
-    appLogger.info('POST PRODUCT CALLED: ', productModel.toJson().toString());
     emit(state.copyWith(states: ProductStates.loading));
     BaseResponseCubit response;
 
@@ -125,7 +124,6 @@ class ProductCubit extends IProductCubit {
   /// PUT PRODUCTS TO PRODUCT SERVICE
   @override
   Future putProducts({required ProductModel productModel, required String productId}) async {
-    appLogger.info('UPDATE PRODUCT CALLED: ', productModel.toJson().toString());
     emit(state.copyWith(states: ProductStates.loading));
     BaseResponseCubit response;
     response = await _productService.putProducts(productId: productId, productModel: productModel);
@@ -223,7 +221,6 @@ class ProductCubit extends IProductCubit {
         prices: state.selectedProduct!.prices
             ?.map((e) => e.copyWith(vatRate: double.parse(tax)))
             .toList());
-    appLogger.info('UPDATED PRODUCT TAX: ', updatedProduct.toJson().toString());
 
     // updated products list
     final updatedAllProducts = state.allProducts
@@ -269,10 +266,6 @@ class ProductCubit extends IProductCubit {
     productNameController.text = product.title ?? '';
     productPriceController?.text = product.prices?.first.price.toString() ?? '0.0';
     taxController?.text = product.prices?.first.vatRate.toString() ?? '0.0';
-    // if (product.options?.isNotEmpty == true) {
-    //   var option = getProductOptions(product);
-    //   emit(state.copyWith(selectedOption: () => product.options?.first));
-    // }
     emit(state.copyWith(selectedProduct: () => product));
   }
 
@@ -377,23 +370,16 @@ class ProductCubit extends IProductCubit {
     final updatedCategorizedProducts =
         Map<String, List<ProductModel>>.from(state.categorizedProducts ?? {});
     final categoryId = updatedProduct.category;
-    appLogger.info('updateSelectedProductImage', 'updatedProduct categoryId: $categoryId');
     final updatedCategoryProducts = updatedCategorizedProducts[categoryId]?.map((product) {
           if (product.id == state.selectedProduct!.id) {
-            appLogger.info('updateSelectedProductImage',
-                'updatedProduct if: ${updatedProduct.toJson().toString()}');
             return updatedProduct;
           } else {
-            appLogger.info('updateSelectedProductImage',
-                'updatedProduct else: ${updatedProduct.toJson().toString()}');
             return product;
           }
         }).toList() ??
         [];
 
     updatedCategorizedProducts[categoryId!] = updatedCategoryProducts;
-    // setSelectedProduct(updatedCategorizedProducts[categoryId]?.first ?? ProductModel.empty(),
-    //     updatedCategorizedProducts[categoryId]?.first.prices?.first ?? PriceModel.empty());
 
     emit(state.copyWith(
       allProducts: updatedAllProducts,
@@ -403,7 +389,6 @@ class ProductCubit extends IProductCubit {
   }
 
   Future<void> saveChanges() async {
-    // Yeni ürünleri bulma ve post isteği gönderme
     for (var entry
         in state.categorizedProducts?.entries ?? <MapEntry<String, List<ProductModel>>>[]) {
       String categoryId = entry.key;
@@ -450,7 +435,6 @@ class ProductCubit extends IProductCubit {
         }
       }
 
-      // İstekler başarılı olduktan sonra originalCategorizedProducts'ı güncelle
       originalCategorizedProducts = Map.from(state.categorizedProducts!);
     }
   }
@@ -477,10 +461,28 @@ class ProductCubit extends IProductCubit {
 
   void getProductOptions(ProductModel product) async {
     await getOptions().then((value) {
+      //TODO CHECK HERE IF THERE IS ERROR OPEN THIS COMMENT!
       List<OptionModel?> optionList = state.allOptions
           .where(
               (option) => product.options!.any((productOption) => productOption.id == option!.id))
           .toList();
+
+      emit(state.copyWith(
+          productOptionList: optionList,
+          selectedOption: () => optionList.isNotEmpty ? optionList.first : null));
+    });
+  }
+
+  void getExistProductOptions(String productId) async {
+    ProductModel product =
+        state.allProducts.firstWhere((product) => product?.id == productId) ?? ProductModel.empty();
+    await getOptions().then((value) {
+      //TODO: DONT CALL GET OPTIONS FUNC FOR ALL TIME
+      List<OptionModel?> optionList = state.allOptions
+          .where(
+              (option) => product.options!.any((productOption) => productOption.id == option!.id))
+          .toList();
+
       emit(state.copyWith(
           productOptionList: optionList,
           selectedOption: () => optionList.isNotEmpty ? optionList.first : null));
@@ -488,9 +490,6 @@ class ProductCubit extends IProductCubit {
   }
 
   void toggleOptionToProduct(String productId, ProductOptionModel option, String categoryId) {
-    appLogger.info(
-        "first Product with Options", state.selectedProduct!.options?.length.toString() ?? '0');
-
     // Create a new map to avoid directly mutating the state
     final updatedProductOptions = Map<String, List<ProductOptionModel>>.from(state.productOptions);
 
@@ -526,7 +525,6 @@ class ProductCubit extends IProductCubit {
         .map((product) => product.id == state.selectedProduct!.id ? updatedProduct : product)
         .toList();
     productOptionsMap = updatedProductOptions;
-    getProductOptions(updatedProduct);
 
     // Emit the new state with a completely new map for product options
     emit(state.copyWith(
@@ -535,9 +533,6 @@ class ProductCubit extends IProductCubit {
       productOptions: updatedProductOptions, // Updated map for product options
       selectedProduct: () => updatedProduct,
     ));
-
-    appLogger.info(
-        "Updated Product with Options", updatedProduct.options?.length.toString() ?? '0');
   }
 
   // Helper method to get selected options for a specific product

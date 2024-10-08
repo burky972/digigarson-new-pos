@@ -74,8 +74,10 @@ class OrderProductModel extends BaseModel<OrderProductModel> {
   final String? priceId;
   final String? note;
   final List<Options> options;
+  final List<Options>? selectedOptions;
   final CancelStatus cancelStatus;
   final ServeInfoModel serveInfo;
+  final bool isOptionForced;
 
   OrderProductModel({
     this.uniqueTimestamp,
@@ -94,8 +96,10 @@ class OrderProductModel extends BaseModel<OrderProductModel> {
     this.priceType,
     this.note,
     required this.options,
+    required this.selectedOptions,
     required this.cancelStatus,
     required this.serveInfo,
+    required this.isOptionForced,
   });
 
   factory OrderProductModel.fromJson(Map<String, dynamic> json) =>
@@ -122,7 +126,9 @@ class OrderProductModel extends BaseModel<OrderProductModel> {
         note,
         options,
         cancelStatus,
-        serveInfo
+        serveInfo,
+        isOptionForced,
+        selectedOptions,
       ];
 
   OrderProductModel copyWith({
@@ -142,8 +148,10 @@ class OrderProductModel extends BaseModel<OrderProductModel> {
     String? priceType,
     String? note,
     List<Options>? options,
+    List<Options>? selectedOptions,
     CancelStatus? cancelStatus,
     ServeInfoModel? serveInfo,
+    bool? isOptionForced,
   }) {
     return OrderProductModel(
       uniqueTimestamp: uniqueTimestamp ?? this.uniqueTimestamp,
@@ -164,6 +172,8 @@ class OrderProductModel extends BaseModel<OrderProductModel> {
       options: options ?? this.options,
       cancelStatus: cancelStatus ?? this.cancelStatus,
       serveInfo: serveInfo ?? this.serveInfo,
+      selectedOptions: selectedOptions ?? this.selectedOptions,
+      isOptionForced: isOptionForced ?? this.isOptionForced,
     );
   }
 }

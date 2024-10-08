@@ -29,19 +29,12 @@ class OptionCheckDialog extends StatelessWidget {
     return BlocBuilder<ProductCubit, ProductState>(
       builder: (context, state) {
         OptionModel selectedProductOption = state.selectedOption ?? OptionModel.empty();
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (product.options.isNotEmpty && state.selectedItems.isEmpty) {
-            context.read<ProductCubit>().setSelectedItems(product.options.first.items);
-          }
-        });
 
         return Dialog(
           child: SizedBox(
             width: context.dynamicWidth(0.75),
             height: context.dynamicHeight(0.9),
             child: ListView(
-              // mainAxisSize: MainAxisSize.min,
-              // crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 /// Top option title
                 Container(
@@ -62,26 +55,16 @@ class OptionCheckDialog extends StatelessWidget {
                       _OptionItemsGridView(
                         items: isForce ? selectedProductOption.items : state.selectedOption?.items,
                         isExistProduct: isExistProduct,
-                        options: [
-                          isForce
-                              ? Options(
-                                  optionId: selectedProductOption.id ?? '',
-                                  name: selectedProductOption.name ?? '',
-                                  items: [])
-                              : Options(
-                                  optionId: state.selectedOption?.id ?? '',
-                                  name: state.selectedOption?.name ?? '',
-                                  items: [])
-                        ],
-                        product: product,
                       ),
                       SizedBox(height: context.dynamicHeight(0.02)),
                       const _OptionBoldTitleText(text: 'Option Groups'),
-                      _OptionGroupGridView(state),
+                      _OptionGroupGridView(
+                        state,
+                        isForce: product.isOptionForced,
+                      ),
                     ],
                   ),
                 ),
-                // const Spacer(),
 
                 /// bottom button fields
                 Padding(
@@ -97,10 +80,16 @@ class OptionCheckDialog extends StatelessWidget {
                               Options(
                                 optionId: selectedProductOption.id ?? '',
                                 name: selectedProductOption.name ?? '',
-                                items: state.selectedItems
+                                selectedItems: state.selectedItems
                                     .map((item) =>
                                         item.copyWith(priceType: 'REGULAR', itemId: item.id))
                                     .toList(),
+                                items: selectedProductOption.items!.isNotEmpty
+                                    ? selectedProductOption.items!
+                                        .map((item) =>
+                                            item.copyWith(priceType: 'REGULAR', itemId: item.id))
+                                        .toList()
+                                    : [],
                               )
                             ];
 
@@ -147,11 +136,11 @@ class _OptionBoldTitleText extends StatelessWidget {
 }
 
 class _OptionGroupGridView extends StatelessWidget {
-  const _OptionGroupGridView(this.state);
+  const _OptionGroupGridView(this.state, {required this.isForce});
   final ProductState state;
+  final bool isForce;
   @override
   Widget build(BuildContext context) {
-    bool isForce = state.selectedProduct?.options?.isNotEmpty ?? false;
     List<OptionModel?> options = state.productOptionList;
 
     return BlocBuilder<ProductCubit, ProductState>(
@@ -173,8 +162,8 @@ class _OptionGroupGridView extends StatelessWidget {
                 isSelected: isForce
                     ? options[index]?.id == state.selectedOption?.id
                     : state.allOptions[index] == state.selectedOption,
-                onTapped: () => options.length == 1
-                    ? null
+                onTapped: () => isForce //TODO: CHECK HERE
+                    ? context.read<ProductCubit>().setSelectedOption(options[index]!)
                     : context.read<ProductCubit>().setSelectedOption(state.allOptions[index]!),
               );
             },
@@ -189,14 +178,10 @@ class _OptionGroupGridView extends StatelessWidget {
 class _OptionItemsGridView extends StatelessWidget {
   const _OptionItemsGridView({
     required this.items,
-    required this.options,
-    required this.product,
     required this.isExistProduct,
   });
 
   final List<Item>? items;
-  final List<Options> options;
-  final OrderProductModel product;
   final bool isExistProduct;
 
   @override
