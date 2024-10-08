@@ -64,6 +64,7 @@ class UtilityItemCubit extends IUtilityItemCubit {
         emit(state.copyWith(
           states: UtilityItemStates.success,
           utilityBySectionList: groupedItems,
+          allUtilityItem: typedItems,
         ));
         return true;
       },
@@ -128,6 +129,21 @@ class UtilityItemCubit extends IUtilityItemCubit {
       },
       (res) async {
         await SharedManager.instance.removeValue(itemId);
+        emit(state.copyWith(states: UtilityItemStates.success));
+      },
+    );
+    return response.isRight();
+  }
+
+  @override
+  Future<bool> updateUtilityItem(
+      {required String itemId, required UtilityItemUpdateRequestModel utilityModel}) async {
+    emit(state.copyWith(states: UtilityItemStates.loading));
+    final response = await _service.putUtilityItem(itemId: itemId, utilityModel: utilityModel);
+    response.fold(
+      (l) => emit(state.copyWith(states: UtilityItemStates.failure)),
+      (res) async {
+        await getUtilityItem();
         emit(state.copyWith(states: UtilityItemStates.success));
       },
     );

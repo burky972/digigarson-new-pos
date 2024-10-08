@@ -591,6 +591,7 @@ mixin TableLayoutMixin on State<TableLayoutView> {
     appLogger.info("TAG", "save initialized!");
     TableCubit tableCubit = context.read<TableCubit>();
     UtilityItemCubit utilityItemCubit = context.read<UtilityItemCubit>();
+    final existingUtilityItems = utilityItemCubit.state.allUtilityItem;
 
     tableCubit.changeIsTableSaving(true);
 
@@ -661,24 +662,22 @@ mixin TableLayoutMixin on State<TableLayoutView> {
         var yCoordinate = table.position.dy.toInt();
 
         if (table.id > 44) {
-          // Post utility items
-          await utilityItemCubit.postUtilityItem(
-            utilityModel: UtilityItemRequestModel(
-              section: key.id,
-              type: EUtilityItems.getUtilityItemType(table.id),
-              location: LocationModel(xCoordinate: xCoordinate, yCoordinate: yCoordinate),
-            ),
-          );
+          // handle Post - Put  utility items
+          processUtilityItem(key, table, xCoordinate, yCoordinate, existingUtilityItems ?? []);
         } else {
           // Post tables
-          await tableCubit.postTable(
-            TableRequestModel(
-              title: table.name,
-              section: key.id,
-              tableType: newId,
-              location: LocationModel(xCoordinate: xCoordinate, yCoordinate: yCoordinate),
-            ),
-          );
+          try {
+            await tableCubit.postTable(
+              TableRequestModel(
+                title: table.name,
+                section: key.id,
+                tableType: newId,
+                location: LocationModel(xCoordinate: xCoordinate, yCoordinate: yCoordinate),
+              ),
+            );
+          } catch (e) {
+            debugPrint('posting table error  : $e');
+          }
         }
       }
     }
@@ -695,5 +694,37 @@ mixin TableLayoutMixin on State<TableLayoutView> {
     utilityItemCubit.deletedUtilityItemIds.clear();
     tableCubit.changeIsTableSaving(false);
     tableCubit.changeIsTableSaving(false);
+  }
+
+  Future<void> processUtilityItem(SectionModel key, TableItem table, int xCoordinate,
+      int yCoordinate, List<UtilityItemModel> existingItems) async {
+    UtilityItemCubit utilityItemCubit = context.read<UtilityItemCubit>();
+    var utilityType = EUtilityItems.getUtilityItemType(table.id);
+
+    var existingItem = existingItems.firstWhere(
+      (item) => item.section == key.id && item.type == utilityType,
+      orElse: () => UtilityItemModel.empty(),
+    );
+
+    if (existingItem != UtilityItemModel.empty()) {
+      if (existingItem.location?.xCoordinate != xCoordinate ||
+          existingItem.location?.yCoordinate != yCoordinate) {
+        await utilityItemCubit.updateUtilityItem(
+          itemId: existingItem.id.toString(),
+          utilityModel: UtilityItemUpdateRequestModel(
+            type: utilityType,
+            location: LocationModel(xCoordinate: xCoordinate, yCoordinate: yCoordinate),
+          ),
+        );
+      }
+    } else {
+      await utilityItemCubit.postUtilityItem(
+        utilityModel: UtilityItemRequestModel(
+          section: key.id,
+          type: utilityType,
+          location: LocationModel(xCoordinate: xCoordinate, yCoordinate: yCoordinate),
+        ),
+      );
+    }
   }
 }

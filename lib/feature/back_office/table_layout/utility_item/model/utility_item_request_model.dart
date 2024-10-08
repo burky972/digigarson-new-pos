@@ -45,3 +45,41 @@ class UtilityItemRequestModel extends BaseModel<UtilityItemRequestModel> {
     );
   }
 }
+
+@JsonSerializable()
+class UtilityItemUpdateRequestModel extends BaseModel<UtilityItemUpdateRequestModel> {
+  final String? title;
+  final int? type;
+  final LocationModel? location;
+
+  UtilityItemUpdateRequestModel({
+    this.title,
+    this.type,
+    this.location,
+  });
+
+  factory UtilityItemUpdateRequestModel.fromJson(Map<String, dynamic> json) =>
+      _$UtilityItemUpdateRequestModelFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$UtilityItemUpdateRequestModelToJson(this);
+
+  @override
+  UtilityItemUpdateRequestModel fromJson(Map<String, dynamic> json) =>
+      _$UtilityItemUpdateRequestModelFromJson(json);
+
+  @override
+  List<Object?> get props => [title, type, location];
+
+  UtilityItemRequestModel copyWith({
+    String? title,
+    int? type,
+    LocationModel? location,
+  }) {
+    return UtilityItemRequestModel(
+      title: title ?? this.title,
+      type: type ?? this.type,
+      location: location ?? this.location,
+    );
+  }
+}

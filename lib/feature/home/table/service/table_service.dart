@@ -27,11 +27,23 @@ class TableService implements ITableService {
     return ApiResponseHandler.handleResponse(response);
   }
 
-  /// GET TABLE
+  /// POST  TABLE
   @override
   DefaultServiceResponse postTable({required TableRequestModel tableModel}) async {
     BaseResponseModel response = await DioClient.instance.post(
       NetworkConstants.tables,
+      data: tableModel.toJson(),
+    );
+    appLogger.info('Table SERVICE POST TABLE', response.data.toString());
+    return ApiResponseHandler.handleResponse(response);
+  }
+
+  /// PUT TABLE
+  @override
+  DefaultServiceResponse putTable(
+      {required String tableId, required TableRequestModel tableModel}) async {
+    BaseResponseModel response = await DioClient.instance.put(
+      '${NetworkConstants.tables}/$tableId',
       data: tableModel.toJson(),
     );
     appLogger.info('Table SERVICE POST TABLE', response.data.toString());

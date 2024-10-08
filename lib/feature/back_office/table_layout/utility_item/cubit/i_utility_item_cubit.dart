@@ -6,5 +6,7 @@ abstract class IUtilityItemCubit extends BaseCubit<UtilityItemState> {
   IUtilityItemCubit(super.initialState);
   Future<bool> getUtilityItem();
   Future<bool> postUtilityItem({required UtilityItemRequestModel utilityModel});
+  Future<bool> updateUtilityItem(
+      {required String itemId, required UtilityItemUpdateRequestModel utilityModel});
   Future<bool> deleteUtilityItem({required String itemId});
 }

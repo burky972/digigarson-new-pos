@@ -29,4 +29,12 @@ class UtilityItemService implements IUtilityItemService {
         await DioClient.instance.delete('${NetworkConstants.utilityItem}/$itemId');
     return ApiResponseHandler.handleResponse(responseModel);
   }
+
+  @override
+  BaseResponseData<BaseResponseModel> putUtilityItem(
+      {required String itemId, required UtilityItemUpdateRequestModel utilityModel}) async {
+    BaseResponseModel responseModel = await DioClient.instance
+        .put('${NetworkConstants.utilityItem}/$itemId', data: utilityModel.toJson());
+    return ApiResponseHandler.handleResponse(responseModel);
+  }
 }

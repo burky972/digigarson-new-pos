@@ -13,6 +13,7 @@ abstract class ITableCubit extends BaseCubit<TableState> {
   ITableCubit(super.initialState);
   Future getTable();
   Future postTable(TableRequestModel tableModel);
+  Future putTable(String tableId, TableRequestModel tableModel);
   Future<bool> closeTable(String tableId);
   Future<bool> deleteTable(String tableId);
   Future<void> setNewTableList(List<TableModel> newTableList);
