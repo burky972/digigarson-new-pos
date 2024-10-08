@@ -156,23 +156,26 @@ class TableService implements ITableService {
     List<OrderProductModel> orderProducts = [];
     for (var product in products) {
       OrderProductModel orderProduct = OrderProductModel(
-          isFirst: product.isFirst!,
-          note: product.note!,
-          cancelStatus: CancelStatus.empty(),
-          id: product.id!,
-          product: product.product!,
-          productName: product.productName!,
-          categoryId: '', //! check here later,
-          quantity: double.tryParse(product.quantity!.toString()) ?? 1.0,
-          priceId: product.priceId!,
-          options: product.options.map((e) => Options.fromJson(e.toJson())).toList(),
-          priceName: 'REGULAR',
-          priceType: 'REGULAR',
-          priceAfterTax: product.priceAfterTax!,
-          tax: product.tax!,
-          price: product.price!,
-          // createdAt: product.createdAt!.toString(),
-          serveInfo: product.serveInfo ?? ServeInfoModel.empty());
+        isFirst: product.isFirst!,
+        note: product.note!,
+        cancelStatus: CancelStatus.empty(),
+        id: product.id!,
+        product: product.product!,
+        productName: product.productName!,
+        categoryId: '', //! check here later,
+        quantity: double.tryParse(product.quantity!.toString()) ?? 1.0,
+        priceId: product.priceId!,
+        options: product.options.map((e) => Options.fromJson(e.toJson())).toList(),
+        selectedOptions: const [],
+        priceName: 'REGULAR',
+        priceType: 'REGULAR',
+        priceAfterTax: product.priceAfterTax!,
+        tax: product.tax!,
+        price: product.price!,
+        // createdAt: product.createdAt!.toString(),
+        serveInfo: product.serveInfo ?? ServeInfoModel.empty(),
+        isOptionForced: product.options.isNotEmpty ? true : false,
+      );
       orderProducts.add(orderProduct);
     }
     return orderProducts;

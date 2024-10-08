@@ -631,7 +631,10 @@ class _TableLeftWidgetState extends State<TableLeftWidget> {
               priceType: 'REGULAR',
               note: product.note ?? '',
               options: buildOptions(product),
+
+              selectedOptions: const [],
               serveInfo: product.serveInfo ?? ServeInfoModel.empty(),
+              isOptionForced: product.options.isNotEmpty ? true : false,
             ),
           );
     }
@@ -650,23 +653,26 @@ class _TableLeftWidgetState extends State<TableLeftWidget> {
           if (product.quantity != product.paidQuantity) {
             context.read<TableCubit>().setSelectedEditProduct(
                   OrderProductModel(
-                      id: product.id ?? '',
-                      isFirst: product.isFirst ?? false,
-                      product: product.id ?? '',
-                      productName: product.productName ?? '',
-                      quantity: product.quantity ?? 1,
-                      categoryId: product.id ?? "", // TODO: Kontrol edilmeli
-                      tax: product.tax ?? 0,
-                      price: product.price ?? 1,
-                      priceId: product.priceId ?? '',
-                      cancelStatus: CancelStatus.empty(),
-                      priceName: '', // TODO: Kontrol edilmeli
-                      paidQuantity: product.paidQuantity ?? 0,
-                      priceAfterTax: product.priceAfterTax ?? 0,
-                      priceType: 'REGULAR',
-                      note: product.note ?? '',
-                      options: buildOptions(product),
-                      serveInfo: product.serveInfo ?? ServeInfoModel.empty()),
+                    id: product.id ?? '',
+                    isFirst: product.isFirst ?? false,
+                    product: product.id ?? '',
+                    productName: product.productName ?? '',
+                    quantity: product.quantity ?? 1,
+                    categoryId: product.id ?? "", // TODO: Kontrol edilmeli
+                    tax: product.tax ?? 0,
+                    price: product.price ?? 1,
+                    priceId: product.priceId ?? '',
+                    cancelStatus: CancelStatus.empty(),
+                    priceName: '', // TODO: Kontrol edilmeli
+                    paidQuantity: product.paidQuantity ?? 0,
+                    priceAfterTax: product.priceAfterTax ?? 0,
+                    selectedOptions: const [],
+                    priceType: 'REGULAR',
+                    note: product.note ?? '',
+                    options: buildOptions(product),
+                    serveInfo: product.serveInfo ?? ServeInfoModel.empty(),
+                    isOptionForced: product.options.isNotEmpty ? true : false,
+                  ),
                 );
             return;
           }
@@ -684,6 +690,7 @@ class _TableLeftWidgetState extends State<TableLeftWidget> {
     return [
       Options(
         name: firstOption.name ?? '',
+        selectedItems: buildItems(firstOption),
         optionId: firstOption.optionId ?? '',
         items: buildItems(firstOption),
       ),

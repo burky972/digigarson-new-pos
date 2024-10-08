@@ -66,10 +66,12 @@ class OptionMultipleProductDialog extends StatelessWidget {
                               ? Options(
                                   optionId: selectedProductOption.id ?? '',
                                   name: selectedProductOption.name ?? '',
+                                  selectedItems: [],
                                   items: [])
                               : Options(
                                   optionId: state.selectedOption?.id ?? '',
                                   name: state.selectedOption?.name ?? '',
+                                  selectedItems: [],
                                   items: [])
                         ],
                         product: product,
@@ -96,10 +98,16 @@ class OptionMultipleProductDialog extends StatelessWidget {
                                 Options(
                                   optionId: selectedProductOption.id ?? '',
                                   name: selectedProductOption.name ?? '',
-                                  items: state.selectedItems
+                                  selectedItems: state.selectedItems
                                       .map((item) =>
                                           item.copyWith(priceType: 'REGULAR', itemId: item.id))
                                       .toList(),
+                                  items: selectedProductOption.items!.isNotEmpty
+                                      ? selectedProductOption.items!
+                                          .map((item) =>
+                                              item.copyWith(priceType: 'REGULAR', itemId: item.id))
+                                          .toList()
+                                      : [],
                                 )
                               ];
                               context.read<TableCubit>().setNewMultipleOrderProducts(

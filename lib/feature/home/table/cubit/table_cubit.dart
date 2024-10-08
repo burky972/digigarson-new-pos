@@ -217,10 +217,25 @@ class TableCubit extends ITableCubit {
   /// post table new order
   Future<bool> postTableNewOrder(BuildContext context) async {
     appLogger.info('Table CUBIT POST TABLE NEW ORDER', state.newProducts.toJson().toString());
+    List<OrderProductModel> updatedProducts = [];
+
+    for (var product in state.newProducts.products) {
+      if (product.selectedOptions != null && product.selectedOptions!.isNotEmpty) {
+        List<Options> updatedOptions = product.selectedOptions!.map((option) {
+          return option.copyWith(items: List.from(option.selectedItems));
+        }).toList();
+        var updatedProduct = product.copyWith(options: updatedOptions);
+        updatedProducts.add(updatedProduct);
+      }
+    }
+
+    var updatedNewProducts = state.newProducts.copyWith(products: updatedProducts);
+
     bool? isSuccess;
     emit(state.copyWith(states: TableStates.loading));
+
     final response = await _tableService.postTableNewOrder(
-        newOrderModel: state.newProducts, tableId: state.selectedTable!.id.toString());
+        newOrderModel: updatedNewProducts, tableId: state.selectedTable!.id.toString());
 
     response.fold((_) {
       emit(state.copyWith(states: TableStates.error));
@@ -329,9 +344,12 @@ class TableCubit extends ITableCubit {
     String uniqueTimestamp = DateTime.now().millisecondsSinceEpoch.toString();
     product = product.copyWith(
       price: product.price!,
-      options: options,
+      selectedOptions: options,
       quantity: qty,
       uniqueTimestamp: uniqueTimestamp, // Add this line
+      isOptionForced: options.isNotEmpty ? true : false,
+
+      // selectedItemIDs: start
     );
     updatedProducts.add(product);
 
@@ -355,91 +373,6 @@ class TableCubit extends ITableCubit {
     calculateTotalPrice();
   }
 
-  /// update New Order Product(ADDING OPTION;S ITEMS)
-
-  // Future<void> updateNewOrderProducts(OrderProductModel product, String timestamp,
-  //     List<Options> newOptions, List<Item> newUpdatedItems) async {
-  //   final updatedProducts = List<OrderProductModel>.from(state.newProducts.products);
-
-  //   int existingIndex = updatedProducts.indexWhere((p) => p.uniqueTimestamp == timestamp);
-
-  //   if (existingIndex != -1) {
-  //     var existingProduct = updatedProducts[existingIndex];
-
-  //     // Merge existing options with new options
-  //     List<Options> updatedOptions = List.from(existingProduct.options);
-
-  //     for (var newOption in newOptions) {
-  //       int existingOptionIndex =
-  //           updatedOptions.indexWhere((opt) => opt.optionId == newOption.optionId);
-
-  //       if (existingOptionIndex != -1) {
-  //         // Update existing option items
-  //         var existingOption = updatedOptions[existingOptionIndex];
-  //         List<Item> updatedItems = List.from(existingOption.items);
-
-  //         for (var newItem in newOption.items) {
-  //           int existingItemIndex = updatedItems.indexWhere((item) => item.id == newItem.id);
-  //           if (existingItemIndex != -1) {
-  //             // Update existing item
-  //             updatedItems[existingItemIndex] = newItem;
-  //           } else {
-  //             // If item does not exist, add it
-  //             updatedItems.add(newItem);
-  //           }
-  //         }
-
-  //         updatedOptions[existingOptionIndex] = existingOption.copyWith(items: updatedItems);
-  //       } else {
-  //         // Add new option if not exists
-  //         updatedOptions.add(newOption);
-  //       }
-  //     }
-
-  //     // Calculate price and tax
-  //     double totalItemsPrice = 0;
-  //     double totalItemsTax = 0;
-  //     for (var option in updatedOptions) {
-  //       for (var item in option.items) {
-  //         totalItemsPrice += item.price!;
-  //         if ((item.vatRate ?? 0) > 0) {
-  //           totalItemsTax += item.price! * (item.vatRate! / 100);
-  //         }
-  //       }
-  //     }
-
-  //     double basePrice = existingProduct.price! - totalItemsPrice; // Subtract existing items' price
-  //     double newPrice = basePrice + totalItemsPrice;
-  //     double newTax = (existingProduct.tax! - totalItemsTax) + totalItemsTax;
-  //     updatedProducts[existingIndex] = existingProduct.copyWith(
-  //       options: updatedOptions,
-  //       price: newPrice,
-  //       tax: newTax,
-  //     );
-  //   }
-
-  //   // calculate total tax
-  //   final totalTax =
-  //       updatedProducts.map((product) => product.tax).fold(0.0, (sum, tax) => sum + tax!);
-
-  //   // create updated new order model
-  //   final updatedNewProducts = NewOrderModel(
-  //     products: updatedProducts,
-  //     tableId: state.selectedTable!.id.toString(),
-  //     totalTax: totalTax.toInt(),
-  //     totalPrice: state.selectedTable!.totalPrice ?? 0.0,
-  //   );
-
-  //   emit(state.copyWith(
-  //     newOrderProducts: updatedProducts,
-  //     newProducts: updatedNewProducts,
-  //   ));
-
-  //   calculateTotalTax();
-  //   calculateSubPrice();
-  //   calculateTotalPrice();
-  // }
-
   Future<void> updateNewOrderProducts(OrderProductModel product, String timestamp,
       List<Options> newOptions, List<Item> newUpdatedItems) async {
     final updatedProducts = List<OrderProductModel>.from(state.newProducts.products);
@@ -453,22 +386,19 @@ class TableCubit extends ITableCubit {
       List<Options> updatedOptions = List.from(newOptions);
 
       // Calculate price and tax
-      double totalItemsPrice = 0;
       double totalItemsTax = 0;
       for (var option in updatedOptions) {
         for (var item in option.items) {
-          totalItemsPrice += item.price!;
           if ((item.vatRate ?? 0) > 0) {
             totalItemsTax += item.price! * (item.vatRate! / 100);
           }
         }
       }
 
-      double newPrice = product.price! + totalItemsPrice;
       double newTax = product.tax! + totalItemsTax;
       updatedProducts[existingIndex] = existingProduct.copyWith(
-        options: updatedOptions,
-        price: newPrice,
+        selectedOptions: updatedOptions,
+        // price: newPrice,
         tax: newTax,
       );
     }
@@ -524,47 +454,41 @@ class TableCubit extends ITableCubit {
     }
 
     // Güncellenmiş item listesi ile options'ı oluşturun
-    final updatedOptions = product.options.map((option) {
+    final updatedOptions = product.selectedOptions?.map((option) {
       late List<Item> updatedItems;
-      if (isItemRequired && option.items.length == 1) {
-        updatedItems = option.items;
+      if (isItemRequired && option.selectedItems.length == 1) {
+        updatedItems = option.selectedItems;
       } else {
-        updatedItems = List<Item>.from(option.items)..remove(itemToRemove);
+        updatedItems = List<Item>.from(option.selectedItems)..remove(itemToRemove);
       }
-      return option.copyWith(items: updatedItems);
+      return option.copyWith(selectedItems: updatedItems);
     }).toList();
 
-    // Güncellenmiş options ve fiyat ile yeni bir OrderProductModel oluşturun
     final updatedProduct = product.copyWith(
-      options: updatedOptions,
+      selectedOptions: updatedOptions,
     );
 
-    // newProducts listesini güncellemek için mevcut listenin kopyasını oluşturun
     final updatedProductsList = List<OrderProductModel>.from(state.newProducts.products);
 
-    // Güncellenmiş ürünü orijinal ürün ile değiştirin
     final productIndex = updatedProductsList.indexOf(product);
     if (productIndex != -1) {
       updatedProductsList[productIndex] = updatedProduct;
     }
 
-    // newOrderProducts listesini güncellemek için de benzer şekilde işlem yapın
     final updatedNewOrderProducts = List<OrderProductModel>.from(state.newOrderProducts);
     final orderProductIndex = updatedNewOrderProducts.indexOf(product);
     if (orderProductIndex != -1) {
       updatedNewOrderProducts[orderProductIndex] = updatedProduct;
     }
 
-    // Durum güncellemesi
     emit(state.copyWith(
       newProducts: state.newProducts.copyWith(products: updatedProductsList),
       newOrderProducts: updatedNewOrderProducts,
     ));
 
-    // Ürün çıkarıldıktan sonra fiyat ve vergi hesaplamaları
     calculateSubPrice();
     calculateTotalPrice();
-    calculateTotalTax(); // Vergi güncellemelerini burada çağırarak hesaplayın
+    calculateTotalTax();
   }
 
   /// clear new order products LIST
@@ -578,8 +502,8 @@ class TableCubit extends ITableCubit {
             (state.selectedTable!.totalPrice ?? 0);
     double itemsPrice = 0.0;
     for (var element in state.newProducts.products) {
-      for (var option in element.options) {
-        for (var item in option.items) {
+      for (var option in element.selectedOptions ?? []) {
+        for (var item in option.selectedItems) {
           itemsPrice += item.price ?? 0;
         }
       }

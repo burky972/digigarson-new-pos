@@ -1,3 +1,4 @@
+import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/model/option_model.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/cubit/product_cubit.dart';
 import 'package:a_pos_flutter/feature/home/checks/model/re_open_model.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
@@ -57,11 +58,16 @@ class NewOrderProductListWidget extends StatelessWidget {
                               : Colors.white,
                           child: InkWell(
                             onDoubleTap: () async {
+                              List<Item> selectedItems = [];
+                              context.read<ProductCubit>().getExistProductOptions(product.product!);
                               context.read<ProductCubit>().resetSelectedItems();
-                              if (product.options.isNotEmpty) {
-                                context
-                                    .read<ProductCubit>()
-                                    .setSelectedItems(product.options.first.items);
+                              if (product.selectedOptions?.isNotEmpty == true) {
+                                for (var option in product.selectedOptions!) {
+                                  for (var item in option.selectedItems) {
+                                    selectedItems.add(item);
+                                  }
+                                }
+                                context.read<ProductCubit>().setSelectedItems(selectedItems);
                               }
                               showDialog(
                                 context: context,
@@ -82,7 +88,7 @@ class NewOrderProductListWidget extends StatelessWidget {
                             },
                             child: Column(children: [
                               _NewProductList(headTitle: headTitle, product: product),
-                              product.options.isNotEmpty
+                              product.selectedOptions?.isNotEmpty == true
                                   ? _ItemListWidget(product: product, headTitle: headTitle)
                                   : const SizedBox.shrink(),
                             ]),
@@ -206,11 +212,11 @@ class _ItemListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: product.options.isNotEmpty == true
-          ? product.options.map((option) {
+      children: product.selectedOptions?.isNotEmpty == true
+          ? product.selectedOptions!.map((option) {
               return Column(
-                children: option.items.isNotEmpty == true
-                    ? option.items.map((item) {
+                children: option.selectedItems.isNotEmpty == true
+                    ? option.selectedItems.map((item) {
                         return Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
@@ -226,14 +232,7 @@ class _ItemListWidget extends StatelessWidget {
                                   InkWell(
                                     onTap: () {
                                       /// check if at least 1 option is required for product
-                                      if ((context
-                                                  .read<ProductCubit>()
-                                                  .state
-                                                  .selectedProduct
-                                                  ?.options
-                                                  ?.length ??
-                                              -1) >
-                                          0) {
+                                      if (product.isOptionForced == true) {
                                         context
                                             .read<TableCubit>()
                                             .removeItemFromProduct(product, item, true);
