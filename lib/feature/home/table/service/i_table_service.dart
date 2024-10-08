@@ -13,6 +13,7 @@ import 'package:core/base/model/base_response_model.dart';
 abstract class ITableService {
   DefaultServiceResponse getTable();
   DefaultServiceResponse postTable({required TableRequestModel tableModel});
+  DefaultServiceResponse putTable({required String tableId, required TableRequestModel tableModel});
   DefaultServiceResponse deleteTable({required String tableId});
   DefaultServiceResponse deleteAllTables();
   DefaultServiceResponse postTableNewOrder(

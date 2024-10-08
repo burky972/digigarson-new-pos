@@ -108,37 +108,60 @@ class TableCubit extends ITableCubit {
     });
   }
 
+  /// PUT table api request
+  @override
+  Future putTable(String tableId, TableRequestModel tableModel) async {
+    final response = await _tableService.putTable(tableId: tableId, tableModel: tableModel);
+    response.fold((_) => emit(state.copyWith(states: TableStates.error)),
+        (r) => emit(state.copyWith(states: TableStates.completed)));
+  }
+
   /// post table api request
   @override
-  Future postTable(TableRequestModel tableModel) async {
-    bool alreadyExists = false;
+  Future<bool> postTable(TableRequestModel tableModel) async {
+    bool updated = false;
 
-    // We are checking if the utility items already exist or not.
+    // Check existing tables
     for (MapEntry<String, List<TableModel>> entry in state.tablesBySectionList?.entries ?? {}) {
       final sectionId = entry.key;
-      final utilityItems = entry.value;
-      for (var utilityItem in utilityItems) {
-        if (sectionId == tableModel.section &&
-            tableModel.tableType == utilityItem.tableType &&
-            tableModel.title == utilityItem.title &&
-            tableModel.location?.xCoordinate == utilityItem.location?.xCoordinate &&
-            tableModel.location?.yCoordinate == utilityItem.location?.yCoordinate) {
-          alreadyExists = true;
-          break;
+      final tables = entry.value;
+
+      for (var existingTable in tables) {
+        // Is there a table with the same section and table type?
+        if (sectionId == tableModel.section && tableModel.tableType == existingTable.tableType) {
+          // If title or location is different, update
+          if (tableModel.title != existingTable.title ||
+              tableModel.location?.xCoordinate != existingTable.location?.xCoordinate ||
+              tableModel.location?.yCoordinate != existingTable.location?.yCoordinate) {
+            await putTable(existingTable.id!, tableModel);
+            updated = true;
+            break;
+          } else {
+            debugPrint("Table already exists, no changes needed: ${existingTable.id}");
+            return false; // No changes needed, exiting the function
+          }
         }
       }
-      if (alreadyExists) break;
+
+      if (updated) break;
     }
 
-    // If it already exists, return without making a request.
-    if (alreadyExists) {
-      return false;
+    // If update was made, do not send a new POST request
+    if (updated) {
+      return true;
     }
+
+    // If we have reached this point, create a new table
+    debugPrint("Creating new table");
     emit(state.copyWith(states: TableStates.loading));
     final response = await _tableService.postTable(tableModel: tableModel);
-    response.fold((_) => emit(state.copyWith(states: TableStates.error)), (r) async {
+    return response.fold((failure) {
+      emit(state.copyWith(states: TableStates.error));
+      return false;
+    }, (success) async {
       await getTable();
       emit(state.copyWith(states: TableStates.completed));
+      return true;
     });
   }
 

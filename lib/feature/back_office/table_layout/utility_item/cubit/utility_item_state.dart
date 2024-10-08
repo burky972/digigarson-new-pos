@@ -3,20 +3,22 @@ import 'package:a_pos_flutter/feature/back_office/table_layout/utility_item/mode
 import 'package:core/core.dart';
 
 class UtilityItemState implements BaseState {
-  const UtilityItemState({required this.states, this.utilityBySectionList});
+  const UtilityItemState({required this.states, this.utilityBySectionList, this.allUtilityItem});
 
   final UtilityItemStates states;
   final Map<String, List<UtilityItemModel>>? utilityBySectionList;
+  final List<UtilityItemModel>? allUtilityItem;
 
   factory UtilityItemState.initial() {
     return const UtilityItemState(
       states: UtilityItemStates.initial,
       utilityBySectionList: null,
+      allUtilityItem: [],
     );
   }
 
   @override
-  List<Object?> get props => [states, utilityBySectionList];
+  List<Object?> get props => [states, utilityBySectionList, allUtilityItem];
 
   @override
   bool? get stringify => true;
@@ -24,10 +26,12 @@ class UtilityItemState implements BaseState {
   UtilityItemState copyWith({
     UtilityItemStates? states,
     Map<String, List<UtilityItemModel>>? utilityBySectionList,
+    List<UtilityItemModel>? allUtilityItem,
   }) {
     return UtilityItemState(
       states: states ?? this.states,
       utilityBySectionList: utilityBySectionList ?? this.utilityBySectionList,
+      allUtilityItem: allUtilityItem ?? this.allUtilityItem,
     );
   }
 }

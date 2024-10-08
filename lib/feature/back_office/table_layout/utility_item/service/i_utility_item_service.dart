@@ -6,5 +6,7 @@ abstract class IUtilityItemService {
   BaseResponseData<BaseResponseModel> postUtilityItem(
       {required UtilityItemRequestModel utilityModel});
   BaseResponseData<BaseResponseModel> getUtilityItem();
+  BaseResponseData<BaseResponseModel> putUtilityItem(
+      {required String itemId, required UtilityItemUpdateRequestModel utilityModel});
   BaseResponseData<BaseResponseModel> deleteUtilityItem({required String itemId});
 }

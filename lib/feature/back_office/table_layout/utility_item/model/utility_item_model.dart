@@ -24,6 +24,13 @@ class UtilityItemModel extends BaseModel<UtilityItemModel> {
 
   factory UtilityItemModel.fromJson(Map<String, dynamic> json) => _$UtilityItemModelFromJson(json);
 
+  factory UtilityItemModel.empty() => UtilityItemModel(
+        id: null,
+        section: null,
+        type: null,
+        location: null,
+      );
+
   @override
   UtilityItemModel fromJson(Map<String, dynamic> json) => _$UtilityItemModelFromJson(json);
 
