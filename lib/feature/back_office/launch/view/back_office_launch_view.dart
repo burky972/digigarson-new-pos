@@ -1,4 +1,5 @@
 import 'package:a_pos_flutter/feature/back_office/menu/view/menu_view.dart';
+import 'package:a_pos_flutter/feature/back_office/reports/initial_report/view/initial_report_view.dart';
 import 'package:a_pos_flutter/feature/back_office/restaurant/view/restaurant_dialog_view.dart';
 import 'package:a_pos_flutter/feature/back_office/table_layout/view/table_layout_view.dart';
 import 'package:a_pos_flutter/feature/home/main/view/main_view.dart';
@@ -68,11 +69,17 @@ class BackOfficeLaunchView extends StatelessWidget {
           SizedBox(
             width: context.dynamicWidth(1),
             height: context.dynamicHeight(0.2),
-            child: const Row(children: [
-              Expanded(flex: 1, child: _EachTitleContainer(title: 'Employee')),
-              Expanded(flex: 1, child: _EachTitleContainer(title: 'Reports')),
-              Expanded(flex: 1, child: _EachTitleContainer(title: 'Settings')),
-              Expanded(flex: 1, child: _EachTitleContainer(title: 'Member Cards')),
+            child: Row(children: [
+              const Expanded(flex: 1, child: _EachTitleContainer(title: 'Employee')),
+              Expanded(
+                flex: 1,
+                child: InkWell(
+                    onTap: () => Navigator.push(
+                        context, MaterialPageRoute(builder: (_) => const InitialReportView())),
+                    child: const _EachTitleContainer(title: 'Reports')),
+              ),
+              const Expanded(flex: 1, child: _EachTitleContainer(title: 'Settings')),
+              const Expanded(flex: 1, child: _EachTitleContainer(title: 'Member Cards')),
             ]),
           ),
           SizedBox(
