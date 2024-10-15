@@ -1,5 +1,7 @@
 import 'package:a_pos_flutter/language/locale_keys.g.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
+import 'package:a_pos_flutter/product/routes/route_constants.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/widget/button/light_blue_button.dart';
 import 'package:a_pos_flutter/product/widget/calendar/calendar_widget.dart';
@@ -17,8 +19,8 @@ class InitialReportView extends StatelessWidget {
           SizedBox(
               height: context.dynamicHeight(0.05),
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text('Reports'.tr(),
+                padding: const EdgeInsets.only(top: 12.0),
+                child: Text('Reports',
                     style: CustomFontStyle.titlesTextStyle.copyWith(fontWeight: FontWeight.bold)),
               )),
           SizedBox(
@@ -34,7 +36,11 @@ class InitialReportView extends StatelessWidget {
                           title:
                               Text('Basic Reports', style: TextStyle(fontWeight: FontWeight.bold))),
                       const _LeftClickableReportTitle(title: 'Close Day/Shift', icon: Icons.people),
-                      const _LeftClickableReportTitle(title: 'Sales Report', icon: Icons.bar_chart),
+                      _LeftClickableReportTitle(
+                        title: 'Sales Report',
+                        icon: Icons.bar_chart,
+                        onTap: () => routeManager.push(RouteConstants.salesReport),
+                      ),
                       const _LeftClickableReportTitle(
                           title: 'Product', icon: Icons.shopping_basket),
                       const _LeftClickableReportTitle(title: 'Inventory', icon: Icons.inventory),
@@ -48,6 +54,7 @@ class InitialReportView extends StatelessWidget {
                     ],
                   ),
                 ),
+
                 // Calendar
                 const Expanded(child: CalendarWidget()),
               ],
@@ -55,10 +62,10 @@ class InitialReportView extends StatelessWidget {
           ),
           const Spacer(),
           Container(
-            margin: const EdgeInsets.all(32),
+            margin: const EdgeInsets.only(right: 24, bottom: 24),
             alignment: Alignment.centerRight,
-            child: LightBlueButton(
-                buttonText: LocaleKeys.exit.tr(), onTap: () => Navigator.pop(context)),
+            child:
+                LightBlueButton(buttonText: LocaleKeys.exit.tr(), onTap: () => routeManager.pop()),
           )
         ],
       ),
@@ -70,16 +77,18 @@ class _LeftClickableReportTitle extends StatelessWidget {
   const _LeftClickableReportTitle({
     required this.icon,
     required this.title,
+    this.onTap,
   });
   final IconData icon;
   final String title;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       leading: Icon(icon),
       title: Text(title),
-      onTap: () {},
+      onTap: onTap,
     );
   }
 }
