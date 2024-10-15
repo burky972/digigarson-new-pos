@@ -242,7 +242,7 @@ class CategoryCubit extends ICategoryCubit {
           appLogger.error('SUBCATEGORY (POST): ', 'PARENT CATE CANT BE EMPTY'.toString());
         } else {
           if (state.selectedSubCategory!.image!.length < 500) {
-            CategoryModel newCateModel = newSubCategory.copyWith(image: () => null);
+            CategoryModel newCateModel = newSubCategory.copyWith(image: () => null, id: () => null);
             await postCategories(categoryModel: newCateModel);
             postedList.add(subCategory.title ?? "");
           } else {

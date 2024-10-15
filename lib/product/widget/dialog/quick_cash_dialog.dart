@@ -1,3 +1,5 @@
+import 'package:a_pos_flutter/feature/home/case/cubit/case_cubit.dart';
+import 'package:a_pos_flutter/feature/home/checks/cubit/check_cubit.dart';
 import 'package:a_pos_flutter/feature/home/order/cubit/order_cubit.dart';
 import 'package:a_pos_flutter/feature/home/order/model/pay_request_model.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
@@ -6,6 +8,7 @@ import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
 import 'package:a_pos_flutter/language/locale_keys.g.dart';
 import 'package:a_pos_flutter/product/enums/button_action/button_action_enum.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/global/service/response_action_service.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/widget/button/light_blue_button.dart';
@@ -55,12 +58,12 @@ class QuickCashDialog {
                 return LightBlueButton(
                     buttonText: LocaleKeys.YES.tr(),
                     onTap: () async => await _handleQuickCash(context, state: state)
-                        .then((_) => Navigator.pop(context)));
+                        .then((_) => routeManager.pop()));
               },
             ),
             LightBlueButton(
               buttonText: LocaleKeys.NO.tr(),
-              onTap: () => Navigator.pop(context),
+              onTap: () => routeManager.pop(),
             ),
           ],
         );
@@ -90,9 +93,13 @@ class QuickCashDialog {
         tableId: state.selectedTable!.id!);
     tableCubit.clearPriceInfos();
     await ResponseActionService.getTableAndNavigate(
-        context: context,
-        response: isPaidSuccess,
-        tableCubit: tableCubit,
-        action: ButtonAction.checkout);
+      context: context,
+      response: isPaidSuccess,
+      tableCubit: tableCubit,
+      action: ButtonAction.checkout,
+      callback: () => context.read<CheckCubit>().getAllCheck(
+            caseId: context.read<CaseCubit>().cases?.id.toString() ?? "",
+          ),
+    );
   }
 }

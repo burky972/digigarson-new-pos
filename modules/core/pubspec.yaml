@@ -1,7 +1,7 @@
 name: core
 description: "A new Flutter package project."
 version: 0.0.1
-homepage:
+homepage: null
 
 environment:
   sdk: ">=3.4.1 <4.0.0"
@@ -15,29 +15,26 @@ dependencies:
     sdk: flutter
   flutter_bloc: ^8.1.6
   gap: ^3.0.1
+  go_router: ^14.3.0
   logger: ^2.3.0
   shared_preferences: ^2.2.3
 
 dev_dependencies:
+  flutter_lints: ^3.0.0
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
-
 # The following section is specific to Flutter packages.
 flutter:
   assets:
     - assets/translations/
-
-  #
   # For details regarding assets in packages, see
   # https://flutter.dev/assets-and-images/#from-packages
   #
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
-
   # To add custom fonts to your package, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a

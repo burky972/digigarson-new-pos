@@ -214,37 +214,9 @@ class _ProductListWidget extends StatelessWidget {
                                         children: [
                                           SizedBox(
                                             height: 80,
-                                            child: product.image == null || product.image!.isEmpty
-                                                ? Assets.icon.icLogo.image()
-                                                : Image.network(
-                                                    product.image!,
-                                                    loadingBuilder: (BuildContext context,
-                                                        Widget child,
-                                                        ImageChunkEvent? loadingProgress) {
-                                                      if (loadingProgress == null) {
-                                                        return child;
-                                                      } else {
-                                                        return Center(
-                                                          child: CircularProgressIndicator(
-                                                            value: loadingProgress
-                                                                        .expectedTotalBytes !=
-                                                                    null
-                                                                ? loadingProgress
-                                                                        .cumulativeBytesLoaded /
-                                                                    (loadingProgress
-                                                                            .expectedTotalBytes ??
-                                                                        1)
-                                                                : null,
-                                                          ),
-                                                        );
-                                                      }
-                                                    },
-                                                    errorBuilder: (BuildContext context,
-                                                        Object error, StackTrace? stackTrace) {
-                                                      return const Text(
-                                                          'An error occurred while loading the image.');
-                                                    },
-                                                  ),
+                                            child: CachedNetworkImageWidget(
+                                              imageUrl: product.image!,
+                                            ),
                                           ),
                                           Stack(
                                             alignment: Alignment.bottomRight,

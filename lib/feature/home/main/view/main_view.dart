@@ -3,17 +3,15 @@ import 'package:a_pos_flutter/feature/back_office/sections/cubit/section_state.d
 import 'package:a_pos_flutter/feature/back_office/sections/model/section_model.dart';
 import 'package:a_pos_flutter/feature/back_office/table_layout/utility_item/cubit/utility_item_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/table_layout/utility_item/cubit/utility_item_state.dart';
-import 'package:a_pos_flutter/feature/home/case/cubit/case_cubit.dart';
-import 'package:a_pos_flutter/feature/home/checks/cubit/check_cubit.dart';
 import 'package:a_pos_flutter/feature/home/main/view/widget/main_right_widget.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_state.dart';
-import 'package:a_pos_flutter/feature/home/table/view/table_view.dart';
 import 'package:a_pos_flutter/feature/home/table/widget/timer_widget.dart';
 import 'package:a_pos_flutter/product/enums/utility_item/enum.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
 import 'package:a_pos_flutter/product/global/cubit/global_cubit.dart';
 import 'package:a_pos_flutter/product/global/getters/getter.dart';
+import 'package:a_pos_flutter/product/routes/route_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:a_pos_flutter/feature/back_office/table_layout/model/table_layout_model.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
@@ -77,12 +75,7 @@ class _MainSavedTableViewState extends State<MainSavedTableView> with TickerProv
 
   Future<void> _asyncMethod() async {
     try {
-      await Future.wait([
-        context.read<SectionCubit>().getSections(),
-        context.read<CheckCubit>().getAllCheck(
-              caseId: context.read<CaseCubit>().cases?.id.toString() ?? "",
-            ),
-      ]);
+      await Future.wait([context.read<SectionCubit>().getSections()]);
     } catch (e) {
       appLogger.error('MainView _asyncMethod:,', ' $e');
     }
@@ -142,8 +135,7 @@ class _MainSavedTableViewState extends State<MainSavedTableView> with TickerProv
                         context.read<GlobalCubit>().setSelectedTableName(table.title.toString());
                         await context.read<TableCubit>().setSelectedTable(table).then(
                           (value) {
-                            Navigator.push(
-                                context, MaterialPageRoute(builder: (_) => const TableView()));
+                            routeManager.push(RouteConstants.table);
                           },
                         );
                       },

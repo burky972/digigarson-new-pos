@@ -277,7 +277,7 @@ class SpecialItemDialog {
                             '${_titleController.text} - ${_quantityController.text} - ${_priceController.text}');
                       }),
                   LightBlueButton(
-                      buttonText: LocaleKeys.close.tr(), onTap: () => Navigator.pop(context)),
+                      buttonText: LocaleKeys.close.tr(), onTap: () => routeManager.pop()),
                 ],
               );
             });

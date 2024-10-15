@@ -2,7 +2,6 @@ import 'package:a_pos_flutter/language/locale_keys.g.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 /// Keyboard with 1...9 and clear button
 class CustomNumberKeyboard extends StatelessWidget {
@@ -127,7 +126,7 @@ class CustomKeyButton extends StatelessWidget {
               : Text(
                   label,
                   style: CustomFontStyle.buttonTextStyle
-                      .copyWith(color: textColor, fontSize: 16.sp, fontWeight: FontWeight.w600),
+                      .copyWith(color: textColor, fontSize: 16, fontWeight: FontWeight.w600),
                 ),
         ));
   }

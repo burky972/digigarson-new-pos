@@ -1,3 +1,5 @@
+import 'package:a_pos_flutter/feature/home/case/cubit/case_cubit.dart';
+import 'package:a_pos_flutter/feature/home/checks/cubit/check_cubit.dart';
 import 'package:a_pos_flutter/feature/home/order/cubit/order_cubit.dart';
 import 'package:a_pos_flutter/feature/home/order/model/pay_request_model.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
@@ -49,7 +51,7 @@ class NewCheckoutDialog {
               ),
             ),
             actions: <Widget>[
-              LightBlueButton(buttonText: 'Close', onTap: () => Navigator.pop(context)),
+              LightBlueButton(buttonText: 'Close', onTap: () => routeManager.pop()),
             ],
           );
         });
@@ -472,10 +474,14 @@ class _RightCheckoutWidget extends StatelessWidget {
       context.read<TableCubit>().setTotalDue(0);
 
       await ResponseActionService.getTableAndNavigate(
-          context: context,
-          response: isPaidSuccess,
-          tableCubit: tableCubit,
-          action: ButtonAction.checkout);
+        context: context,
+        response: isPaidSuccess,
+        tableCubit: tableCubit,
+        action: ButtonAction.checkout,
+        callback: () => context.read<CheckCubit>().getAllCheck(
+              caseId: context.read<CaseCubit>().cases?.id.toString() ?? "",
+            ),
+      );
     }
 
     return BlocBuilder<TableCubit, TableState>(

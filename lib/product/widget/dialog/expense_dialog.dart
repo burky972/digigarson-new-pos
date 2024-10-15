@@ -3,10 +3,13 @@ import 'package:a_pos_flutter/feature/home/expense/cubit/expense_state.dart';
 import 'package:a_pos_flutter/feature/home/expense/model/expense_request_model.dart';
 import 'package:a_pos_flutter/feature/home/expense/model/expense_response_model.dart';
 import 'package:a_pos_flutter/language/locale_keys.g.dart';
+import 'package:a_pos_flutter/product/constant/app/date_time_formats.dart';
 import 'package:a_pos_flutter/product/enums/expense_types/expense_type.dart';
 import 'package:a_pos_flutter/product/enums/payment_type/enum.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
+import 'package:a_pos_flutter/product/extension/date_time_format/date_time_format.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/responsive/border.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
@@ -327,7 +330,7 @@ class ExpenseDialog {
                                             style: const ButtonStyle(
                                                 backgroundColor:
                                                     WidgetStatePropertyAll(Colors.red)),
-                                            onPressed: () => Navigator.pop(context),
+                                            onPressed: () => routeManager.pop(),
                                             child: Padding(
                                               padding: const AppPadding.normalAll(),
                                               child: Text(
@@ -346,7 +349,7 @@ class ExpenseDialog {
                               width: context.dynamicWidth(0.2),
                               child: LightBlueButton(
                                   buttonText: LocaleKeys.close.tr(),
-                                  onTap: () => Navigator.pop(context)),
+                                  onTap: () => routeManager.pop()),
                             )
                           : const SizedBox(),
                     ],
@@ -490,8 +493,9 @@ class _ExpensesBodyWidget extends StatelessWidget {
                               '${expense.expenseAmount?.toStringAsFixed(2)} ${expense.currency}')),
                   Expanded(
                       child: _ExpenseSingleTextInfoWidget(
-                          text: DateFormat("dd-MM-yyyy HH:mm:ss")
-                              .format(expense.createdAt!.toLocal()))),
+                          text: expense.createdAt!
+                              .toLocal()
+                              .toFormattedString(format: dateAndTimeFormat))),
                   const Expanded(child: _ExpenseSingleTextInfoWidget(text: '-')),
                   Expanded(
                       child: _ExpenseSingleDeleteButtonWidget(

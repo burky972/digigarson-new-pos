@@ -1,12 +1,10 @@
-import 'package:a_pos_flutter/feature/back_office/menu/view/menu_view.dart';
-import 'package:a_pos_flutter/feature/back_office/reports/initial_report/view/initial_report_view.dart';
 import 'package:a_pos_flutter/feature/back_office/restaurant/view/restaurant_dialog_view.dart';
-import 'package:a_pos_flutter/feature/back_office/table_layout/view/table_layout_view.dart';
-import 'package:a_pos_flutter/feature/home/main/view/main_view.dart';
 import 'package:a_pos_flutter/gen/assets.gen.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
+import 'package:a_pos_flutter/product/routes/route_constants.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/widget/button/exit_button.dart';
 import 'package:flutter/material.dart';
@@ -32,14 +30,14 @@ class BackOfficeLaunchView extends StatelessWidget {
               Expanded(
                   flex: 1,
                   child: InkWell(
-                      onTap: () => Navigator.push(
-                          context, MaterialPageRoute(builder: (_) => const MenuView())),
+                      onTap: () => routeManager.push(
+                            RouteConstants.menu,
+                          ),
                       child: const _EachTitleContainer(title: 'Menu'))),
               Expanded(
                   flex: 1,
                   child: InkWell(
-                      onTap: () => Navigator.push(
-                          context, MaterialPageRoute(builder: (_) => const TableLayoutView())),
+                      onTap: () => routeManager.push(RouteConstants.tableLayout),
                       child: const _EachTitleContainer(title: 'Table Layout'))),
               const Expanded(flex: 1, child: _EachTitleContainer(title: 'Maintenance')),
             ]),
@@ -74,8 +72,7 @@ class BackOfficeLaunchView extends StatelessWidget {
               Expanded(
                 flex: 1,
                 child: InkWell(
-                    onTap: () => Navigator.push(
-                        context, MaterialPageRoute(builder: (_) => const InitialReportView())),
+                    onTap: () => routeManager.push(RouteConstants.initialReport),
                     child: const _EachTitleContainer(title: 'Reports')),
               ),
               const Expanded(flex: 1, child: _EachTitleContainer(title: 'Settings')),
@@ -88,8 +85,7 @@ class BackOfficeLaunchView extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ExitButton(
-              onPressed: () =>
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const MainView())),
+              onPressed: () => routeManager.push(RouteConstants.main),
             ),
           ),
         ],

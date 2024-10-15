@@ -101,7 +101,7 @@ class AnimatedCounterDouble extends StatefulWidget {
   });
 
   @override
-  _AnimatedCounterDoubleState createState() => _AnimatedCounterDoubleState();
+  State<AnimatedCounterDouble> createState() => _AnimatedCounterDoubleState();
 }
 
 class _AnimatedCounterDoubleState extends State<AnimatedCounterDouble>

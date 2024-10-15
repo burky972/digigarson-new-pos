@@ -8,7 +8,9 @@ import 'package:a_pos_flutter/feature/home/printer/cubit/printer_cubit.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
 import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
+import 'package:a_pos_flutter/product/extension/date_time_format/date_time_format.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/global/model/print/print_invoice_model.dart';
 import 'package:a_pos_flutter/product/responsive/border.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
@@ -17,7 +19,6 @@ import 'package:a_pos_flutter/product/utils/helper/format_double.dart';
 import 'package:a_pos_flutter/product/widget/dialog/old_checkout_dialog.dart';
 import 'package:a_pos_flutter/product/widget/invoices/invoice_widget.dart';
 import 'package:a_pos_flutter/product/widget/printer/printer_widget.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 part 'sub/check_right_sub_widget.dart';
@@ -146,8 +147,7 @@ class _CheckRightWidgetState extends State<CheckRightWidget> with _CheckRightMix
                               const _CheckLeftTextWidget(text: "Open Date:"),
                               _CheckRightText(
                                   text: selectOrder != null
-                                      ? DateFormat("dd-MM-yyyy HH:mm")
-                                          .format(selectOrder.createdAt!.toLocal())
+                                      ? selectOrder.createdAt!.toLocal().toFormattedString()
                                       : "")
                             ],
                           ),
@@ -161,8 +161,7 @@ class _CheckRightWidgetState extends State<CheckRightWidget> with _CheckRightMix
                               const _CheckLeftTextWidget(text: "Closed Date:"),
                               _CheckRightText(
                                   text: selectOrder != null
-                                      ? DateFormat("dd-MM-yyyy HH:mm")
-                                          .format(selectOrder.updatedAt!.toLocal())
+                                      ? selectOrder.updatedAt!.toLocal().toFormattedString()
                                       : "")
                             ],
                           ),
@@ -378,7 +377,7 @@ class _CheckRightWidgetState extends State<CheckRightWidget> with _CheckRightMix
               ),
               InkWell(
                   onTap: () {
-                    Navigator.pop(context);
+                    routeManager.pop();
                   },
                   child: const _CheckButton(buttonText: 'Cancel')),
             ],

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:a_pos_flutter/language/locale_keys.g.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/widget/button/light_blue_button.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
@@ -19,8 +20,9 @@ showOrderWarningDialog(BuildContext context, String title, {bool? secondClose}) 
     title: title,
   ).show();
   Timer(const Duration(milliseconds: 1200), () {
-    Navigator.of(context).pop();
-    secondClose != null ? Navigator.of(context).pop() : null;
+    routeManager.pop();
+
+    secondClose != null ? routeManager.pop() : null;
   });
 }
 
@@ -36,8 +38,9 @@ showOrderSuccessDialog(BuildContext context, String title, {bool? secondClose}) 
     title: title,
   ).show();
   Timer(const Duration(milliseconds: 1500), () {
-    Navigator.of(context).pop();
-    secondClose != null ? Navigator.of(context).pop() : null;
+    routeManager.pop();
+
+    secondClose != null ? routeManager.pop() : null;
   });
 }
 
@@ -53,15 +56,15 @@ showOrderErrorDialog(BuildContext context, String title, {bool? secondClose}) {
     title: title,
   ).show();
   Timer(const Duration(milliseconds: 1500), () {
-    Navigator.of(context).pop();
-    secondClose != null ? Navigator.of(context).pop() : null;
+    routeManager.pop();
+    secondClose != null ? routeManager.pop() : null;
   });
 }
 
 //! pop op without closing depends on the duration- only ok button on center bottom
 showOrderDialogWithOutCustomDuration(BuildContext context, String title, {DialogType? type}) {
   AwesomeDialog(
-    btnOk: TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Ok')),
+    btnOk: TextButton(onPressed: () => routeManager.pop(), child: const Text('Ok')),
     width: 550,
     context: context,
     animType: AnimType.leftSlide,
@@ -109,8 +112,8 @@ showOrderErrorNotProductDialog(BuildContext context, String title, {bool? second
     title: title,
   ).show();
   Timer(const Duration(milliseconds: 1500), () {
-    Navigator.of(context).pop();
-    secondClose != null ? Navigator.of(context).pop() : null;
+    routeManager.pop();
+    secondClose != null ? routeManager.pop() : null;
   });
 }
 
@@ -128,7 +131,7 @@ showOrderSuccessPriceChangedDialog(BuildContext context, String title,
     title: title,
   ).show();
   Timer(const Duration(milliseconds: 1500), () {
-    Navigator.of(context).pop();
+    routeManager.pop();
     if (secondClose != null && secondClose) {
       if (onNavigate != null) {
         onNavigate();
@@ -150,8 +153,9 @@ showErrorDialog(BuildContext context, String title, {bool? secondClose}) {
     title: title,
   ).show();
   Timer(const Duration(milliseconds: 1500), () {
-    Navigator.of(context).pop();
-    secondClose != null ? Navigator.of(context).pop() : null;
+    routeManager.pop();
+
+    secondClose != null ? routeManager.pop() : null;
   });
 }
 
@@ -159,7 +163,7 @@ showErrorDialog(BuildContext context, String title, {bool? secondClose}) {
 showCloseTableDialog(BuildContext context, {required void Function()? onOkPressed}) {
   AwesomeDialog(
     dismissOnTouchOutside: false,
-    btnOk: LightBlueButton(onTap: () => Navigator.pop(context), buttonText: 'Cancel'),
+    btnOk: LightBlueButton(onTap: () => routeManager.pop(), buttonText: 'Cancel'),
     btnCancel: LightBlueButton(buttonText: 'Ok', onTap: onOkPressed),
     width: 550,
     context: context,

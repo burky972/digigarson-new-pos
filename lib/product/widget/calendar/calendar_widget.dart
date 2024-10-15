@@ -1,30 +1,13 @@
+import 'package:a_pos_flutter/product/constant/app/date_time_formats.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
+import 'package:a_pos_flutter/product/extension/date_time_format/date_time_format.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
 import 'package:a_pos_flutter/product/theme/custom_calendar_theme.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:window_manager/window_manager.dart';
 
-class CalendarWidget extends StatefulWidget {
-  const CalendarWidget({super.key});
-
-  @override
-  State<CalendarWidget> createState() => _CalendarWidgetState();
-}
-
-class _CalendarWidgetState extends State<CalendarWidget> {
-  late CalendarFormat _calendarFormat;
-  late DateTime _focusedDay;
-  late DateTime _selectedDay;
-
-  @override
-  void initState() {
-    super.initState();
-    _calendarFormat = CalendarFormat.month;
-    _focusedDay = DateTime.now();
-    _selectedDay = DateTime.now();
-  }
-
+class _CalendarWidgetState extends State<CalendarWidget> with _CalendarMixin {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -57,18 +40,14 @@ class _CalendarWidgetState extends State<CalendarWidget> {
           headerStyle: HeaderStyle(
               formatButtonVisible: false,
               titleCentered: true,
-              titleTextFormatter: (date, locale) => DateFormat('MM/yyyy').format(date),
-              titleTextStyle: TextStyle(
-                fontSize: 32,
-                color: context.colorScheme.tertiary,
-                fontWeight: FontWeight.bold,
-              ),
+              titleTextFormatter: (date, locale) => date.toFormattedString(format: timeMonthYear),
+              titleTextStyle: CustomCalendarTheme.titleStyle(context),
               leftChevronIcon: const _ForwardBackwardButton(isForward: false),
               rightChevronIcon: const _ForwardBackwardButton()),
           calendarBuilders: CalendarBuilders(
             defaultBuilder: (context, day, focusedDay) {
               return Container(
-                margin: const EdgeInsets.all(4),
+                margin: const EdgeInsets.all(2),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: day.isBefore(DateTime.now()) ? Colors.green[100] : null,
@@ -77,31 +56,19 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                 ),
                 child: Text(
                   day.day.toString(),
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
+                  style: CustomCalendarTheme.calendarNumberStyle,
                 ),
               );
             },
           ),
           availableGestures: AvailableGestures.all,
           daysOfWeekStyle: DaysOfWeekStyle(
-            weekdayStyle: TextStyle(
-              color: context.colorScheme.tertiary,
-              fontWeight: FontWeight.bold,
-              fontSize: 24,
-            ),
-            weekendStyle: TextStyle(
-              color: context.colorScheme.tertiary,
-              fontWeight: FontWeight.bold,
-              fontSize: 24,
-            ),
+            weekdayStyle: CustomCalendarTheme.weekendTextStyle(context),
+            weekendStyle: CustomCalendarTheme.weekendTextStyle(context),
           ),
           locale: 'en_US',
           daysOfWeekHeight: 40,
-          rowHeight: 90,
+          rowHeight: _rowHeight,
         ),
       ),
     );
@@ -126,4 +93,35 @@ class _ForwardBackwardButton extends StatelessWidget {
       ),
     );
   }
+}
+
+mixin _CalendarMixin on State<CalendarWidget> {
+  late CalendarFormat _calendarFormat;
+  late DateTime _focusedDay;
+  late DateTime _selectedDay;
+  bool isFullScreen = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _calendarFormat = CalendarFormat.month;
+    _focusedDay = DateTime.now();
+    _selectedDay = DateTime.now();
+    checkIsFullScreen();
+  }
+
+  Future<void> checkIsFullScreen() async {
+    bool isPreventClose = await windowManager.isFullScreen();
+    isFullScreen = isPreventClose;
+    setState(() {});
+  }
+
+  double get _rowHeight => isFullScreen ? 90 : 52.0;
+}
+
+class CalendarWidget extends StatefulWidget {
+  const CalendarWidget({super.key});
+
+  @override
+  State<CalendarWidget> createState() => _CalendarWidgetState();
 }

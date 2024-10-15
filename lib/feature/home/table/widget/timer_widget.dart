@@ -55,11 +55,11 @@ class _TimerWidgetState extends State<TimerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    int seconds = 0;
+    // int seconds = 0;
     int minutes = 0;
     int hours = 0;
     if (elapsedTime != null) {
-      seconds = elapsedTime!.inSeconds % 60;
+      // seconds = elapsedTime!.inSeconds % 60;
       minutes = (elapsedTime!.inMinutes % 60);
       hours = elapsedTime!.inHours;
     }

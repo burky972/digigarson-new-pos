@@ -581,7 +581,9 @@ class _BottomWidgets extends StatelessWidget {
                               child: imageString == null || imageString.isEmpty
                                   ? null
                                   : imageString.length < 500
-                                      ? Image.network(imageString)
+                                      ? CachedNetworkImageWidget(
+                                          imageUrl: imageString,
+                                        )
                                       : Image.memory(base64Decode(imageString)),
                               // child: imageString == null ||
                               //         imageString.isEmpty
@@ -626,7 +628,7 @@ class _BottomWidgets extends StatelessWidget {
                                             TextButton(
                                               child: const Text('Tamam'),
                                               onPressed: () {
-                                                Navigator.of(context).pop();
+                                                routeManager.pop();
                                               },
                                             ),
                                           ],

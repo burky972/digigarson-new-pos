@@ -1,6 +1,7 @@
-import 'package:a_pos_flutter/feature/home/main/view/main_view.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
 import 'package:a_pos_flutter/product/enums/button_action/button_action_enum.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
+import 'package:a_pos_flutter/product/routes/route_constants.dart';
 import 'package:a_pos_flutter/product/widget/pop_up/pop_up.dart';
 import 'package:flutter/material.dart';
 
@@ -16,15 +17,18 @@ class ResponseActionService {
     required TableCubit tableCubit,
     required ButtonAction action,
     bool isShowingError = true,
+
+    /// If callback is not null, it will be called after the table is updated
+    VoidCallback? callback,
   }) async {
     if (response) {
       await tableCubit
           .getTable()
-          .then((_) => showOrderSuccessDialog(context, action.getSuccessMessage()));
+          .then((_) => showOrderSuccessDialog(context, action.getSuccessMessage()))
+          .then((value) => callback != null ? callback() : null);
 
       await Future.delayed(const Duration(milliseconds: 1600)).then(
-        (_) => Navigator.pushAndRemoveUntil(
-            context, MaterialPageRoute(builder: (_) => const MainView()), (route) => false),
+        (_) => routeManager.go(RouteConstants.main),
       );
     } else {
       isShowingError ? showErrorDialog(context, action.getErrorMessage()) : null;

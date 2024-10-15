@@ -1,4 +1,5 @@
 import 'package:a_pos_flutter/product/extension/context/context.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/widget/button/custom_yes_no_button.dart';
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
@@ -46,9 +47,9 @@ mixin MainRightMixin on StatelessWidget {
         return AlertDialog(
           title: const Text('Are you sure you want to close this window?'),
           actions: [
-            CustomNoButton(onPressed: () => Navigator.of(context).pop()),
+            CustomNoButton(onPressed: () => routeManager.pop()),
             CustomYesButton(onPressed: () async {
-              Navigator.of(context).pop();
+              routeManager.pop();
               await windowManager.destroy();
             })
           ],

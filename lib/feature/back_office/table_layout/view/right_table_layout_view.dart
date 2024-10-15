@@ -1,6 +1,7 @@
 import 'package:a_pos_flutter/feature/back_office/sections/cubit/section_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/table_layout/model/table_layout_model.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -198,7 +199,7 @@ class _RightTableLayoutViewState extends State<RightTableLayoutView>
           .showSnackBar(const SnackBar(content: Text('NAME ALREADY EXIST!!')));
     } else {
       table.name = _tableNameController.text;
-      Navigator.pop(context);
+      routeManager.pop();
     }
     setState(() {});
   }

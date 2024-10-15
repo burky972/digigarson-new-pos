@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:a_pos_flutter/feature/back_office/menu/view/menu_view.dart';
 import 'package:a_pos_flutter/feature/back_office/sections/cubit/section_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/sections/cubit/section_state.dart';
 import 'package:a_pos_flutter/feature/back_office/sections/model/section_model.dart';
@@ -18,6 +17,7 @@ import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
 import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
+import 'package:a_pos_flutter/product/routes/route_constants.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/widget/button/light_blue_button.dart';
 import 'package:a_pos_flutter/product/widget/dialog/clean_all_tables_dialog.dart';
@@ -435,9 +435,8 @@ class _TableLayoutViewState extends State<TableLayoutView>
                                   tableCubit.deletedTableIds.clear();
                                   tableCubit.newAddedTableIds.clear();
                                   utilityItemCubit.deletedUtilityItemIds.clear();
-                                  Navigator.of(context).pushReplacement(
-                                      MaterialPageRoute(builder: (_) => const MenuView()));
-                                  Navigator.pop(context);
+                                  routeManager.replace(RouteConstants.menu);
+                                  routeManager.pop();
                                 },
                               ),
                             ],

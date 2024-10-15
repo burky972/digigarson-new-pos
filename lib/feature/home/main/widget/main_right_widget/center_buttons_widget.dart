@@ -1,12 +1,11 @@
-import 'package:a_pos_flutter/feature/back_office/launch/view/back_office_launch_view.dart';
 import 'package:a_pos_flutter/feature/home/checks/cubit/check_cubit.dart';
 import 'package:a_pos_flutter/feature/home/main/widget/main_right_widget/main_right_button.dart';
-import 'package:a_pos_flutter/feature/home/checks/view/check_view.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
 import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
-import 'package:a_pos_flutter/feature/home/table/view/table_view.dart';
 import 'package:a_pos_flutter/language/locale_keys.g.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
+import 'package:a_pos_flutter/product/routes/route_constants.dart';
 import 'package:a_pos_flutter/product/widget/dialog/expense_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +28,7 @@ class CenterButtonsWidget extends StatelessWidget {
               InkWell(
                 onTap: () {
                   context.read<CheckCubit>().setSelectedCheck(null);
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const CheckView()));
+                  routeManager.push(RouteConstants.check);
                 },
                 child: MainRightButton(text: LocaleKeys.reOpen.tr()),
               ),
@@ -62,7 +61,7 @@ class CenterButtonsWidget extends StatelessWidget {
                   onTap: () {
                     context.read<TableCubit>().setIsQuickService(true);
                     context.read<TableCubit>().setSelectedTable(TableModel.empty());
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const TableView()));
+                    routeManager.push(RouteConstants.table);
                   },
                   child: MainRightButton(text: LocaleKeys.quickService.tr())),
               MainRightButton(text: LocaleKeys.reservation.tr()),
@@ -76,10 +75,7 @@ class CenterButtonsWidget extends StatelessWidget {
                 child: const MainRightButton(text: 'Bar'),
               ),
               InkWell(
-                onTap: () {
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (_) => const BackOfficeLaunchView()));
-                },
+                onTap: () => routeManager.push(RouteConstants.backOfficeLaunch),
                 child: const MainRightButton(text: 'Back Office'),
               ),
             ],

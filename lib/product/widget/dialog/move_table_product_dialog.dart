@@ -7,6 +7,7 @@ import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
 import 'package:a_pos_flutter/product/enums/button_action/button_action_enum.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/global/service/response_action_service.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
@@ -211,7 +212,7 @@ class _MoveTableButtons extends StatelessWidget {
               InkWell(
                   child: LightBlueButton(
                 buttonText: 'Cancel',
-                onTap: () => Navigator.pop(context),
+                onTap: () => routeManager.pop(),
               )),
             ],
           ),

@@ -1,12 +1,11 @@
-import 'package:a_pos_flutter/feature/auth/login/view/login_view.dart';
 import 'package:a_pos_flutter/feature/home/case/cubit/case_cubit.dart';
 import 'package:a_pos_flutter/feature/home/case/model/case_model.dart';
-import 'package:a_pos_flutter/feature/home/main/view/main_view.dart';
 import 'package:a_pos_flutter/gen/assets.gen.dart';
 import 'package:a_pos_flutter/language/locale_keys.g.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
 import 'package:a_pos_flutter/product/global/service/global_service.dart';
+import 'package:a_pos_flutter/product/routes/route_constants.dart';
 import 'package:a_pos_flutter/product/widget/button/custom_button.dart';
 import 'package:a_pos_flutter/product/widget/button/exit_button.dart';
 import 'package:a_pos_flutter/product/widget/keyboard/custom_keyboard.dart';
@@ -100,8 +99,7 @@ class _CaseViewState extends State<CaseView> {
   route(bool isRoute, String? token) async {
     if (isRoute) {
       if (token != null || token!.isNotEmpty) {
-        Navigator.pushAndRemoveUntil(
-            context, MaterialPageRoute(builder: (_) => const MainView()), (route) => false);
+        routeManager.go(RouteConstants.main);
       }
     }
   }
@@ -158,10 +156,7 @@ class _CaseViewState extends State<CaseView> {
                               appLogger.info('CASE VIEW', 'token: $token , isPosted: $isPosted');
                               if (isPosted) {
                                 if (token != null || token!.isNotEmpty) {
-                                  Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(builder: (_) => const MainView()),
-                                      (route) => false);
+                                  routeManager.go(RouteConstants.main);
                                 }
                               }
                             },
@@ -182,8 +177,7 @@ class _CaseViewState extends State<CaseView> {
                 onPressed: () {
                   _overlayEntry?.remove();
                   _overlayEntry = null;
-                  Navigator.pushAndRemoveUntil(context,
-                      MaterialPageRoute(builder: (_) => const LoginView()), (route) => false);
+                  routeManager.go(RouteConstants.login);
                 },
                 buttonColor: context.colorScheme.error,
               )),

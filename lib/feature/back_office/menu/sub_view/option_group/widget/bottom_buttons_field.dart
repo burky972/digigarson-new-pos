@@ -42,7 +42,7 @@ class _BottomButtonFields extends StatelessWidget {
             const LightBlueButton(buttonText: 'Export'),
             LightBlueButton(
               buttonText: 'Exit',
-              onTap: () => Navigator.pop(context),
+              onTap: () => routeManager.pop(),
             ),
           ],
         );

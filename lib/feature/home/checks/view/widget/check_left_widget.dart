@@ -2,12 +2,12 @@ import 'package:a_pos_flutter/feature/home/checks/cubit/check_cubit.dart';
 import 'package:a_pos_flutter/feature/home/checks/cubit/check_state.dart';
 import 'package:a_pos_flutter/feature/home/checks/model/re_open_model.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
+import 'package:a_pos_flutter/product/extension/date_time_format/date_time_format.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
 import 'package:a_pos_flutter/product/responsive/border.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 
 class CheckLeftWidget extends StatefulWidget {
   const CheckLeftWidget({super.key});
@@ -67,8 +67,7 @@ class _ReOpenLeftWidgetState extends State<CheckLeftWidget> with ReOpenLeftMixin
                         state.checkModelList![index].user?.name.toString() ?? '',
 
                         //TODO: check closed time
-                        DateFormat("dd-MM-yyyy HH:mm")
-                            .format(state.checkModelList![index].createdAt!.toLocal())
+                        state.checkModelList![index].createdAt!.toLocal().toFormattedString()
                       ];
 
                       return InkWell(

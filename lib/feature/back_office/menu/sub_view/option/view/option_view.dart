@@ -318,9 +318,8 @@ class _MenuOptionsViewState extends State<OptionsView> with AutomaticKeepAliveCl
                                                                 actions: <Widget>[
                                                                   TextButton(
                                                                     child: const Text('Tamam'),
-                                                                    onPressed: () {
-                                                                      Navigator.of(context).pop();
-                                                                    },
+                                                                    onPressed: () =>
+                                                                        routeManager.pop(),
                                                                   ),
                                                                 ],
                                                               );
