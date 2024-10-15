@@ -4,6 +4,7 @@ import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
 import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/global/model/order/new_order_model.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
@@ -124,7 +125,7 @@ class OptionMultipleProductDialog extends StatelessWidget {
                                 context.read<ProductCubit>().setSelectedProductQuantity(null);
                                 context.read<ProductCubit>().setSelectedItems([]);
                                 context.read<ProductCubit>().resetSelectedItems();
-                                Navigator.pop(context);
+                                routeManager.pop();
                               }
                             }
                           }),
@@ -137,7 +138,7 @@ class OptionMultipleProductDialog extends StatelessWidget {
                           onTap: () {
                             context.read<ProductCubit>().resetSelectedItems();
                             context.read<ProductCubit>().setSelectedProductQuantity(null);
-                            Navigator.pop(context);
+                            routeManager.pop();
                           }),
                     ],
                   ),

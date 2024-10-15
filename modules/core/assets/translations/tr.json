@@ -12,6 +12,7 @@
   "FLOORS": "BÖLÜMLER",
   "ORDERS": "SİPARİŞLER",
   "SEND_MAIL": "Parola Sıfırlama E-postası Gönderin",
+  "send_email": "E-posta gönder",
   "Quantity_Selection": "Adet Seçimi",
   "Weight_Selection": "Ağırlık Seçimi",
   "Order_Not_Placed_Error_Occurred": "Sipariş Verilmedi Hata Oluştu",
@@ -71,7 +72,7 @@
   "NoNetwork": "İnternet Yok",
   "MoveTable": "Taşımak İstediğiniz Masayı Seçiniz",
   "MoveTablePermission": "Masa taşıma yetkiniz yok.",
-  "search": "Ürününüzü arayın...",
+  "searchProduct": "Ürününüzü arayın...",
   "InputWeight": "Ağırlık Giriniz",
   "today": "Bugün",
   "date": "Tarih",
@@ -192,6 +193,10 @@
   "cold" : "Soğuk",
   "freeze" : "Donmuş",
   "kitchen" : "Mutfak",
-  "receipt" : "Fiş"
+  "receipt" : "Fiş",
+  "export" : "Dışa aktar",
+  "refund": "İade",
+  "search":"Ara"
+
 
 }

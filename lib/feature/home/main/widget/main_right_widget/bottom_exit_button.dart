@@ -1,8 +1,9 @@
-import 'package:a_pos_flutter/feature/auth/login/view/login_view.dart';
 import 'package:a_pos_flutter/language/locale_keys.g.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/responsive/border.dart';
+import 'package:a_pos_flutter/product/routes/route_constants.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/widget/button/custom_yes_no_button.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -23,11 +24,12 @@ class MainRightBottomExitButton extends StatelessWidget {
               return AlertDialog(
                 title: const Text(LocaleKeys.sureWannaCloseWindow).tr(),
                 actions: [
-                  CustomNoButton(onPressed: () => Navigator.of(context).pop()),
-                  CustomYesButton(onPressed: () {
-                    Navigator.pushAndRemoveUntil(context,
-                        MaterialPageRoute(builder: (_) => const LoginView()), (route) => false);
-                  })
+                  CustomNoButton(
+                    onPressed: () => routeManager.pop(),
+                  ),
+                  CustomYesButton(
+                    onPressed: () => routeManager.go(RouteConstants.login),
+                  )
                 ],
               );
             },

@@ -2,6 +2,7 @@ import 'package:a_pos_flutter/feature/back_office/restaurant/cubit/restaurant_cu
 import 'package:a_pos_flutter/feature/back_office/restaurant/cubit/restaurant_state.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/widget/textfield/custom_textfield.dart';
 import 'package:flutter/material.dart';
@@ -613,7 +614,7 @@ class RestaurantDialogView {
                           : message4Controller!.text,
                     );
 
-                    Navigator.pop(context);
+                    routeManager.pop();
                   },
                   child: const _BottomButtonWidget(
                     buttonText: "Save",
@@ -621,7 +622,7 @@ class RestaurantDialogView {
                 ),
                 InkWell(
                   onTap: () {
-                    Navigator.pop(context);
+                    routeManager.pop();
                   },
                   child: const _BottomButtonWidget(
                     buttonText: "Exit",

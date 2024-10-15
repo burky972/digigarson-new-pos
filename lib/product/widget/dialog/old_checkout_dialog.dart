@@ -246,7 +246,10 @@ class OldCheckDialog {
                       );
                     },
                   ),
-                  LightBlueButton(buttonText: 'Close', onTap: () => Navigator.of(context).pop()),
+                  LightBlueButton(
+                    buttonText: 'Close',
+                    onTap: () => routeManager.pop(),
+                  ),
                 ],
               );
             },

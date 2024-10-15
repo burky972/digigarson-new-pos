@@ -9,6 +9,7 @@ import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/responsive/border.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
 import 'package:a_pos_flutter/product/widget/button/light_blue_button.dart';
+import 'package:a_pos_flutter/product/widget/cached_network_image/cached_network_image.dart';
 import 'package:a_pos_flutter/product/widget/pop_up/pop_up.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -365,7 +366,9 @@ class _MenuGroupViewState extends State<CategoryView> with AutomaticKeepAliveCli
                                         child: imageString == null || imageString.isEmpty
                                             ? null
                                             : imageString.length < 500
-                                                ? Image.network(imageString)
+                                                ? CachedNetworkImageWidget(
+                                                    imageUrl: imageString,
+                                                  )
                                                 : Image.memory(base64Decode(imageString)),
                                       ),
                                       const SizedBox(height: 15),

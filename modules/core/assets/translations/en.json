@@ -340,7 +340,7 @@
   "NoNetwork": "No Internet",
   "MoveTable": "Select the Table You Want to Move.",
   "MoveTablePermission": "You are not authorized to move tables.",
-  "search": "Search your product",
+  "searchProduct": "Search your product",
   "InputWeight": "Enter Weight",
   "today": "Today",
   "date": "Date",
@@ -446,6 +446,10 @@
   "cold" : "Cold",
   "freeze" : "Freeze",
   "kitchen" : "Kitchen",
-  "receipt" : "Receipt"
+  "receipt" : "Receipt",
+  "export" : "Export",
+  "refund": "Refund",
+  "search":"Search"
+
 
 }

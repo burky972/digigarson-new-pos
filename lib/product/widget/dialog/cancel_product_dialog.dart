@@ -8,6 +8,7 @@ import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
 import 'package:a_pos_flutter/language/locale_keys.g.dart';
 import 'package:a_pos_flutter/product/enums/button_action/button_action_enum.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/global/model/order/new_order_model.dart';
 import 'package:a_pos_flutter/product/global/service/global_service.dart';
 import 'package:a_pos_flutter/product/global/service/response_action_service.dart';
@@ -165,7 +166,7 @@ class CancelProductDialog {
               ),
               LightBlueButton(
                 buttonText: LocaleKeys.CANCEL.tr(),
-                onTap: () => Navigator.pop(context),
+                onTap: () => routeManager.pop(),
               ),
             ],
           );
@@ -325,7 +326,7 @@ class CancelProductDialog {
                 products: state.newOrderProducts,
                 tableId: state.selectedTable!.id.toString()),
             state: state)
-        .then((_) => Navigator.pop(context));
+        .then((_) => routeManager.pop());
   }
 
   Future<void> cancelProduct(BuildContext context,

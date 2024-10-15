@@ -5,10 +5,12 @@ import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/cubit/pr
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/model/product_model.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/responsive/border.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/widget/button/light_blue_button.dart';
+import 'package:a_pos_flutter/product/widget/cached_network_image/cached_network_image.dart';
 import 'package:a_pos_flutter/product/widget/textfield/custom_border_all_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

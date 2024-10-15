@@ -29,7 +29,7 @@ class _BottomButtonFields extends StatelessWidget {
                   await optionCubit.saveItemChanges().whenComplete(() => optionCubit.getOptions()),
             ),
             const LightBlueButton(buttonText: 'Export'),
-            LightBlueButton(buttonText: 'Exit', onTap: () => Navigator.pop(context)),
+            LightBlueButton(buttonText: 'Exit', onTap: () => routeManager.pop()),
           ],
         );
       },

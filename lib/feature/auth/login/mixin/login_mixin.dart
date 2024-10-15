@@ -1,16 +1,11 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:a_pos_flutter/feature/auth/login/cubit/login_cubit.dart';
 import 'package:a_pos_flutter/feature/auth/login/cubit/login_state.dart';
 import 'package:a_pos_flutter/feature/auth/login/model/login_model.dart';
 import 'package:a_pos_flutter/feature/auth/login/view/widget/login_body_widget.dart';
-
 import 'package:a_pos_flutter/feature/home/case/cubit/case_cubit.dart';
-import 'package:a_pos_flutter/feature/home/case/view/case_view.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/cubit/category_cubit.dart';
-import 'package:a_pos_flutter/feature/home/main/view/main_view.dart';
-
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/cubit/product_cubit.dart';
 import 'package:a_pos_flutter/feature/home/note_serve_payment_cancel_reason/cubit/note_cubit.dart';
 import 'package:a_pos_flutter/feature/home/checks/cubit/check_cubit.dart';
@@ -18,6 +13,7 @@ import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
 import 'package:a_pos_flutter/language/locale_keys.g.dart';
 import 'package:a_pos_flutter/product/global/cubit/global_cubit.dart';
 import 'package:a_pos_flutter/product/global/getters/getter.dart';
+import 'package:a_pos_flutter/product/routes/route_constants.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/utils/helper/network_info.dart';
 import 'package:a_pos_flutter/product/utils/helper/timer_convert.dart';
@@ -45,8 +41,6 @@ mixin LoginMixin on State<LoginBodyWidget> {
 
   @override
   void initState() {
-    appLogger.info('SignIn', 'Sign in widget initState run!');
-
     super.initState();
     formKeyLogin = GlobalKey<FormState>();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive, overlays: []);
@@ -65,30 +59,42 @@ mixin LoginMixin on State<LoginBodyWidget> {
   void dispose() {
     branchCustomIdController.dispose();
     passwordController.dispose();
+    serverSocket?.close();
     timer.cancel();
     super.dispose();
   }
 
+  int port = 12345;
+  ServerSocket? serverSocket;
   Future<void> load() async {
     try {
-      final serverSocket = await ServerSocket.bind(InternetAddress.anyIPv4, 12345);
-
-      await for (var socket in serverSocket) {
-        socket.listen(
-          (List<int> data) {
-            final message = String.fromCharCodes(data);
-            appLogger.info('load func SignIn Widget', message);
-          },
-          onError: (error) {
-            appLogger.error('load func SignIn Widget', 'Hata: $error');
-            socket.destroy();
-          },
-          onDone: () {
-            appLogger.error('load func SignIn Widget', 'Bağlantı: kesildi ');
-            socket.destroy();
-          },
-          cancelOnError: true,
-        );
+      while (serverSocket == null) {
+        try {
+          serverSocket = await ServerSocket.bind(InternetAddress.anyIPv4, port, shared: true);
+        } catch (e) {
+          port++; // Try the next port
+          if (port > 65535) {
+            appLogger.warning('load func SignIn Widget', 'Hata: port bulunamadı');
+            throw Exception('No available ports');
+          }
+        }
+        await for (var socket in serverSocket!) {
+          socket.listen(
+            (List<int> data) {
+              final message = String.fromCharCodes(data);
+              appLogger.info('load func SignIn Widget', message);
+            },
+            onError: (error) {
+              appLogger.error('load func SignIn Widget', 'Hata: $error');
+              socket.destroy();
+            },
+            onDone: () {
+              appLogger.error('load func SignIn Widget', 'Bağlantı: kesildi ');
+              socket.destroy();
+            },
+            cancelOnError: true,
+          );
+        }
       }
     } catch (e) {
       appLogger.error('load func SignIn Widget', 'Sunucu başlatılamadı: $e');
@@ -153,10 +159,10 @@ mixin LoginMixin on State<LoginBodyWidget> {
             style: CustomFontStyle.popupNotificationTextStyle,
           ),
           actions: [
-            CustomNoButton(onPressed: () => Navigator.of(context).pop()),
+            CustomNoButton(onPressed: () => routeManager.pop()),
             CustomYesButton(
               onPressed: () async {
-                Navigator.of(context).pop();
+                routeManager.pop();
                 await windowManager.destroy();
               },
             )
@@ -211,10 +217,11 @@ mixin LoginMixin on State<LoginBodyWidget> {
 
   Future<void> callNecessaryFunctions(bool isCaseOpened, LoginState state) async {
     appLogger.warning('callNecessaryFunctions func', 'isCaseOpened: $isCaseOpened');
+    final loginCubit = context.read<LoginCubit>();
+    final globalCubit = context.read<GlobalCubit>();
     await Future.wait([
       context.read<CategoryCubit>().getCategories(),
       context.read<ProductCubit>().getProducts(),
-      //TODO: OPEN THIS CODE LATER!
       context.read<NoteServePaymentCancelReasonCubit>().getALLFunctions(state.userModel!),
       context
           .read<CheckCubit>()
@@ -222,15 +229,13 @@ mixin LoginMixin on State<LoginBodyWidget> {
       context.read<TableCubit>().getTable(),
     ]).then((_) {
       if (isCaseOpened) {
-        context.read<GlobalCubit>().setUser(state.userModel!);
-        context.read<LoginCubit>().updateIsLoading(false);
+        globalCubit.setUser(state.userModel!);
+        loginCubit.updateIsLoading(false);
         //TODO: check HERE TO NAVIGATE AFTER CLICKING LOGIN BUTTON!
-        Navigator.pushAndRemoveUntil(
-            context, MaterialPageRoute(builder: (_) => const MainView()), (route) => false);
+        routeManager.go(RouteConstants.main);
       } else {
-        context.read<LoginCubit>().updateIsLoading(false);
-        Navigator.pushAndRemoveUntil(
-            context, MaterialPageRoute(builder: (_) => const CaseView()), (route) => false);
+        loginCubit.updateIsLoading(false);
+        routeManager.go(RouteConstants.caseView);
       }
     });
   }

@@ -276,7 +276,7 @@ class ServiceFeeDialog {
                         : const SizedBox(),
                     LightBlueButton(
                       buttonText: LocaleKeys.close.tr(),
-                      onTap: () => Navigator.pop(context),
+                      onTap: () => routeManager.pop(),
                     ),
                   ],
                 );

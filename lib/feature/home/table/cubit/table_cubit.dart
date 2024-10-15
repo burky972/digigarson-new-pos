@@ -29,6 +29,7 @@ class TableCubit extends ITableCubit {
   }
 
   late ITableService _tableService;
+  // ignore: non_constant_identifier_names
   final TAG = "TableCubit";
   List<TableModel> tableModel = [];
   List<String> deletedTableIds = [];
@@ -900,20 +901,5 @@ class TableCubit extends ITableCubit {
     calculateTotalTax();
     calculateSubPrice();
     calculateTotalPrice();
-  }
-
-  //////////*******************************NEW ORDER UPDATES  ***************************/
-  void updateNewOrderProductItems(
-      OrderProductModel product, int timestamp, List<Options> updatedOptions) {
-    final updatedProducts = state.newProducts.products.map((p) {
-      if (p.uniqueTimestamp == timestamp) {
-        return p.copyWith(options: updatedOptions);
-      }
-      return p;
-    }).toList();
-
-    emit(state.copyWith(
-      newProducts: state.newProducts.copyWith(products: updatedProducts),
-    ));
   }
 }

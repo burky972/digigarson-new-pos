@@ -5,6 +5,7 @@ import 'package:a_pos_flutter/language/locale_keys.g.dart';
 import 'package:a_pos_flutter/product/enums/service_type/enum.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/global/model/order/new_order_model.dart';
 import 'package:a_pos_flutter/product/responsive/border.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
@@ -375,7 +376,7 @@ class CoverDialog {
                           })
                       : const SizedBox(),
                   LightBlueButton(
-                      buttonText: LocaleKeys.close.tr(), onTap: () => Navigator.pop(context)),
+                      buttonText: LocaleKeys.close.tr(), onTap: () => routeManager.pop()),
                 ],
               );
             });

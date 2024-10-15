@@ -6,12 +6,12 @@ import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/model/pr
 import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
 import 'package:a_pos_flutter/feature/home/table/widget/category_list_widget.dart';
 import 'package:a_pos_flutter/feature/home/table/widget/table_button_widget.dart';
-import 'package:a_pos_flutter/gen/assets.gen.dart';
 import 'package:a_pos_flutter/product/enums/button_action/button_action_enum.dart';
 import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/global/model/order/new_order_model.dart';
 import 'package:a_pos_flutter/product/global/service/response_action_service.dart';
 import 'package:a_pos_flutter/product/responsive/border.dart';
+import 'package:a_pos_flutter/product/widget/cached_network_image/cached_network_image.dart';
 import 'package:a_pos_flutter/product/widget/dialog/cancel_product_dialog.dart';
 import 'package:a_pos_flutter/product/widget/dialog/cover_dialog.dart';
 import 'package:a_pos_flutter/product/widget/dialog/edit_customer_count_dialog.dart';

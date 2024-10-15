@@ -41,4 +41,21 @@ final class CustomCalendarTheme {
         shape: BoxShape.rectangle,
         borderRadius: BorderRadius.circular(5),
       );
+
+  static TextStyle weekendTextStyle(BuildContext context) => TextStyle(
+        color: context.colorScheme.tertiary,
+        fontWeight: FontWeight.bold,
+        fontSize: 24,
+      );
+  static TextStyle get calendarNumberStyle => const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        color: Colors.black,
+      );
+
+  static TextStyle titleStyle(BuildContext context) => TextStyle(
+        fontSize: 32,
+        color: context.colorScheme.tertiary,
+        fontWeight: FontWeight.bold,
+      );
 }

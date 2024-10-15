@@ -1,3 +1,5 @@
+import 'package:a_pos_flutter/feature/home/case/cubit/case_cubit.dart';
+import 'package:a_pos_flutter/feature/home/checks/cubit/check_cubit.dart';
 import 'package:a_pos_flutter/feature/home/order/cubit/order_cubit.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
 import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
@@ -8,6 +10,7 @@ import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
 import 'package:a_pos_flutter/product/global/cubit/quick_service/quick_service_cubit.dart';
 import 'package:a_pos_flutter/product/global/cubit/quick_service/quick_service_state.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/global/model/quick_service/quick_service_request_model.dart';
 import 'package:a_pos_flutter/product/global/service/response_action_service.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
@@ -54,7 +57,7 @@ class QuickServiceCheckoutDialog {
                     QuickServiceCubit quickServiceCubit = context.read<QuickServiceCubit>();
                     quickServiceCubit.clearAll();
 
-                    Navigator.pop(context);
+                    routeManager.pop();
                   }),
             ],
           );
@@ -383,6 +386,11 @@ class _RightCheckoutWidget extends StatelessWidget {
                                         response: isSales,
                                         tableCubit: tableCubit,
                                         action: ButtonAction.quickCash,
+                                        callback: () => context.read<CheckCubit>().getAllCheck(
+                                              caseId:
+                                                  context.read<CaseCubit>().cases?.id.toString() ??
+                                                      "",
+                                            ),
                                       );
                                     },
                                     child: Text(

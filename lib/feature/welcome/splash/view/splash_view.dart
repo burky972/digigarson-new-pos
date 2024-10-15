@@ -1,10 +1,11 @@
 import 'dart:async';
-import 'package:a_pos_flutter/feature/auth/login/view/login_view.dart';
 import 'package:a_pos_flutter/feature/welcome/splash/view/widget/splas_painter.dart';
 import 'package:a_pos_flutter/gen/assets.gen.dart';
 import 'package:a_pos_flutter/language/locale_keys.g.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
+import 'package:a_pos_flutter/product/routes/route_constants.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -88,8 +89,7 @@ mixin SplashMixin on State<SplashView> {
 
   void _route() {
     Timer(const Duration(seconds: 1), () {
-      Navigator.of(context)
-          .pushReplacement(MaterialPageRoute(builder: (BuildContext context) => const LoginView()));
+      routeManager.go(RouteConstants.login);
     });
   }
 }

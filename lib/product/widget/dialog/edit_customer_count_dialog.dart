@@ -3,6 +3,7 @@ import 'package:a_pos_flutter/feature/home/table/cubit/table_state.dart';
 import 'package:a_pos_flutter/language/locale_keys.g.dart';
 import 'package:a_pos_flutter/product/enums/customer_count/customer_count_type.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/global/model/customer_count/customer_count_model.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
@@ -66,11 +67,11 @@ class EditCustomerCountDialog {
                             ),
                           ),
                           InkWell(
-                            onTap: () => Navigator.pop(context),
+                            onTap: () => routeManager.pop(),
                             child: _BottomColorButton(
                               text: LocaleKeys.CANCEL,
                               color: Colors.red,
-                              onPressed: () => Navigator.pop(context),
+                              onPressed: () => routeManager.pop(),
                             ),
                           ),
                           InkWell(

@@ -1,3 +1,5 @@
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
+import 'package:a_pos_flutter/product/widget/cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -326,7 +328,9 @@ class _MainCategoryViewState extends State<MainCategoryView> with AutomaticKeepA
                                         child: imageString == null || imageString.isEmpty
                                             ? null
                                             : imageString.length < 500
-                                                ? Image.network(imageString)
+                                                ? CachedNetworkImageWidget(
+                                                    imageUrl: imageString,
+                                                  )
                                                 : Image.memory(base64Decode(imageString)),
                                       ),
                                       const SizedBox(height: 15),
@@ -420,7 +424,7 @@ class _BottomButtonFields extends StatelessWidget {
         const LightBlueButton(buttonText: 'Export'),
         LightBlueButton(
           buttonText: 'Exit',
-          onTap: () => Navigator.pop(context),
+          onTap: () => routeManager.pop(),
         ),
       ],
     );
