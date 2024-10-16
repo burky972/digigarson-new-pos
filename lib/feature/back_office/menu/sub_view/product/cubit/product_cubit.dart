@@ -2,11 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/model/option_model.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/service/i_option_service.dart';
-import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/service/option_service.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/cubit/i_product_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/model/product_model.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/service/i_product_service.dart';
-import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/service/product_service.dart';
 import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/global/service/global_service.dart';
 import 'package:core/base/cubit/base_cubit.dart';
@@ -19,7 +17,10 @@ import 'package:image_picker/image_picker.dart';
 part 'product_state.dart';
 
 class ProductCubit extends IProductCubit {
-  ProductCubit() : super(ProductState.initial()) {
+  ProductCubit({required IProductService productService, required IOptionService optionService})
+      : _productService = productService,
+        _optionService = optionService,
+        super(ProductState.initial()) {
     init();
   }
   final TextEditingController productNameController = TextEditingController();
@@ -30,8 +31,8 @@ class ProductCubit extends IProductCubit {
   Map<String, List<ProductOptionModel>> productOptionsMap = {};
   Map<String, List<ProductModel>>? originalCategorizedProducts = {};
 
-  final IProductService _productService = ProductService();
-  final IOptionService _optionService = OptionService();
+  final IProductService _productService;
+  final IOptionService _optionService;
   @override
   Future<void> init() async {
     await Future.wait([getProducts(), getOptions()]);

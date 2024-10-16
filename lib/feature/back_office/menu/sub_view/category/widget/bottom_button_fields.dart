@@ -27,10 +27,7 @@ class _BottomButtonFields extends StatelessWidget {
         ),
         LightBlueButton(
             buttonText: 'Save',
-            onTap: () async => await context
-                .read<CategoryCubit>()
-                .saveSubCategoriesChanges()
-                .whenComplete(() => context.read<CategoryCubit>().getCategories())),
+            onTap: () async => await context.read<CategoryCubit>().saveSubCategoriesChanges()),
         const LightBlueButton(buttonText: 'Export'),
         LightBlueButton(
           buttonText: 'Exit',
@@ -45,7 +42,7 @@ class _BottomButtonFields extends StatelessWidget {
     final bool isSuccess =
         await categoryCubit.patchCategories(categoryId: categoryCubit.selectedSubCategory!.id!);
     if (!isSuccess) {
-      await showOrderErrorDialog(context, '${categoryCubit.state.exception?.message}!');
+      await showOrderErrorDialog('${categoryCubit.state.exception?.message}!');
       await categoryCubit.getCategories();
     } else {
       await categoryCubit

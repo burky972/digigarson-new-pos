@@ -1,10 +1,7 @@
+import 'package:a_pos_flutter/product/app/app_container.dart';
 import 'package:a_pos_flutter/product/app/window_manager_initialize.dart';
 import 'package:a_pos_flutter/product/config/app_environment.dart';
-import 'package:a_pos_flutter/product/routes/go_routes.dart';
 import 'package:a_pos_flutter/product/utils/observer/bloc_observer.dart';
-import 'package:core/cache/shared_manager.dart';
-import 'package:core/core.dart';
-import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -24,19 +21,23 @@ class AppInitialize {
 
     /// Initialize the App Environment items (DEV environment, Prod environment)
     AppEnvironment.general();
+
+    /// initialize the app container
+    await AppContainer.setup(baseUrl: AppEnvironmentItems.baseUrl.value);
+
     //initialize the shared preferences manager
-    await SharedManager.preferencesInit();
+    //! await SharedManager.preferencesInit();
 
     //initialize the Route manager
-    RouteManager.instance.init(AppRoute.router);
+    //! RouteManager.instance.init(AppRoute.router);
 
     //initialize the app logger
-    appLogger.init(isCacheLog: false);
+    //! appLogger.init(isCacheLog: false);
 
     //initialize the network manager
-    await DioClient.instance.init(
-      baseUrl: AppEnvironmentItems.baseUrl.value,
-    );
+    //! await DioClient.instance.init(
+    //!   baseUrl: AppEnvironmentItems.baseUrl.value,
+    //! );
     // observe bloc changes
     Bloc.observer = const AppBlocObserver();
 

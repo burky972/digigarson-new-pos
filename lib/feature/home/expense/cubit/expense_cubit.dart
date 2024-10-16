@@ -2,13 +2,12 @@ import 'package:a_pos_flutter/feature/home/expense/cubit/expense_state.dart';
 import 'package:a_pos_flutter/feature/home/expense/cubit/i_expense_cubit.dart';
 import 'package:a_pos_flutter/feature/home/expense/model/expense_request_model.dart';
 import 'package:a_pos_flutter/feature/home/expense/model/expense_response_model.dart';
-import 'package:a_pos_flutter/feature/home/expense/service/expense_service.dart';
 import 'package:a_pos_flutter/feature/home/expense/service/i_expense_service.dart';
 
 class ExpenseCubit extends IExpenseCubit {
-  ExpenseCubit() : super(ExpenseState.initial());
+  ExpenseCubit(this._service) : super(ExpenseState.initial());
 
-  final IExpenseService _service = ExpenseService();
+  final IExpenseService _service;
 
   @override
   void init() {

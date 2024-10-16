@@ -11,11 +11,13 @@ import 'package:a_pos_flutter/feature/home/table/view/table_view.dart';
 import 'package:a_pos_flutter/feature/welcome/splash/view/splash_view.dart';
 import 'package:a_pos_flutter/product/routes/route_constants.dart';
 import 'package:core/core.dart';
+import 'package:flutter/material.dart';
 
 final class AppRoute {
   const AppRoute._();
-
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   static final router = GoRouter(
+    navigatorKey: navigatorKey,
     routes: <RouteBase>[
       /// Splash View
       GoRoute(

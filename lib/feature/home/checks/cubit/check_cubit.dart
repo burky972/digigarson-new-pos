@@ -2,15 +2,14 @@ import 'package:a_pos_flutter/feature/home/checks/cubit/check_state.dart';
 import 'package:a_pos_flutter/feature/home/checks/cubit/i_check_cubit.dart';
 import 'package:a_pos_flutter/feature/home/checks/model/check_response_model.dart';
 import 'package:a_pos_flutter/feature/home/checks/model/single_check_model.dart';
-import 'package:a_pos_flutter/feature/home/checks/service/check_service.dart';
 import 'package:a_pos_flutter/feature/home/checks/service/i_check_service.dart';
 import 'package:a_pos_flutter/product/global/getters/getter.dart';
 
 class CheckCubit extends ICheckCubit {
-  CheckCubit() : super(CheckState.initial()) {
+  CheckCubit(this._checkService) : super(CheckState.initial()) {
     init();
   }
-  late ICheckService _checkService;
+  final ICheckService _checkService;
 
   final TAG = "CheckCubit";
 
@@ -18,9 +17,7 @@ class CheckCubit extends ICheckCubit {
   List<CheckModel> checkModelList = [];
 
   @override
-  Future<void> init() async {
-    _checkService = CheckService();
-  }
+  Future<void> init() async {}
 
   @override
   void setSelectedCheck(SingleCheckModel? checkModel) =>

@@ -50,7 +50,7 @@ class CleanAllTablesDialog {
         BlocConsumer<TableCubit, TableState>(
           listener: (context, state) {
             if (state.states == TableStates.error && state.exception != null) {
-              showErrorDialog(context, state.exception!.message);
+              showErrorDialog(state.exception!.message);
               Future.delayed(const Duration(milliseconds: 1600)).then(
                 (value) => routeManager.pop(),
               );
@@ -66,7 +66,7 @@ class CleanAllTablesDialog {
                   tableStates.forEach((key, tables) async {
                     await SharedManager.instance.removeValue(key);
                   });
-                  showOrderSuccessDialog(context, 'All tables states cleaned!');
+                  showOrderSuccessDialog('All tables states cleaned!');
                 }
                 await ResponseActionService.getTableAndNavigate(
                   context: context,

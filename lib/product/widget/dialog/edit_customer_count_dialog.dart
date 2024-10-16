@@ -54,14 +54,11 @@ class EditCustomerCountDialog {
                                 bool isEdited = await tableCubit.patchCustomerCount(
                                     CustomerCountType.save,
                                     CustomerCountModel(customerCount: customerCount));
-
                                 if (isEdited) {
-                                  showOrderSuccessDialog(
-                                      context, 'Customer count updated successfully',
+                                  showOrderSuccessDialog('Customer count updated successfully',
                                       secondClose: true);
                                 } else {
-                                  showErrorDialog(context, 'Customer count not updated!',
-                                      secondClose: true);
+                                  showErrorDialog('Customer count not updated!', secondClose: true);
                                 }
                               },
                             ),
@@ -82,12 +79,10 @@ class EditCustomerCountDialog {
                                 bool isEdited = await tableCubit.patchCustomerCount(
                                     CustomerCountType.reset, CustomerCountModel(customerCount: 0));
                                 if (isEdited) {
-                                  showOrderSuccessDialog(
-                                      context, 'Customer count updated successfully',
+                                  showOrderSuccessDialog('Customer count updated successfully',
                                       secondClose: true);
                                 } else {
-                                  showErrorDialog(context, 'Customer count not updated!',
-                                      secondClose: true);
+                                  showErrorDialog('Customer count not updated!', secondClose: true);
                                 }
                               },
                             ),

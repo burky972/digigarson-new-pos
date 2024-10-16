@@ -1,7 +1,6 @@
 import 'package:a_pos_flutter/feature/home/order/cubit/i_order_cubit.dart';
 import 'package:a_pos_flutter/feature/home/order/model/pay_request_model.dart';
 import 'package:a_pos_flutter/feature/home/order/service/i_order_service.dart';
-import 'package:a_pos_flutter/feature/home/order/service/order_service.dart';
 import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
 import 'package:a_pos_flutter/product/global/model/quick_service/quick_service_request_model.dart';
 import 'package:core/core.dart';
@@ -10,9 +9,9 @@ import 'package:a_pos_flutter/product/global/getters/getter.dart';
 part 'order_state.dart';
 
 class OrderCubit extends IOrderCubit {
-  OrderCubit() : super(OrderState.initial());
+  OrderCubit(this._orderService) : super(OrderState.initial());
 
-  final IOrderService _orderService = OrderService();
+  final IOrderService _orderService;
   final TAG = 'OrderCubit';
   @override
   void init() {}

@@ -438,7 +438,7 @@ class _BottomButtonFields extends StatelessWidget {
         await categoryCubit.patchCategories(categoryId: categoryCubit.selectedCategory!.id!);
 
     if (!isSuccess) {
-      await showOrderErrorDialog(context, '${categoryCubit.state.exception?.message}!');
+      await showOrderErrorDialog('${categoryCubit.state.exception?.message}!');
       await categoryCubit.getCategories();
     } else {
       await categoryCubit

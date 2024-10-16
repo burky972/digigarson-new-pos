@@ -2,18 +2,17 @@ import 'dart:ui';
 
 import 'package:a_pos_flutter/feature/home/branch/cubit/branch_state.dart';
 import 'package:a_pos_flutter/feature/home/branch/cubit/i_branch_cubit.dart';
-import 'package:a_pos_flutter/feature/home/branch/service/branch_service.dart';
 import 'package:a_pos_flutter/feature/home/branch/service/i_branch_service.dart';
 import 'package:a_pos_flutter/product/global/model/branch/branch_model.dart';
 import 'package:a_pos_flutter/product/global/model/user_model.dart';
 import 'package:a_pos_flutter/product/global/getters/getter.dart';
 
 class BranchCubit extends IBranchCubit {
-  BranchCubit() : super(BranchState.initial()) {
+  BranchCubit(this._branchService) : super(BranchState.initial()) {
     init();
   }
   //TODO: SEPERATE BRANCH TO CATEGORIES-PRODUCTS-SECTIONS-TABLES-OPTIONS!
-  late IBranchService _branchService;
+  final IBranchService _branchService;
   final TAG = "BranchCubit";
   BranchModel? branchModel;
   SectionsModel? selectedSection;
@@ -26,9 +25,7 @@ class BranchCubit extends IBranchCubit {
 
   /// initialize func
   @override
-  Future<void> init() async {
-    _branchService = BranchService();
-  }
+  Future<void> init() async {}
 
   @override
   Future getBranch({required UserModel userModel, required Locale languageModel}) async {

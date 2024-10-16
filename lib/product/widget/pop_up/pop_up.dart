@@ -26,11 +26,11 @@ showOrderWarningDialog(BuildContext context, String title, {bool? secondClose}) 
   });
 }
 
-showOrderSuccessDialog(BuildContext context, String title, {bool? secondClose}) {
+showOrderSuccessDialog(String title, {bool? secondClose}) {
   AwesomeDialog(
     dismissOnTouchOutside: false,
     width: 550,
-    context: context,
+    context: routeContext,
     animType: AnimType.leftSlide,
     headerAnimationLoop: false,
     dialogType: DialogType.success,
@@ -44,11 +44,11 @@ showOrderSuccessDialog(BuildContext context, String title, {bool? secondClose}) 
   });
 }
 
-showOrderErrorDialog(BuildContext context, String title, {bool? secondClose}) {
+showOrderErrorDialog(String title, {bool? secondClose}) {
   AwesomeDialog(
     dismissOnTouchOutside: false,
     width: 550,
-    context: context,
+    context: routeContext,
     animType: AnimType.leftSlide,
     headerAnimationLoop: false,
     dialogType: DialogType.error,
@@ -141,11 +141,11 @@ showOrderSuccessPriceChangedDialog(BuildContext context, String title,
 }
 
 ///SHOW ERROR DIALOG
-showErrorDialog(BuildContext context, String title, {bool? secondClose}) {
+showErrorDialog(String title, {bool? secondClose}) {
   AwesomeDialog(
     dismissOnTouchOutside: false,
     width: 550,
-    context: context,
+    context: routeContext,
     animType: AnimType.leftSlide,
     headerAnimationLoop: false,
     dialogType: DialogType.error,

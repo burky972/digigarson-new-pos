@@ -6,7 +6,6 @@ import 'package:a_pos_flutter/feature/home/table/cubit/table_state.dart';
 import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
 import 'package:a_pos_flutter/feature/home/table/model/table_request_model.dart';
 import 'package:a_pos_flutter/feature/home/table/service/i_table_service.dart';
-import 'package:a_pos_flutter/feature/home/table/service/table_service.dart';
 import 'package:a_pos_flutter/product/enums/customer_count/customer_count_type.dart';
 import 'package:a_pos_flutter/product/global/model/branch/branch_model.dart';
 import 'package:a_pos_flutter/product/global/model/catering/catering_cancel_model.dart';
@@ -24,11 +23,11 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TableCubit extends ITableCubit {
-  TableCubit() : super(TableState.initial()) {
+  TableCubit(this._tableService) : super(TableState.initial()) {
     init();
   }
 
-  late ITableService _tableService;
+  final ITableService _tableService;
   // ignore: non_constant_identifier_names
   final TAG = "TableCubit";
   List<TableModel> tableModel = [];
@@ -50,9 +49,7 @@ class TableCubit extends ITableCubit {
 
   // bool isCalculated = false;
   @override
-  void init() {
-    _tableService = TableService();
-  }
+  void init() {}
 
   @override
   void changeIsTableSaving(bool value) => emit(state.copyWith(isTableSaving: value));

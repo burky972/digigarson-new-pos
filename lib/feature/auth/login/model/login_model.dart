@@ -4,8 +4,9 @@ part 'login_model.g.dart';
 
 @JsonSerializable()
 class LoginModel extends BaseModel<LoginModel> {
-  LoginModel({this.branch_custom_id, this.password});
-  final String? branch_custom_id;
+  LoginModel({this.branchCustomId, this.password});
+  @JsonKey(name: 'branch_custom_id')
+  final String? branchCustomId;
   final String? password;
 
   @override
@@ -15,5 +16,5 @@ class LoginModel extends BaseModel<LoginModel> {
   Map<String, dynamic> toJson() => _$LoginModelToJson(this);
 
   @override
-  List<Object?> get props => [branch_custom_id, password];
+  List<Object?> get props => [branchCustomId, password];
 }

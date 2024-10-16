@@ -3,12 +3,11 @@ import 'package:a_pos_flutter/feature/back_office/table_layout/utility_item/cubi
 import 'package:a_pos_flutter/feature/back_office/table_layout/utility_item/model/utility_item_model.dart';
 import 'package:a_pos_flutter/feature/back_office/table_layout/utility_item/model/utility_item_request_model.dart';
 import 'package:a_pos_flutter/feature/back_office/table_layout/utility_item/service/i_utility_item_service.dart';
-import 'package:a_pos_flutter/feature/back_office/table_layout/utility_item/service/utility_item_service.dart';
 import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:core/cache/shared_manager.dart';
 
 class UtilityItemCubit extends IUtilityItemCubit {
-  UtilityItemCubit() : super(UtilityItemState.initial()) {
+  UtilityItemCubit(this._service) : super(UtilityItemState.initial()) {
     init();
   }
   Map<String, List<UtilityItemModel>> sectionMap = {};
@@ -20,7 +19,7 @@ class UtilityItemCubit extends IUtilityItemCubit {
     emit(UtilityItemState.initial());
   }
 
-  final IUtilityItemService _service = UtilityItemService();
+  final IUtilityItemService _service;
   void addIdToDeletedUtilityItemIds(String id) => deletedUtilityItemIds.add(id);
   @override
   Future<void> init() async {

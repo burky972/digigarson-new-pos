@@ -308,6 +308,7 @@ Future<void> handleButtonAction(
       tableCubit.setInitialCheckoutProducts();
       showCloseTableDialog(context, onOkPressed: () async {
         bool isClosed = await tableCubit.closeTable(state.selectedTable!.id!);
+        if (!context.mounted) return;
         ResponseActionService.getTableAndNavigate(
           context: context,
           response: isClosed,
@@ -336,6 +337,7 @@ Future<void> handleButtonAction(
       if (state.newProducts.products.isEmpty) return;
 
       final response = await context.read<TableCubit>().postTableNewOrder(context);
+      if (!context.mounted) return;
       ResponseActionService.getTableAndNavigate(
         context: context,
         response: response,

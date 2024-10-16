@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:developer';
+import 'package:a_pos_flutter/product/app/app_container.dart';
 import 'package:a_pos_flutter/product/app/app_initialize.dart';
+import 'package:a_pos_flutter/product/routes/go_routes.dart';
 import 'package:flutter/material.dart';
 
 Future<void> bootstrap(
@@ -19,6 +21,10 @@ Future<void> _onInit(
   FutureOr<Widget> Function() builder,
 ) async {
   await AppInitialize().init();
+
+  /// call locator go manager service
+  AppContainer.initializeRouteManager(AppRoute.router);
+
   runApp(await builder());
 }
 

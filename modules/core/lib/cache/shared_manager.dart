@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import 'dart:convert';
 import 'package:core/base/model/base_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
