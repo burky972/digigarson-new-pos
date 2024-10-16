@@ -239,8 +239,7 @@ class OldCheckDialog {
                                 tableCubit: tableCubit,
                                 action: ButtonAction.changePrice);
                           } else {
-                            showOrderErrorDialog(
-                                context, 'ERROR! You have entered too little or too much.');
+                            showOrderErrorDialog('ERROR! You have entered too little or too much.');
                           }
                         },
                       );

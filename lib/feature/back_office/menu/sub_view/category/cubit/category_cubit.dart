@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/cubit/i_category_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/model/category_model.dart';
-import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/service/category_service.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/service/i_category_service.dart';
 import 'package:a_pos_flutter/product/enums/order_type/order_type.dart';
 import 'package:a_pos_flutter/product/global/getters/getter.dart';
@@ -14,9 +13,9 @@ import 'package:image_picker/image_picker.dart';
 part 'category_state.dart';
 
 class CategoryCubit extends ICategoryCubit {
-  CategoryCubit() : super(CategoryState.initial());
+  CategoryCubit(this._categoryService) : super(CategoryState.initial());
 
-  final ICategoryService _categoryService = CategoryService();
+  final ICategoryService _categoryService;
   final TextEditingController titleController = TextEditingController();
   final TextEditingController subTitleController = TextEditingController();
   List<CategoryModel> originalCategories = [];
@@ -285,6 +284,7 @@ class CategoryCubit extends ICategoryCubit {
         }
       }
     }
+    await getCategories(); //TODO: CHECK THIS
   }
 
   void updateParentCategory(String? newParentCategoryId) {

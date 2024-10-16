@@ -372,7 +372,9 @@ class CoverDialog {
                                   double.parse(_amountController.text.isEmpty
                                       ? "0.0"
                                       : _amountController.text));
-                            } catch (e) {}
+                            } catch (e) {
+                              debugPrint(e.toString());
+                            }
                           })
                       : const SizedBox(),
                   LightBlueButton(
@@ -400,9 +402,9 @@ class CoverDialog {
           ));
 
       if (return_) {
-        showOrderSuccessDialog(context, LocaleKeys.coverCreated.tr(), secondClose: true);
+        showOrderSuccessDialog(LocaleKeys.coverCreated.tr(), secondClose: true);
       } else {
-        showOrderErrorDialog(context, LocaleKeys.coverNotCreated.tr());
+        showOrderErrorDialog(LocaleKeys.coverNotCreated.tr());
       }
     } else {
       showOrderErrorNotProductDialog(context, LocaleKeys.enterCorrectValue.tr());
@@ -413,9 +415,9 @@ class CoverDialog {
   deleteCover(BuildContext context, String coverId) async {
     bool return_ = await context.read<TableCubit>().deleteTableCover(coverId: coverId);
     if (return_) {
-      showOrderSuccessDialog(context, LocaleKeys.coverDeleted.tr(), secondClose: true);
+      showOrderSuccessDialog(LocaleKeys.coverDeleted.tr(), secondClose: true);
     } else {
-      showOrderErrorDialog(context, LocaleKeys.coverNotDeleted.tr());
+      showOrderErrorDialog(LocaleKeys.coverNotDeleted.tr());
     }
     toggleFullScreen();
   }

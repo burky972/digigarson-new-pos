@@ -33,7 +33,7 @@ class InvoiceWidget {
       double? fontSize,
       bool isBold = false,
       bool centerPos = false}) {
-    final Uint8List fontData = File(AppConstants.font_URL).readAsBytesSync();
+    final Uint8List fontData = File(AppConstants.fontURL).readAsBytesSync();
     final ttf = pw.Font.ttf(fontData.buffer.asByteData());
     const divider = InvoiceConstant.invoiceItemDivider;
     const multiplier = InvoiceConstant.invoiceItemMultiplier;
@@ -78,7 +78,7 @@ class InvoiceWidget {
 
   static pw.Widget buildTitleItem(
       {required double screenWidth, required String title, double? fontSize, bool isBold = false}) {
-    final Uint8List fontData = File(AppConstants.font_URL).readAsBytesSync();
+    final Uint8List fontData = File(AppConstants.fontURL).readAsBytesSync();
     final ttf = pw.Font.ttf(fontData.buffer.asByteData());
 
     return pw.Container(
@@ -102,7 +102,7 @@ class InvoiceWidget {
       bool isBold = false}) {
     const divider = InvoiceConstant.invoiceItemDivider;
     const multiplier = InvoiceConstant.invoiceItemMultiplier;
-    // final Uint8List fontData = File(AppConstants.font_URL).readAsBytesSync();
+    // final Uint8List fontData = File(AppConstants.fontURL).readAsBytesSync();
     // final ttf = pw.Font.ttf(fontData.buffer.asByteData());
     int rowCount = (value.length / divider).ceil();
     num totalRow = rowCount > 0 ? rowCount : 1;
@@ -268,7 +268,7 @@ class InvoiceWidget {
 
   print(CustomPrinterModel? printer, PrinterInvoiceModel invoice) async {
     if (printer == null) return;
-    final Uint8List fontData = File(AppConstants.font_URL).readAsBytesSync();
+    final Uint8List fontData = File(AppConstants.fontURL).readAsBytesSync();
     final ttf = pw.Font.ttf(fontData.buffer.asByteData());
     final doc = pw.Document();
     double screenWidth = (printer.pdfPageSize) * PdfPageFormat.mm;
@@ -516,7 +516,7 @@ class InvoiceWidget {
 
   printKitchen(CustomPrinterModel? printer, PrinterKitchenInvoice invoice) async {
     if (printer == null) return;
-    final Uint8List fontData = File(AppConstants.font_URL).readAsBytesSync();
+    final Uint8List fontData = File(AppConstants.fontURL).readAsBytesSync();
     final ttf = pw.Font.ttf(fontData.buffer.asByteData());
     final doc = pw.Document();
     double screenWidth = (printer.pdfPageSize) * PdfPageFormat.mm;
@@ -821,7 +821,7 @@ class InvoiceWidget {
 
   printKitchenCancelInfo(CustomPrinterModel? printer, PrinterKitchenCancelInvoice invoice) async {
     if (printer == null) return;
-    final Uint8List fontData = File(AppConstants.font_URL).readAsBytesSync();
+    final Uint8List fontData = File(AppConstants.fontURL).readAsBytesSync();
     final ttf = pw.Font.ttf(fontData.buffer.asByteData());
     final doc = pw.Document();
     double screenWidth = (printer.pdfPageSize) * PdfPageFormat.mm;

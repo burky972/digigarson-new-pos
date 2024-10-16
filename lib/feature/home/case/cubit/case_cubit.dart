@@ -1,15 +1,14 @@
 import 'package:a_pos_flutter/feature/home/case/cubit/case_state.dart';
 import 'package:a_pos_flutter/feature/home/case/cubit/i_case_cubit.dart';
 import 'package:a_pos_flutter/feature/home/case/model/case_model.dart';
-import 'package:a_pos_flutter/feature/home/case/service/case_service.dart';
 import 'package:a_pos_flutter/feature/home/case/service/i_case_service.dart';
 import 'package:a_pos_flutter/product/global/model/user_model.dart';
 
 class CaseCubit extends ICaseCubit {
-  CaseCubit() : super(CaseState.initial()) {
+  CaseCubit(this._caseService) : super(CaseState.initial()) {
     init();
   }
-  final ICaseService _caseService = CaseService();
+  final ICaseService _caseService;
   final TAG = "CaseCubit";
 
   /// initialize func

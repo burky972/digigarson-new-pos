@@ -5,13 +5,13 @@ import 'package:a_pos_flutter/feature/home/note_serve_payment_cancel_reason/mode
 import 'package:a_pos_flutter/feature/home/note_serve_payment_cancel_reason/model/payment_method_model.dart';
 import 'package:a_pos_flutter/feature/home/note_serve_payment_cancel_reason/model/serve_model.dart';
 import 'package:a_pos_flutter/feature/home/note_serve_payment_cancel_reason/service/i_note_service.dart';
-import 'package:a_pos_flutter/feature/home/note_serve_payment_cancel_reason/service/note_service.dart';
 import 'package:a_pos_flutter/product/global/model/user_model.dart';
 import 'package:a_pos_flutter/product/global/getters/getter.dart';
 
 class NoteServePaymentCancelReasonCubit extends INoteServePaymentCancelReasonCubit {
-  NoteServePaymentCancelReasonCubit() : super(NoteServePaymentCancelReasonState.initial());
-  final INoteServePaymentCancelReasonService _service = NoteServePaymentCancelReasonService();
+  NoteServePaymentCancelReasonCubit(this._service)
+      : super(NoteServePaymentCancelReasonState.initial());
+  final INoteServePaymentCancelReasonService _service;
   final TAG = "NoteServePaymentCancelReasonCubit";
 
   /// initial empty list

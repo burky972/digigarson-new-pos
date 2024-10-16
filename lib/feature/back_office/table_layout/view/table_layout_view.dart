@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:a_pos_flutter/feature/back_office/sections/cubit/i_section_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/sections/cubit/section_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/sections/cubit/section_state.dart';
 import 'package:a_pos_flutter/feature/back_office/sections/model/section_model.dart';
@@ -12,12 +13,12 @@ import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_state.dart';
 import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
 import 'package:a_pos_flutter/feature/home/table/model/table_request_model.dart';
+import 'package:a_pos_flutter/product/app/app_container_items.dart';
 import 'package:a_pos_flutter/product/enums/utility_item/enum.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
 import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
-import 'package:a_pos_flutter/product/routes/route_constants.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/widget/button/light_blue_button.dart';
 import 'package:a_pos_flutter/product/widget/dialog/clean_all_tables_dialog.dart';
@@ -62,8 +63,9 @@ class _TableLayoutViewState extends State<TableLayoutView>
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => SectionCubit()..init(),
+    return BlocProvider<ISectionCubit>(
+      // create: (context) => SectionCubit()..init(),
+      create: (context) => AppContainerItems.sectionCubit..init(),
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Table Layout'),
@@ -354,8 +356,7 @@ class _TableLayoutViewState extends State<TableLayoutView>
                                                             ?.length ??
                                                         0) >
                                                     0
-                                                ? showOrderErrorDialog(
-                                                    context, 'Section has Tables!')
+                                                ? showOrderErrorDialog('Section has Tables!')
                                                 : context.read<SectionCubit>().deleteSection();
                                           }
                                         : null,
@@ -435,7 +436,6 @@ class _TableLayoutViewState extends State<TableLayoutView>
                                   tableCubit.deletedTableIds.clear();
                                   tableCubit.newAddedTableIds.clear();
                                   utilityItemCubit.deletedUtilityItemIds.clear();
-                                  routeManager.replace(RouteConstants.menu);
                                   routeManager.pop();
                                 },
                               ),
@@ -599,7 +599,7 @@ mixin TableLayoutMixin on State<TableLayoutView> {
       bool deleteSuccess = await tableCubit.deleteTable(id.toString());
       if (!deleteSuccess) {
         tableCubit.changeIsTableSaving(false);
-        showErrorDialog(context, 'Failed to delete table with ID $id.');
+        showErrorDialog('Failed to delete table with ID $id.');
         return; // Silme başarısız olursa çıkış yap
       }
     }
@@ -608,7 +608,8 @@ mixin TableLayoutMixin on State<TableLayoutView> {
       bool deleteSuccess = await utilityItemCubit.deleteUtilityItem(itemId: id.toString());
       if (!deleteSuccess) {
         tableCubit.changeIsTableSaving(false);
-        showErrorDialog(context, 'Failed to delete utility item with ID $id.');
+        if (!mounted) return;
+        showErrorDialog('Failed to delete utility item with ID $id.');
         return; // Silme başarısız olursa çıkış yap
       }
     }
@@ -643,7 +644,8 @@ mixin TableLayoutMixin on State<TableLayoutView> {
       if (hasInvalidTables) {
         appLogger.warning('error : ', hasInvalidTables.toString());
         tableCubit.changeIsTableSaving(false); // Ensure saving state is false
-        showErrorDialog(context, 'Be sure that all the placed tables have names!');
+        if (!mounted) return;
+        showErrorDialog('Be sure that all the placed tables have names!');
         return;
       }
 
@@ -682,7 +684,7 @@ mixin TableLayoutMixin on State<TableLayoutView> {
     }
 
     // Show a success message once all operations are completed
-    showOrderSuccessDialog(context, 'All table states saved!');
+    showOrderSuccessDialog('All table states saved!');
 
     // Reset table states and fetch updated data
 

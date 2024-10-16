@@ -8,6 +8,7 @@ class _BottomButtonFields extends StatelessWidget {
     return BlocBuilder<OptionCubit, OptionState>(
       builder: (context, state) {
         OptionCubit optionCubit = context.read<OptionCubit>();
+        ProductCubit productCubit = context.read<ProductCubit>();
         return Row(
           children: [
             const Expanded(child: TextField()),
@@ -28,13 +29,12 @@ class _BottomButtonFields extends StatelessWidget {
                           context: context,
                           selectedOption: state.selectedOption,
                           allOptions: state.allOptions)
-                      .whenComplete(() => context.read<ProductCubit>().getOptions()),
+                      .whenComplete(() => productCubit.getOptions()),
             ),
             LightBlueButton(
               buttonText: 'Save',
               onTap: () async => await optionCubit.saveChanges().whenComplete(
-                    () => context
-                        .read<ProductCubit>()
+                    () => productCubit
                         .getOptions()
                         .whenComplete(() async => await optionCubit.getOptions()),
                   ),
@@ -63,7 +63,7 @@ class _BottomButtonFields extends StatelessWidget {
     }
     // }
     if (hasItemsInOption) {
-      showOrderErrorDialog(context, 'Option HAS Items!');
+      showOrderErrorDialog('Option HAS Items!');
     } else {
       await optionCubit
           .patchOptions(optionId: selectedOption!.id!)

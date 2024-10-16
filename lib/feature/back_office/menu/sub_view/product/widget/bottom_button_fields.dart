@@ -5,6 +5,7 @@ class _BottomButtonFields extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ProductCubit productCubit = context.read<ProductCubit>();
     return Row(
       children: [
         const Expanded(child: TextField()),
@@ -15,9 +16,8 @@ class _BottomButtonFields extends StatelessWidget {
         const LightBlueButton(buttonText: 'Move Down'),
         LightBlueButton(
           buttonText: 'Add',
-          onTap: () => context
-              .read<ProductCubit>()
-              .addNewProduct(context.read<CategoryCubit>().selectedSubCategory!.id!),
+          onTap: () =>
+              productCubit.addNewProduct(context.read<CategoryCubit>().selectedSubCategory!.id!),
         ),
         LightBlueButton(
           buttonText: 'Delete',
@@ -25,15 +25,15 @@ class _BottomButtonFields extends StatelessWidget {
               ? null
               : () async => await context
                   .read<ProductCubit>()
-                  .patchProducts(productId: context.read<ProductCubit>().state.selectedProduct!.id!)
-                  .whenComplete(() => context.read<ProductCubit>().getProducts()),
+                  .patchProducts(productId: productCubit.state.selectedProduct!.id!)
+                  .whenComplete(() => productCubit.getProducts()),
         ),
         LightBlueButton(
           buttonText: 'Save',
           onTap: () async => await context
               .read<ProductCubit>()
               .saveChanges()
-              .then((value) => context.read<ProductCubit>().getProducts()),
+              .then((value) => productCubit.getProducts()),
         ),
         const LightBlueButton(buttonText: 'Export'),
         LightBlueButton(

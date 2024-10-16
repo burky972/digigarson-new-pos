@@ -53,11 +53,10 @@ class CateringDialog {
                                             tableId: state.selectedTable!.id!,
                                           ));
                                   if (isCancelCatering) {
-                                    showOrderSuccessDialog(context, LocaleKeys.cancelCatering.tr(),
+                                    showOrderSuccessDialog(LocaleKeys.cancelCatering.tr(),
                                         secondClose: true);
                                   } else {
-                                    showErrorDialog(context, 'Please try again!',
-                                        secondClose: true);
+                                    showErrorDialog('Please try again!', secondClose: true);
                                   }
                                 } else {
                                   bool isCatered = await context.read<TableCubit>().postCatering(
@@ -70,11 +69,10 @@ class CateringDialog {
                                       ));
 
                                   if (isCatered) {
-                                    showOrderSuccessDialog(context, LocaleKeys.addedCatering.tr(),
+                                    showOrderSuccessDialog(LocaleKeys.addedCatering.tr(),
                                         secondClose: true);
                                   } else {
-                                    showErrorDialog(context, 'Please try again!',
-                                        secondClose: true);
+                                    showErrorDialog('Please try again!', secondClose: true);
                                   }
                                 }
                               }),

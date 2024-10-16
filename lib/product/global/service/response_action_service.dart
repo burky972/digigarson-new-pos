@@ -24,14 +24,14 @@ class ResponseActionService {
     if (response) {
       await tableCubit
           .getTable()
-          .then((_) => showOrderSuccessDialog(context, action.getSuccessMessage()))
+          .then((_) => showOrderSuccessDialog(action.getSuccessMessage()))
           .then((value) => callback != null ? callback() : null);
 
       await Future.delayed(const Duration(milliseconds: 1600)).then(
         (_) => routeManager.go(RouteConstants.main),
       );
     } else {
-      isShowingError ? showErrorDialog(context, action.getErrorMessage()) : null;
+      isShowingError ? showErrorDialog(action.getErrorMessage()) : null;
     }
   }
 }

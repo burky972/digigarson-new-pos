@@ -1,8 +1,10 @@
 import 'package:a_pos_flutter/feature/home/expense/cubit/expense_cubit.dart';
 import 'package:a_pos_flutter/feature/home/expense/cubit/expense_state.dart';
+import 'package:a_pos_flutter/feature/home/expense/cubit/i_expense_cubit.dart';
 import 'package:a_pos_flutter/feature/home/expense/model/expense_request_model.dart';
 import 'package:a_pos_flutter/feature/home/expense/model/expense_response_model.dart';
 import 'package:a_pos_flutter/language/locale_keys.g.dart';
+import 'package:a_pos_flutter/product/app/app_container_items.dart';
 import 'package:a_pos_flutter/product/constant/app/date_time_formats.dart';
 import 'package:a_pos_flutter/product/enums/expense_types/expense_type.dart';
 import 'package:a_pos_flutter/product/enums/payment_type/enum.dart';
@@ -132,8 +134,9 @@ class ExpenseDialog {
               return;
             }
           },
-          child: BlocProvider(
-            create: (context) => ExpenseCubit()..getExpenses(),
+          child: BlocProvider<IExpenseCubit>(
+            // create: (context) => ExpenseCubit()..getExpenses(),
+            create: (context) => AppContainerItems.expenseCubit..getExpenses(),
             child: BlocBuilder<ExpenseCubit, ExpenseState>(
               builder: (context, state) {
                 return StatefulBuilder(builder: (context, setState) {
@@ -381,11 +384,10 @@ class ExpenseDialog {
             currency: 'USD',
             description: _noteController.text,
           ));
-
       if (return_) {
-        showOrderSuccessDialog(context, LocaleKeys.expenseCreated.tr(), secondClose: true);
+        showOrderSuccessDialog(LocaleKeys.expenseCreated.tr(), secondClose: true);
       } else {
-        showOrderErrorDialog(context, LocaleKeys.expenseNotCreated.tr());
+        showOrderErrorDialog(LocaleKeys.expenseNotCreated.tr());
       }
     } else {
       showOrderErrorNotProductDialog(context, LocaleKeys.enterCorrectValue.tr());
@@ -529,9 +531,9 @@ class _ExpenseSingleDeleteButtonWidget extends StatelessWidget {
           onTap: () async {
             bool isDeleted = await context.read<ExpenseCubit>().deleteExpense(expenseId: expenseId);
             if (isDeleted) {
-              showOrderSuccessDialog(context, LocaleKeys.expenseDeleted.tr(), secondClose: true);
+              showOrderSuccessDialog(LocaleKeys.expenseDeleted.tr(), secondClose: true);
             } else {
-              showErrorDialog(context, LocaleKeys.expenseNotDeleted.tr());
+              showErrorDialog(LocaleKeys.expenseNotDeleted.tr());
             }
           },
         ));

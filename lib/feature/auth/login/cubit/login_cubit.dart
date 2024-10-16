@@ -2,22 +2,19 @@ import 'package:a_pos_flutter/feature/auth/login/cubit/i_login_cubit.dart';
 import 'package:a_pos_flutter/feature/auth/login/cubit/login_state.dart';
 import 'package:a_pos_flutter/feature/auth/login/model/login_model.dart';
 import 'package:a_pos_flutter/feature/auth/login/service/i_login_service.dart';
-import 'package:a_pos_flutter/feature/auth/login/service/login_service.dart';
 import 'package:a_pos_flutter/product/global/model/user_model.dart';
 import 'package:a_pos_flutter/product/global/service/global_service.dart';
 import 'package:core/network/dio_client.dart';
 
 class LoginCubit extends ILoginCubit {
-  LoginCubit() : super(LoginState.initial()) {
+  LoginCubit(this._loginService) : super(LoginState.initial()) {
     init();
   }
-  late ILoginService _loginService;
+  final ILoginService _loginService;
 
   /// initialize func
   @override
-  Future<void> init() async {
-    _loginService = LoginService();
-  }
+  Future<void> init() async {}
 
   /// Login function
   @override

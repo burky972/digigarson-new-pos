@@ -144,7 +144,7 @@ mixin LoginMixin on State<LoginBodyWidget> {
         context.read<LoginCubit>().saveUserEmail(branchCustomId);
         await context
             .read<LoginCubit>()
-            .login(LoginModel(branch_custom_id: branchCustomId, password: password));
+            .login(LoginModel(branchCustomId: branchCustomId, password: password));
       }
     }
   }

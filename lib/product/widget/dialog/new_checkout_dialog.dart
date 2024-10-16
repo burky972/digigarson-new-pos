@@ -444,7 +444,7 @@ class _RightCheckoutWidget extends StatelessWidget {
           state.selectedTable?.orders == null ||
           state.selectedTable?.orders.isEmpty == true) return;
       if (state.selectedTable?.remainingPrice == 0) {
-        showErrorDialog(context, 'No remaining price');
+        showErrorDialog('No remaining price');
       }
       List<PaidProductModel> allProducts = [];
 
@@ -470,8 +470,8 @@ class _RightCheckoutWidget extends StatelessWidget {
           ]),
           tableId: state.selectedTable!.id!);
 
-      context.read<TableCubit>().clearCheckoutInput();
-      context.read<TableCubit>().setTotalDue(0);
+      tableCubit.clearCheckoutInput();
+      tableCubit.setTotalDue(0);
 
       await ResponseActionService.getTableAndNavigate(
         context: context,

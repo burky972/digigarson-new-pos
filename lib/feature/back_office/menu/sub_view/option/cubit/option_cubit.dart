@@ -3,14 +3,13 @@ import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/cubit/opt
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/model/option_model.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/model/option_request_model.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/service/i_option_service.dart';
-import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/service/option_service.dart';
 import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:flutter/widgets.dart';
 
 class OptionCubit extends IOptionCubit {
-  OptionCubit() : super(OptionState.initial());
+  OptionCubit(this._optionService) : super(OptionState.initial());
 
-  final IOptionService _optionService = OptionService();
+  final IOptionService _optionService;
   final TextEditingController optionNameController = TextEditingController();
   final TextEditingController optionDescController = TextEditingController();
   final TextEditingController itemNameController = TextEditingController();

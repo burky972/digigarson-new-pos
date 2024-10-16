@@ -4,15 +4,14 @@ import 'package:a_pos_flutter/feature/back_office/sections/cubit/i_section_cubit
 import 'package:a_pos_flutter/feature/back_office/sections/cubit/section_state.dart';
 import 'package:a_pos_flutter/feature/back_office/sections/model/section_model.dart';
 import 'package:a_pos_flutter/feature/back_office/sections/service/i_section_service.dart';
-import 'package:a_pos_flutter/feature/back_office/sections/service/section_service.dart';
 import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 
 class SectionCubit extends ISectionCubit {
-  SectionCubit() : super(SectionState.initial());
+  SectionCubit(this._sectionService) : super(SectionState.initial());
 
-  final ISectionService _sectionService = SectionService();
+  final ISectionService _sectionService;
   final TextEditingController sectionController = TextEditingController();
   List<SectionModel> originalSections = [];
   List<SectionModel> allSectionList = [];

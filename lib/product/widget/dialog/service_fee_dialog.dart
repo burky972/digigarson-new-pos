@@ -303,14 +303,13 @@ class ServiceFeeDialog {
             );
 
         if (return_) {
-          await showOrderSuccessDialog(context, LocaleKeys.serviceFeeCreated.tr(),
-              secondClose: true);
+          await showOrderSuccessDialog(LocaleKeys.serviceFeeCreated.tr(), secondClose: true);
         } else {
-          await showOrderErrorDialog(context, LocaleKeys.serviceFeeNotCreated.tr());
+          await showOrderErrorDialog(LocaleKeys.serviceFeeNotCreated.tr());
         }
       } catch (e) {
         print('Error in postService: $e');
-        await showOrderErrorDialog(context, LocaleKeys.serviceFeeNotCreated.tr());
+        await showOrderErrorDialog(LocaleKeys.serviceFeeNotCreated.tr());
       }
     } else {
       showOrderErrorNotProductDialog(context, LocaleKeys.enterValidValue.tr());
@@ -323,9 +322,9 @@ class ServiceFeeDialog {
           serviceId: serviceId,
         );
     if (return_) {
-      await showOrderSuccessDialog(context, LocaleKeys.serviceFeeDeleted.tr(), secondClose: true);
+      await showOrderSuccessDialog(LocaleKeys.serviceFeeDeleted.tr(), secondClose: true);
     } else {
-      await showOrderErrorDialog(context, LocaleKeys.serviceFeeNotDeleted.tr());
+      await showOrderErrorDialog(LocaleKeys.serviceFeeNotDeleted.tr());
     }
     toggleFullScreen();
   }

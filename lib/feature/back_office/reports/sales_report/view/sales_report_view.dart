@@ -16,7 +16,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 part '../widget/left/bottom_table_widget.dart';
 part '../widget/left/top_table_widget.dart';
-part '../widget/right/right_table_widget.dart';
 part '../widget/right/bottom_tables/order_detail_table_widget.dart';
 part '../widget/right/bottom_tables/order_payment_table_widget.dart';
 part '../widget/right/top_tables/waiter_table_widget.dart';

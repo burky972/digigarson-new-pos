@@ -7,9 +7,9 @@ class AppConstants {
   static const connectTimeout = 60;
   static const receiveTimeout = 60;
 
-  static const String font_URL = 'assets/fonts/roboto/Roboto-Regular.ttf';
+  static const String fontURL = 'assets/fonts/roboto/Roboto-Regular.ttf';
 
-  static List<String> payment_types_list = [
+  static List<String> paymentTypesList = [
     "pos_bank",
     "pos_cash",
     "app_payment",
