@@ -144,7 +144,7 @@ class CancelProductDialog {
 
   Widget _buildDialog(BuildContext context) {
     return PopScope(
-      onPopInvoked: (bool didPop) {
+      onPopInvokedWithResult: (bool didPop, Object? result) {
         if (didPop) {
           _removeOverlay();
           return;

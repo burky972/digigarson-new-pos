@@ -77,7 +77,7 @@ class ServiceFeeDialog {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return PopScope(
-          onPopInvoked: (bool didPop) {
+          onPopInvokedWithResult: (bool didPop, Object? result) {
             if (didPop) {
               toggleFullScreen();
               return;

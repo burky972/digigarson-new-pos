@@ -22,14 +22,17 @@ class DioClient {
   String? token;
   String? refreshToken;
   String? countryCode;
+  SharedManager? sharedManager;
 
   // Initialize
   Future<void> init({
     required String baseUrl,
+    required SharedManager sharedManager,
   }) async {
-    token = SharedManager.instance.getStringValue(CacheKeys.token.name) ?? "";
-    refreshToken = SharedManager.instance.getStringValue(CacheKeys.refreshToken.name) ?? "";
-    countryCode = SharedManager.instance.getStringValue(CacheKeys.country_code.name);
+    sharedManager = sharedManager;
+    token = sharedManager.getStringValue(CacheKeys.token.name) ?? "";
+    refreshToken = sharedManager.getStringValue(CacheKeys.refreshToken.name) ?? "";
+    countryCode = sharedManager.getStringValue(CacheKeys.country_code.name);
     APosLogger.instance.info('dio Client TOKEN', '$token ');
     dio
       ..options.baseUrl = baseUrl
@@ -67,7 +70,7 @@ class DioClient {
       if (response.statusCode == 200) {
         APosLogger.instance.info('refreshToken: ', 'refreshToken: ${response.data}');
         final newAccessToken = response.data['accessToken'];
-        SharedManager.instance.setStringValue(CacheKeys.token, newAccessToken);
+        sharedManager?.setStringValue(CacheKeys.token, newAccessToken);
         updateHeader(newAccessToken);
         return BaseResponseModel();
       } else {

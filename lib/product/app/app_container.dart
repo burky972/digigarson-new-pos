@@ -110,11 +110,6 @@ abstract final class AppContainer {
     /// Initialize APosLogger
     await APosLogger.instance.init(isCacheLog: false);
 
-    /// Initialize NetworkManager
-    _getIt<DioClient>().init(
-      baseUrl: baseUrl,
-    );
-
     // Register SharedManager as a singleton
     _getIt.registerLazySingleton<SharedManager>(
       () => SharedManager.instance,
@@ -122,6 +117,12 @@ abstract final class AppContainer {
 
     //initialize the shared preferences manager
     await SharedManager.preferencesInit();
+
+    /// Initialize NetworkManager
+    _getIt<DioClient>().init(
+      baseUrl: baseUrl,
+      sharedManager: _getIt<SharedManager>(),
+    );
 
     /// Register RouteManager as a singleton
     _getIt.registerLazySingleton<RouteManager>(() => RouteManager.instance);

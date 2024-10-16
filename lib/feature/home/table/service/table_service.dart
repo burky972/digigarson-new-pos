@@ -1,3 +1,4 @@
+import 'package:a_pos_flutter/feature/home/table/model/special_item_request_model.dart';
 import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
 import 'package:a_pos_flutter/feature/home/table/model/table_request_model.dart';
 import 'package:a_pos_flutter/feature/home/table/service/i_table_service.dart';
@@ -313,6 +314,17 @@ class TableService implements ITableService {
       {required String tableId, required String serviceId}) async {
     BaseResponseModel response = await DioClient.instance.delete(
       NetworkConstants.delServiceFee(tableId: tableId, serviceId: serviceId),
+    );
+    return ApiResponseHandler.handleResponse(response);
+  }
+
+  /// Post special item
+  @override
+  DefaultServiceResponse createSpecialItem(
+      {required SpecialItemRequestModel specialItemModel}) async {
+    BaseResponseModel response = await DioClient.instance.post(
+      NetworkConstants.specialItem,
+      data: specialItemModel.toJson(),
     );
     return ApiResponseHandler.handleResponse(response);
   }

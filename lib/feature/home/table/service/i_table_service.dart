@@ -1,3 +1,4 @@
+import 'package:a_pos_flutter/feature/home/table/model/special_item_request_model.dart';
 import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
 import 'package:a_pos_flutter/feature/home/table/model/table_request_model.dart';
 import 'package:a_pos_flutter/product/enums/customer_count/customer_count_type.dart';
@@ -71,6 +72,11 @@ abstract class ITableService {
 
   /// delete service fee
   DefaultServiceResponse deleteServiceFee({required String tableId, required String serviceId});
+
+  /// create special item
+  DefaultServiceResponse createSpecialItem({
+    required SpecialItemRequestModel specialItemModel,
+  });
 }
 
 typedef DefaultServiceResponse = BaseResponseData<BaseResponseModel>;

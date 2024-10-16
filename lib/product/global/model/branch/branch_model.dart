@@ -336,39 +336,6 @@ class OptionsModel {
   }
 }
 
-// class Item {
-//   late String price;
-//   late double amount;
-//   late String sId;
-//   late String itemName;
-//   late String? ingredientId;
-
-//   Item(
-//       {required this.price,
-//       required this.amount,
-//       required this.sId,
-//       required this.itemName,
-//       required this.ingredientId});
-
-//   Item.fromJson(Map<String, dynamic> json) {
-//     price = json['price'].toString();
-//     amount = double.parse(json['amount'].toString());
-//     sId = json['_id'].toString();
-//     itemName = json['item_name'].toString();
-//     ingredientId = json['ingredient_id'];
-//   }
-
-//   Map<String, dynamic> toJson() {
-//     final Map<String, dynamic> data = <String, dynamic>{};
-//     data['price'] = sId;
-//     data['amount'] = price;
-//     data['_id'] = amount;
-//     data['item_name'] = itemName;
-//     data['ingredient_id'] = ingredientId;
-//     return data;
-//   }
-// }
-
 class CurrencySettingsModel {
   String? defaultCurrency;
   String? currencies;
@@ -386,11 +353,6 @@ class CurrencySettingsModel {
     data['currencies'] = currencies;
     return data;
   }
-}
-
-List<OptionsModel> OptionsModelFromJson(String jsonString) {
-  final jsonData = json.decode(jsonString);
-  return List<OptionsModel>.from(jsonData.map((item) => OptionsModel.fromJson(item)));
 }
 
 CurrencySettingsModel currencySettingsFromJson(String jsonString) {
