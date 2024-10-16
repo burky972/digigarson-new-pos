@@ -1,4 +1,5 @@
 import 'package:a_pos_flutter/feature/home/table/cubit/table_state.dart';
+import 'package:a_pos_flutter/feature/home/table/model/special_item_request_model.dart';
 import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
 import 'package:a_pos_flutter/feature/home/table/model/table_request_model.dart';
 import 'package:a_pos_flutter/product/enums/customer_count/customer_count_type.dart';
@@ -28,4 +29,9 @@ abstract class ITableCubit extends BaseCubit<TableState> {
 
   Future<bool> postTableCover({required CoverRequestModel coverRequestModel});
   Future<bool> deleteTableCover({required String coverId});
+
+  Future<bool> createSpecialItem({
+    required SpecialItemRequestModel specialItemModel,
+    required int repeatIndex,
+  });
 }

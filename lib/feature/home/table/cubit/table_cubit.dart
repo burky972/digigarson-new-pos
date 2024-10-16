@@ -3,6 +3,7 @@ import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/model/pr
 import 'package:a_pos_flutter/feature/home/printer/cubit/printer_cubit.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/i_table_cubit.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_state.dart';
+import 'package:a_pos_flutter/feature/home/table/model/special_item_request_model.dart';
 import 'package:a_pos_flutter/feature/home/table/model/table_model.dart';
 import 'package:a_pos_flutter/feature/home/table/model/table_request_model.dart';
 import 'package:a_pos_flutter/feature/home/table/service/i_table_service.dart';
@@ -238,6 +239,7 @@ class TableCubit extends ITableCubit {
   /// post table new order
   Future<bool> postTableNewOrder(BuildContext context) async {
     appLogger.info('Table CUBIT POST TABLE NEW ORDER', state.newProducts.toJson().toString());
+
     List<OrderProductModel> updatedProducts = [];
 
     for (var product in state.newProducts.products) {
@@ -247,11 +249,13 @@ class TableCubit extends ITableCubit {
         }).toList();
         var updatedProduct = product.copyWith(options: updatedOptions);
         updatedProducts.add(updatedProduct);
+      } else {
+        updatedProducts.add(product);
       }
     }
 
     var updatedNewProducts = state.newProducts.copyWith(products: updatedProducts);
-
+    appLogger.error(TAG, updatedNewProducts.toJson().toString());
     bool? isSuccess;
     emit(state.copyWith(states: TableStates.loading));
 
@@ -898,5 +902,42 @@ class TableCubit extends ITableCubit {
     calculateTotalTax();
     calculateSubPrice();
     calculateTotalPrice();
+  }
+
+  /// create special item
+  @override
+  Future<bool> createSpecialItem({
+    required SpecialItemRequestModel specialItemModel,
+    required int repeatIndex,
+  }) async {
+    emit(state.copyWith(states: TableStates.loading));
+    final response = await _tableService.createSpecialItem(specialItemModel: specialItemModel);
+    return response.fold((l) {
+      emit(state.copyWith(states: TableStates.error));
+      return false;
+    }, (r) async {
+      ProductModel newProduct = ProductModel.fromJson(r.data);
+      for (var i = 0; i < repeatIndex; i++) {
+        await setNewOrderProducts(
+          OrderProductModel(
+            price: newProduct.prices?.first.price,
+            priceId: newProduct.prices?.first.id,
+            product: newProduct.id,
+            quantity: 1,
+            productName: newProduct.title,
+            priceAfterTax: newProduct.prices?.first.price,
+            tax: 0,
+            isSpecial: true,
+            options: const [],
+            selectedOptions: const [],
+            cancelStatus: CancelStatus.empty(),
+            serveInfo: ServeInfoModel.empty(),
+            isOptionForced: false,
+          ),
+          1.0,
+        );
+      }
+      return true;
+    });
   }
 }

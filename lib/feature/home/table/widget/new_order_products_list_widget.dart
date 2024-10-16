@@ -51,13 +51,16 @@ class NewOrderProductListWidget extends StatelessWidget {
                   return ListView.builder(
                       itemCount: state.newProducts.products.length,
                       itemBuilder: (context, index) {
-                        var product = state.newProducts.products[index];
+                        final product = state.newProducts.products[index];
                         return ColoredBox(
                           color: state.newOrderProduct?.product == product.product
                               ? context.colorScheme.tertiary
                               : Colors.white,
                           child: InkWell(
                             onDoubleTap: () async {
+                              /// if product is specialItem do not show dialog
+                              if (product.isSpecial == true) return;
+
                               List<Item> selectedItems = [];
                               context.read<ProductCubit>().getExistProductOptions(product.product!);
                               context.read<ProductCubit>().resetSelectedItems();

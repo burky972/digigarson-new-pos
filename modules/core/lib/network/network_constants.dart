@@ -42,4 +42,5 @@ class NetworkConstants {
       '/pos/tables/$tableId/service-fee/$serviceId';
   static const String cover = '/pos/cover';
   static const String expense = 'pos/expenses';
+  static const String specialItem = 'pos/specialproduct';
 }

@@ -70,6 +70,7 @@ class OrderProductModel extends BaseModel<OrderProductModel> {
   final double? quantity;
   final double? paidQuantity;
   final double? price;
+  final bool? isSpecial;
   final double? priceAfterTax;
   final String? priceId;
   final String? note;
@@ -92,6 +93,7 @@ class OrderProductModel extends BaseModel<OrderProductModel> {
     this.price,
     required this.priceAfterTax,
     this.priceId,
+    this.isSpecial,
     this.priceName,
     this.priceType,
     this.note,
@@ -115,6 +117,7 @@ class OrderProductModel extends BaseModel<OrderProductModel> {
         product,
         productName,
         quantity,
+        isSpecial,
         paidQuantity,
         categoryId,
         tax,
@@ -140,6 +143,7 @@ class OrderProductModel extends BaseModel<OrderProductModel> {
     double? quantity,
     double? paidQuantity,
     String? categoryId,
+    bool? isSpecial,
     double? tax,
     double? price,
     double? priceAfterTax,
@@ -166,6 +170,7 @@ class OrderProductModel extends BaseModel<OrderProductModel> {
       price: price ?? this.price,
       priceAfterTax: priceAfterTax ?? this.priceAfterTax,
       priceId: priceId ?? this.priceId,
+      isSpecial: isSpecial ?? this.isSpecial,
       priceName: priceName ?? this.priceName,
       priceType: priceType ?? this.priceType,
       note: note ?? this.note,

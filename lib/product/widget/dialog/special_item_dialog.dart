@@ -1,5 +1,6 @@
 import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_state.dart';
+import 'package:a_pos_flutter/feature/home/table/model/special_item_request_model.dart';
 import 'package:a_pos_flutter/language/locale_keys.g.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
@@ -10,6 +11,7 @@ import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/widget/button/light_blue_button.dart';
 import 'package:a_pos_flutter/product/widget/keyboard/custom_keyboard.dart';
 import 'package:a_pos_flutter/product/widget/keyboard/custom_search_keyboard.dart';
+import 'package:a_pos_flutter/product/widget/pop_up/pop_up.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -271,11 +273,9 @@ class SpecialItemDialog {
                 actions: [
                   /// save - close buttons
                   LightBlueButton(
-                      buttonText: LocaleKeys.save.tr(),
-                      onTap: () {
-                        appLogger.info("INPUT FIELDS: ",
-                            '${_titleController.text} - ${_quantityController.text} - ${_priceController.text}');
-                      }),
+                    buttonText: LocaleKeys.save.tr(),
+                    onTap: () async => _handleCreateSpecialItem(context),
+                  ),
                   LightBlueButton(
                       buttonText: LocaleKeys.close.tr(), onTap: () => routeManager.pop()),
                 ],
@@ -287,9 +287,36 @@ class SpecialItemDialog {
     );
   }
 
-  postCover(BuildContext context, TableState state, double amount) async {}
+  Future<void> _handleCreateSpecialItem(BuildContext context) async {
+    if (_titleController.text.isEmpty ||
+        _quantityController.text.isEmpty ||
+        _priceController.text.isEmpty) return;
+    final priceModel = PriceModel(
+      amount: 1.0,
+      vatRate: 0.0,
+      priceName: 'REGULAR',
+      priceType: 'REGULAR',
+      currency: 'USD',
+      orderType: const [],
+      price: double.tryParse(_priceController.text),
+    );
 
-  deleteCover(BuildContext context, String coverId) async {}
+    final response = await context.read<TableCubit>().createSpecialItem(
+          specialItemModel: SpecialItemRequestModel(
+            prices: [priceModel],
+            title: _titleController.text,
+            activeList: const [1],
+            isSpecial: true,
+          ),
+          repeatIndex: int.tryParse(_quantityController.text) ?? 1,
+        );
+
+    if (response) {
+      showOrderSuccessDialog('Special item created successfully', secondClose: true);
+    } else {
+      showErrorDialog('Special item not created');
+    }
+  }
 }
 
 class _BoldTitleWidget extends StatelessWidget {

@@ -24,9 +24,7 @@ class APosLogger implements IAPosLogger {
     if (kDebugMode) {
       _logger.e('$TAG: $error');
     }
-    if (_isCacheLog) {
-      //TODO: cache log
-    }
+    if (_isCacheLog) {}
   }
 
   @override
@@ -35,9 +33,7 @@ class APosLogger implements IAPosLogger {
       _logger.i('$TAG: $info');
     }
 
-    if (_isCacheLog) {
-      //TODO: cache log
-    }
+    if (_isCacheLog) {}
   }
 
   @override
@@ -46,8 +42,6 @@ class APosLogger implements IAPosLogger {
       _logger.w('$TAG: $warning');
     }
 
-    if (_isCacheLog) {
-      //TODO: cache log
-    }
+    if (_isCacheLog) {}
   }
 }

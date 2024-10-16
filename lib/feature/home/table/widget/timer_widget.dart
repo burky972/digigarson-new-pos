@@ -26,7 +26,7 @@ class _TimerWidgetState extends State<TimerWidget> {
     if (lastOrderTime != null) {
       timer = Timer.periodic(const Duration(seconds: 1), (Timer t) {
         setState(() {
-          elapsedTime = DateTime.now().difference(lastOrderTime!);
+          elapsedTime = DateTime.now().difference(lastOrderTime ?? DateTime.now());
         });
       });
     } else {
