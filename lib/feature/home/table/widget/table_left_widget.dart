@@ -431,7 +431,7 @@ class _TableLeftWidgetState extends State<TableLeftWidget> {
                                                 paidQuantity: orderProduct.paidQuantity,
                                                 serveInfo: orderProduct.serveInfo,
                                                 id: orderProduct.id,
-                                                options: orderProduct.options,
+                                                options: orderProduct.selectedOptions ?? [],
                                                 quantity: orderProduct.quantity,
                                                 cancelStatus: orderProduct.cancelStatus,
                                                 priceAfterTax: orderProduct.priceAfterTax,

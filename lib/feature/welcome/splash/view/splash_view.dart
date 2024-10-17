@@ -6,6 +6,7 @@ import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
 import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/routes/route_constants.dart';
+import 'package:a_pos_flutter/product/widget/custom_snackbar.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -63,15 +64,18 @@ mixin SplashMixin on State<SplashView> {
       if (!_firstTime) {
         bool isNotConnected = results.every(
             (result) => result != ConnectivityResult.wifi && result != ConnectivityResult.mobile);
-        isNotConnected ? const SizedBox() : ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          backgroundColor: isNotConnected ? Colors.red : Colors.green,
-          duration: Duration(seconds: isNotConnected ? 6000 : 3),
-          content: Text(
-            isNotConnected ? LocaleKeys.no_connection : LocaleKeys.connected,
-            textAlign: TextAlign.center,
-          ).tr(),
-        ));
+        if (isNotConnected) {
+          const SizedBox();
+        } else {
+          if (!mounted) return;
+          CustomSnackBar.show(
+            context: context,
+            message: isNotConnected ? LocaleKeys.no_connection.tr() : LocaleKeys.connected.tr(),
+            type: isNotConnected ? SnackBarType.error : SnackBarType.success,
+            duration: Duration(seconds: isNotConnected ? 6000 : 3),
+          );
+        }
+
         if (!isNotConnected) {
           _route();
         }

@@ -47,7 +47,22 @@ class QuickServiceCubit extends BaseCubit<QuickServiceState> {
   }
 
   calculatePriceAfterTax(Product product) {
-    return product.price! + (product.price! * (product.tax! / 100));
+    return product.price! + (product.price! * (product.tax! / 100)) + calculateItemsPrice(product);
+  }
+
+  /// calculate product's selected Items price
+  double calculateItemsPrice(Product product) {
+    double totalPrice = 0.0;
+    if (product.options.isNotEmpty) {
+      for (var option in product.options) {
+        if (option.selectedItems.isNotEmpty) {
+          for (var item in option.selectedItems) {
+            totalPrice += item.price ?? 0.0;
+          }
+        }
+      }
+    }
+    return totalPrice;
   }
 
   void clearProductList() => emit(state.copyWith(willPaidProducts: [], paidProducts: []));

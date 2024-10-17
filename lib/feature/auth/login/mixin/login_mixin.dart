@@ -18,6 +18,7 @@ import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/utils/helper/network_info.dart';
 import 'package:a_pos_flutter/product/utils/helper/timer_convert.dart';
 import 'package:a_pos_flutter/product/widget/button/custom_yes_no_button.dart';
+import 'package:a_pos_flutter/product/widget/custom_snackbar.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -131,15 +132,17 @@ mixin LoginMixin on State<LoginBodyWidget> {
       String branchCustomId = branchCustomIdController.text.trim();
       String password = passwordController.text.trim();
       if (branchCustomId.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: const Text(LocaleKeys.EMAIL_MUST_BE_REQUIRED).tr(),
-          backgroundColor: Colors.red,
-        ));
+        CustomSnackBar.show(
+          context: context,
+          message: LocaleKeys.EMAIL_MUST_BE_REQUIRED.tr(),
+          type: SnackBarType.error,
+        );
       } else if (password.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: const Text(LocaleKeys.PASSWORD_MUST_BE_REQUIRED).tr(),
-          backgroundColor: Colors.red,
-        ));
+        CustomSnackBar.show(
+          context: context,
+          message: LocaleKeys.PASSWORD_MUST_BE_REQUIRED.tr(),
+          type: SnackBarType.error,
+        );
       } else {
         context.read<LoginCubit>().saveUserEmail(branchCustomId);
         await context

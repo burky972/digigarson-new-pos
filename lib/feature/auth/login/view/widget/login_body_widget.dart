@@ -9,6 +9,7 @@ import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/widget/button/custom_button.dart';
+import 'package:a_pos_flutter/product/widget/custom_snackbar.dart';
 import 'package:a_pos_flutter/product/widget/keyboard/custom_keyboard.dart';
 import 'package:a_pos_flutter/product/widget/textfield/custom_password_textfield.dart';
 import 'package:a_pos_flutter/product/widget/textfield/custom_textfield.dart';
@@ -124,12 +125,11 @@ class _SignInWidgetState extends State<LoginBodyWidget> with LoginMixin {
                                 BlocConsumer<LoginCubit, LoginState>(
                                     listener: (context, state) async {
                                       if (state.states == LoginStates.error) {
-                                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                          content:
-                                              const Text('Please check your username and password')
-                                                  .tr(),
-                                          backgroundColor: Colors.red,
-                                        ));
+                                        CustomSnackBar.show(
+                                          context: context,
+                                          message: 'Please check your username and password',
+                                          type: SnackBarType.error,
+                                        );
                                       }
                                       if (state.states == LoginStates.completed && mounted) {
                                         await route(state: state);
