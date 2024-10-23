@@ -200,14 +200,20 @@ class TableModel extends BaseModel<TableModel> {
     );
   }
 
-  Widget buildTable(Widget assetWidget) {
+  Widget buildTable(Widget assetWidget, int? customerCount) {
     return SizedBox(
       width: 65,
       height: 65,
       child: Stack(
         alignment: Alignment.center,
         children: [
-          assetWidget,
+          ColorFiltered(
+            colorFilter: ColorFilter.mode(
+              customerCount == null ? Colors.blue : Colors.red,
+              BlendMode.srcIn,
+            ),
+            child: assetWidget,
+          ),
           Positioned(
               child: Text(title ?? '',
                   style: CustomFontStyle.generalTextStyle

@@ -517,19 +517,24 @@ mixin TableLayoutMixin on State<TableLayoutView> {
       _isLoading = true;
     });
     //! Get table from shared manager
-    for (SectionModel key in sections!) {
-      List<String>? jsonTables = SharedManager.instance.getStringListValue(key.id ?? '');
-      if (jsonTables != null) {
-        List<TableItem> tables = jsonTables.map((jsonTable) {
-          var tableData = json.decode(jsonTable);
-          return TableItem.fromJson(tableData, _getWidgetById(tableData['id']));
-        }).toList();
-        tableStates[key.id ?? ''] = tables;
-      } else {
-        tableStates[key.id ?? ''] = [];
+    try {
+      for (SectionModel key in sections!) {
+        List<String>? jsonTables = SharedManager.instance.getStringListValue(key.id ?? '');
+        if (jsonTables != null) {
+          List<TableItem> tables = jsonTables.map((jsonTable) {
+            var tableData = json.decode(jsonTable);
+            return TableItem.fromJson(tableData, _getWidgetById(tableData['id']));
+          }).toList();
+          tableStates[key.id ?? ''] = tables;
+        } else {
+          tableStates[key.id ?? ''] = [];
+        }
       }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
     }
-
     setState(() {
       _isLoading = false;
     }); // Ensure UI is updated with loaded tables
@@ -634,7 +639,7 @@ mixin TableLayoutMixin on State<TableLayoutView> {
 
       // Check for invalid tables within the section
       for (var table in tables) {
-        if (table.id < 45 && (table.name == null || table.name!.isEmpty)) {
+        if (table.id < 27 && (table.name == null || table.name!.isEmpty)) {
           hasInvalidTables = true;
           break; // Exit loop early since we found an invalid table
         }
@@ -662,7 +667,7 @@ mixin TableLayoutMixin on State<TableLayoutView> {
         var xCoordinate = table.position.dx.toInt();
         var yCoordinate = table.position.dy.toInt();
 
-        if (table.id > 44) {
+        if (table.id > 26) {
           // handle Post - Put  utility items
           processUtilityItem(key, table, xCoordinate, yCoordinate, existingUtilityItems ?? []);
         } else {

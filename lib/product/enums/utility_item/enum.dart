@@ -43,75 +43,75 @@ enum EUtilityItems {
   /// post server utility item type
   static int getUtilityItemType(int value) {
     switch (value) {
-      case 45:
+      case 27:
         return 1;
-      case 46:
+      case 28:
         return 2;
-      case 47:
+      case 29:
         return 3;
-      case 48:
+      case 30:
         return 4;
-      case 49:
+      case 31:
         return 5;
-      case 50:
+      case 32:
         return 6;
-      case 51:
+      case 33:
         return 7;
-      case 52:
+      case 34:
         return 8;
-      case 53:
+      case 35:
         return 9;
-      case 54:
+      case 36:
         return 10;
-      case 55:
+      case 37:
         return 11;
-      case 56:
+      case 38:
         return 12;
-      case 57:
+      case 39:
         return 13;
-      case 58:
+      case 40:
         return 14;
-      case 59:
+      case 41:
         return 15;
-      case 60:
+      case 42:
         return 16;
-      case 61:
+      case 43:
         return 17;
-      case 62:
+      case 44:
         return 18;
-      case 63:
+      case 45:
         return 19;
-      case 64:
+      case 46:
         return 20;
-      case 65:
+      case 47:
         return 21;
-      case 66:
+      case 48:
         return 22;
-      case 67:
+      case 49:
         return 23;
-      case 68:
+      case 50:
         return 24;
-      case 69:
+      case 51:
         return 25;
-      case 70:
+      case 52:
         return 26;
-      case 71:
+      case 53:
         return 27;
-      case 72:
+      case 54:
         return 28;
-      case 73:
+      case 55:
         return 29;
-      case 74:
+      case 56:
         return 30;
-      case 75:
+      case 57:
         return 31;
-      case 76:
+      case 58:
         return 32;
-      case 77:
+      case 59:
         return 33;
-      case 78:
+      case 60:
         return 34;
-      case 79:
+      case 61:
         return 35;
       default:
         return -1;
@@ -122,75 +122,76 @@ enum EUtilityItems {
   static int getServerValue(int value) {
     switch (value) {
       case 1:
-        return 45;
+        return 27;
       case 2:
-        return 46;
+        return 28;
       case 3:
-        return 47;
+        return 29;
       case 4:
-        return 48;
+        return 30;
       case 5:
-        return 49;
+        return 31;
       case 6:
-        return 50;
+        return 32;
       case 7:
-        return 51;
+        return 33;
       case 8:
-        return 52;
+        return 34;
       case 9:
-        return 53;
+        return 35;
       case 10:
-        return 54;
+        return 36;
       case 11:
-        return 55;
+        return 37;
       case 12:
-        return 56;
+        return 38;
       case 13:
-        return 57;
+        return 39;
       case 14:
-        return 58;
+        return 40;
       case 15:
-        return 59;
+        return 41;
       case 16:
-        return 60;
+        return 42;
       case 17:
-        return 61;
+        return 43;
       case 18:
-        return 62;
+        return 44;
+
       case 19:
-        return 63;
+        return 45;
       case 20:
-        return 64;
+        return 46;
       case 21:
-        return 65;
+        return 47;
       case 22:
-        return 66;
+        return 48;
       case 23:
-        return 67;
+        return 49;
       case 24:
-        return 68;
+        return 50;
       case 25:
-        return 69;
+        return 51;
       case 26:
-        return 70;
+        return 52;
       case 27:
-        return 71;
+        return 53;
       case 28:
-        return 72;
+        return 54;
       case 29:
-        return 73;
+        return 55;
       case 30:
-        return 74;
+        return 56;
       case 31:
-        return 75;
+        return 57;
       case 32:
-        return 76;
+        return 58;
       case 33:
-        return 77;
+        return 59;
       case 34:
-        return 78;
+        return 60;
       case 35:
-        return 79;
+        return 61;
       default:
         return -1;
     }

@@ -12,6 +12,8 @@ import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
 import 'package:a_pos_flutter/product/global/cubit/global_cubit.dart';
 import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/routes/route_constants.dart';
+import 'package:a_pos_flutter/product/widget/dialog/edit_customer_count_dialog.dart';
+import 'package:a_pos_flutter/product/widget/dialog/set_initial_customer_count_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:a_pos_flutter/feature/back_office/table_layout/model/table_layout_model.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
@@ -129,45 +131,50 @@ class _MainSavedTableViewState extends State<MainSavedTableView> with TickerProv
                   left: x,
                   top: y,
                   child: InkWell(
-                      // TODO:THINK ABOUT HERE FOR FIRST CLICK SHOW AMOUNT AND DURATION, onDoubleClick OPEN THE SELECTED TABLE!
-                      //! selected table onTap
                       onTap: () async {
+                        appLogger.info('MainView _buildSectionView: ', ' ${table.toJson()}');
+                        TableCubit tableCubit = context.read<TableCubit>();
                         context.read<GlobalCubit>().setSelectedTableName(table.title.toString());
-                        await context.read<TableCubit>().setSelectedTable(table).then(
+                        await tableCubit.setSelectedTable(table).then(
                           (value) {
-                            routeManager.push(RouteConstants.table);
+                            if (table.customerCount == null || table.customerCount == 0) {
+                              tableCubit.setCustomerCount(table.customerCount != null
+                                  ? table.customerCount.toString()
+                                  : '0');
+                              SetInitialCustomerCountDialog().show(context);
+                            } else {
+                              routeManager.push(RouteConstants.table);
+                            }
                           },
                         );
                       },
                       child: DecoratedBox(
                         decoration: BoxDecoration(
-                            color: context.colorScheme.primary,
+                            color: context.colorScheme.tertiary,
                             borderRadius: BorderRadius.circular(8.0)),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            table.buildTable(tableList[listTableType]),
-                            //TODO: CHECK HERE FOR TOTAL AMOUNT AND LAST OPENED ORDER DATE !!
-                            tableType < 46
-                                ? Text('\$ ${table.totalPriceAfterTax?.toStringAsFixed(2)}',
-                                    style: CustomFontStyle.generalTextStyle
-                                        .copyWith(color: context.colorScheme.surface))
-                                : const SizedBox(),
-                            tableType < 46
-                                ? BlocSelector<TableCubit, TableState, DateTime?>(
-                                    selector: (state) {
-                                      return state.tableModel.isNotEmpty
-                                          ? table.lastOrderDate
-                                          : DateTime(0);
-                                    },
-                                    builder: (context, lastOrderDate) {
-                                      return TimerWidget(
-                                        lastOrderTime: lastOrderDate,
-                                        color: context.colorScheme.surface,
-                                      );
-                                    },
-                                  )
-                                : const SizedBox()
+                            table.buildTable(
+                              tableList[listTableType],
+                              table.customerCount,
+                            ),
+                            Text('\$ ${table.totalPriceAfterTax?.toStringAsFixed(2)}',
+                                style: CustomFontStyle.generalTextStyle
+                                    .copyWith(color: context.colorScheme.surface)),
+                            BlocSelector<TableCubit, TableState, DateTime?>(
+                              selector: (state) {
+                                return state.tableModel.isNotEmpty
+                                    ? table.lastOrderDate
+                                    : DateTime(0);
+                              },
+                              builder: (context, lastOrderDate) {
+                                return TimerWidget(
+                                  lastOrderTime: lastOrderDate,
+                                  color: context.colorScheme.surface,
+                                );
+                              },
+                            )
                           ],
                         ),
                       )),
@@ -183,15 +190,8 @@ class _MainSavedTableViewState extends State<MainSavedTableView> with TickerProv
                   top: y,
                   child: InkWell(
                       child: DecoratedBox(
-                    decoration: BoxDecoration(
-                        color: context.colorScheme.primary,
-                        borderRadius: BorderRadius.circular(8.0)),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        utilityItem.buildUtilityItem(tableList[utilityType]),
-                      ],
-                    ),
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.0)),
+                    child: utilityItem.buildUtilityItem(tableList[utilityType]),
                   )),
                 );
               }),

@@ -112,65 +112,11 @@ class $AssetsImagesTablesGen {
   /// File path: assets/images/tables/27.png
   AssetGenImage get a27 => const AssetGenImage('assets/images/tables/27.png');
 
-  /// File path: assets/images/tables/28.png
-  AssetGenImage get a28 => const AssetGenImage('assets/images/tables/28.png');
-
-  /// File path: assets/images/tables/29.png
-  AssetGenImage get a29 => const AssetGenImage('assets/images/tables/29.png');
-
   /// File path: assets/images/tables/3.png
   AssetGenImage get a3 => const AssetGenImage('assets/images/tables/3.png');
 
-  /// File path: assets/images/tables/30.png
-  AssetGenImage get a30 => const AssetGenImage('assets/images/tables/30.png');
-
-  /// File path: assets/images/tables/31.png
-  AssetGenImage get a31 => const AssetGenImage('assets/images/tables/31.png');
-
-  /// File path: assets/images/tables/32.png
-  AssetGenImage get a32 => const AssetGenImage('assets/images/tables/32.png');
-
-  /// File path: assets/images/tables/33.png
-  AssetGenImage get a33 => const AssetGenImage('assets/images/tables/33.png');
-
-  /// File path: assets/images/tables/34.png
-  AssetGenImage get a34 => const AssetGenImage('assets/images/tables/34.png');
-
-  /// File path: assets/images/tables/35.png
-  AssetGenImage get a35 => const AssetGenImage('assets/images/tables/35.png');
-
-  /// File path: assets/images/tables/36.png
-  AssetGenImage get a36 => const AssetGenImage('assets/images/tables/36.png');
-
-  /// File path: assets/images/tables/37.png
-  AssetGenImage get a37 => const AssetGenImage('assets/images/tables/37.png');
-
-  /// File path: assets/images/tables/38.png
-  AssetGenImage get a38 => const AssetGenImage('assets/images/tables/38.png');
-
-  /// File path: assets/images/tables/39.png
-  AssetGenImage get a39 => const AssetGenImage('assets/images/tables/39.png');
-
   /// File path: assets/images/tables/4.png
   AssetGenImage get a4 => const AssetGenImage('assets/images/tables/4.png');
-
-  /// File path: assets/images/tables/40.png
-  AssetGenImage get a40 => const AssetGenImage('assets/images/tables/40.png');
-
-  /// File path: assets/images/tables/41.png
-  AssetGenImage get a41 => const AssetGenImage('assets/images/tables/41.png');
-
-  /// File path: assets/images/tables/42.png
-  AssetGenImage get a42 => const AssetGenImage('assets/images/tables/42.png');
-
-  /// File path: assets/images/tables/43.png
-  AssetGenImage get a43 => const AssetGenImage('assets/images/tables/43.png');
-
-  /// File path: assets/images/tables/44.png
-  AssetGenImage get a44 => const AssetGenImage('assets/images/tables/44.png');
-
-  /// File path: assets/images/tables/45.png
-  AssetGenImage get a45 => const AssetGenImage('assets/images/tables/45.png');
 
   /// File path: assets/images/tables/5.png
   AssetGenImage get a5 => const AssetGenImage('assets/images/tables/5.png');
@@ -209,26 +155,8 @@ class $AssetsImagesTablesGen {
         a25,
         a26,
         a27,
-        a28,
-        a29,
         a3,
-        a30,
-        a31,
-        a32,
-        a33,
-        a34,
-        a35,
-        a36,
-        a37,
-        a38,
-        a39,
         a4,
-        a40,
-        a41,
-        a42,
-        a43,
-        a44,
-        a45,
         a5,
         a6,
         a7,
