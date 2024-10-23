@@ -10,6 +10,7 @@ import 'package:a_pos_flutter/product/responsive/paddings.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/widget/button/custom_button.dart';
 import 'package:a_pos_flutter/product/widget/custom_snackbar.dart';
+import 'package:a_pos_flutter/product/widget/dialog/time_clock_dialog.dart';
 import 'package:a_pos_flutter/product/widget/keyboard/custom_keyboard.dart';
 import 'package:a_pos_flutter/product/widget/textfield/custom_password_textfield.dart';
 import 'package:a_pos_flutter/product/widget/textfield/custom_textfield.dart';
@@ -234,10 +235,13 @@ class _LeftItemsWidget extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Assets.images.onBoarding.clock.image(
-                  height: 250,
-                  width: 250,
-                  color: Colors.white,
+                InkWell(
+                  onTap: () => TimeClockDialog().show(context),
+                  child: Assets.images.onBoarding.clock.image(
+                    height: 250,
+                    width: 250,
+                    color: Colors.white,
+                  ),
                 ),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,

@@ -6,6 +6,8 @@ import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/cubit/opt
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/service/i_option_service.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/cubit/product_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/service/i_product_service.dart';
+import 'package:a_pos_flutter/feature/back_office/reports/sales_report/cubit/reports_cubit.dart';
+import 'package:a_pos_flutter/feature/back_office/reports/sales_report/service/i_reports_service.dart';
 import 'package:a_pos_flutter/feature/back_office/restaurant/cubit/restaurant_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/sections/cubit/section_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/sections/service/i_section_service.dart';
@@ -58,6 +60,7 @@ final class AppContainerItems {
   static IOptionService get optionService => AppContainer.read<IOptionService>();
   static ISectionService get sectionService => AppContainer.read<ISectionService>();
   static IExpenseService get expenseService => AppContainer.read<IExpenseService>();
+  static IReportsService get reportsService => AppContainer.read<IReportsService>();
 
   /// getter for each AppContainer Cubit method
   static LoginCubit get loginCubit => AppContainer.read<LoginCubit>();
@@ -78,4 +81,5 @@ final class AppContainerItems {
   static QuickServiceCubit get quickServiceCubit => AppContainer.read<QuickServiceCubit>();
   static SectionCubit get sectionCubit => AppContainer.read<SectionCubit>();
   static ExpenseCubit get expenseCubit => AppContainer.read<ExpenseCubit>();
+  static ReportsCubit get reportsCubit => AppContainer.read<ReportsCubit>();
 }

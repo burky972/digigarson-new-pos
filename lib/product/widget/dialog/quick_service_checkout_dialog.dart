@@ -382,7 +382,6 @@ class _RightCheckoutWidget extends StatelessWidget {
                                       quickServiceCubit.clearAll();
 
                                       await ResponseActionService.getTableAndNavigate(
-                                        context: context,
                                         response: isSales,
                                         tableCubit: tableCubit,
                                         action: ButtonAction.quickCash,

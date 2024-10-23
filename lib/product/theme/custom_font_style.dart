@@ -10,6 +10,13 @@ class CustomFontStyle {
   /// montserrat title text style
   static const titlesTextStyle = TextStyle(fontFamily: FontTypes.montserrat);
 
+  /// montserrat title bold text style (tertiary color)
+  static const titleBoldTertiaryStyle = TextStyle(
+    fontFamily: FontTypes.montserrat,
+    fontWeight: FontWeight.bold,
+    color: Color(0xFF9370db),
+  );
+
   /// montserrat title lineThrough text style
   static const titleErrorTextStyle = TextStyle(
       fontFamily: FontTypes.montserrat,

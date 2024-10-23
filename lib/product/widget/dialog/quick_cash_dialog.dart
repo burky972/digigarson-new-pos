@@ -93,7 +93,6 @@ class QuickCashDialog {
         tableId: state.selectedTable!.id!);
     tableCubit.clearPriceInfos();
     await ResponseActionService.getTableAndNavigate(
-      context: context,
       response: isPaidSuccess,
       tableCubit: tableCubit,
       action: ButtonAction.checkout,

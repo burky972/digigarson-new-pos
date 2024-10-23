@@ -39,9 +39,9 @@ class _ExpenseTableWidget extends StatelessWidget {
                             const TableRow(
                               decoration: BoxDecoration(color: Colors.grey),
                               children: [
-                                _TableCellTitleWidget(title: 'Description'),
-                                _TableCellTitleWidget(title: 'Amount'),
-                                _TableCellTitleWidget(title: 'Created By'),
+                                TableCellTitleWidget(title: 'Description'),
+                                TableCellTitleWidget(title: 'Amount'),
+                                TableCellTitleWidget(title: 'Created By'),
                               ],
                             ),
                             ...state.allOptions.map((option) {

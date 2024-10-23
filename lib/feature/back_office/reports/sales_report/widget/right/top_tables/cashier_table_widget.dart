@@ -39,9 +39,9 @@ class _CashierTableWidget extends StatelessWidget {
                             const TableRow(
                               decoration: BoxDecoration(color: Colors.grey),
                               children: [
-                                _TableCellTitleWidget(title: 'Cashier'),
-                                _TableCellTitleWidget(title: 'Cash'),
-                                _TableCellTitleWidget(title: 'Card'),
+                                TableCellTitleWidget(title: 'Cashier'),
+                                TableCellTitleWidget(title: 'Cash'),
+                                TableCellTitleWidget(title: 'Card'),
                               ],
                             ),
                             ...state.allOptions.map((option) {

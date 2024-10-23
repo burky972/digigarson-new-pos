@@ -12,7 +12,6 @@ class ResponseActionService {
   const ResponseActionService._();
 
   static Future<void> getTableAndNavigate({
-    required BuildContext context,
     required bool response,
     required TableCubit tableCubit,
     required ButtonAction action,

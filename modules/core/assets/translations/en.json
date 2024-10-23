@@ -449,7 +449,12 @@
   "receipt" : "Receipt",
   "export" : "Export",
   "refund": "Refund",
-  "search":"Search"
-
-
+  "search":"Search",
+  "swipeCard": "Swipe Card : ",
+  "timeIn": "Time In",
+  "timeOut": "Time Out",
+  "timeClock": "Time Clock",
+  "add": "Add",
+  "printRecord": "Print Record",
+  "printSummary": "Print Summary"
 }

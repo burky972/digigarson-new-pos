@@ -39,14 +39,14 @@ class _WaiterTableWidget extends StatelessWidget {
                             const TableRow(
                               decoration: BoxDecoration(color: Colors.grey),
                               children: [
-                                _TableCellTitleWidget(title: 'Waiter'),
-                                _TableCellTitleWidget(title: 'Qty'),
-                                _TableCellTitleWidget(title: 'Cash'),
-                                _TableCellTitleWidget(title: 'Card'),
-                                _TableCellTitleWidget(title: 'Amount'),
-                                _TableCellTitleWidget(title: 'Ch. Tip'),
-                                _TableCellTitleWidget(title: 'Cd. Tip'),
-                                _TableCellTitleWidget(title: 'Gratuity'),
+                                TableCellTitleWidget(title: 'Waiter'),
+                                TableCellTitleWidget(title: 'Qty'),
+                                TableCellTitleWidget(title: 'Cash'),
+                                TableCellTitleWidget(title: 'Card'),
+                                TableCellTitleWidget(title: 'Amount'),
+                                TableCellTitleWidget(title: 'Ch. Tip'),
+                                TableCellTitleWidget(title: 'Cd. Tip'),
+                                TableCellTitleWidget(title: 'Gratuity'),
                               ],
                             ),
                             ...state.allOptions.map((option) {

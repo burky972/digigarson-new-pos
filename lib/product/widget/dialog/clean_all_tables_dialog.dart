@@ -69,7 +69,6 @@ class CleanAllTablesDialog {
                   showOrderSuccessDialog('All tables states cleaned!');
                 }
                 await ResponseActionService.getTableAndNavigate(
-                  context: context,
                   response: isDeleted,
                   tableCubit: tableCubit,
                   isShowingError: false,

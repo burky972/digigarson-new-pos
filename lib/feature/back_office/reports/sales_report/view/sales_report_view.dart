@@ -1,15 +1,20 @@
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/cubit/category_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/cubit/product_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/model/product_model.dart';
+import 'package:a_pos_flutter/feature/back_office/reports/sales_report/model/reports_request_model.dart';
 import 'package:a_pos_flutter/feature/back_office/reports/sales_report/widget/select_date_widget.dart';
 import 'package:a_pos_flutter/language/locale_keys.g.dart';
+import 'package:a_pos_flutter/product/app/app_container_items.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
 import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/responsive/border.dart';
 import 'package:a_pos_flutter/product/responsive/paddings.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
+import 'package:a_pos_flutter/product/utils/helper/date_helper.dart';
 import 'package:a_pos_flutter/product/widget/button/light_blue_button.dart';
+import 'package:a_pos_flutter/product/widget/table_cell/table_cell_widget.dart';
+import 'package:a_pos_flutter/product/widget/text/from_to_title.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -144,7 +149,7 @@ class _SalesReportViewState extends State<SalesReportView> with TickerProviderSt
                       Expanded(
                         child: Row(
                           children: [
-                            const _DateFromToTitle(title: 'From'),
+                            const FromToTitle(title: 'From'),
                             Expanded(
                               child: SelectDateWidget(
                                 startDateController: startDateController,
@@ -159,7 +164,7 @@ class _SalesReportViewState extends State<SalesReportView> with TickerProviderSt
                       Expanded(
                         child: Row(
                           children: [
-                            const _DateFromToTitle(title: 'To'),
+                            const FromToTitle(title: 'To'),
                             Expanded(
                               child: SelectDateWidget(
                                 startDateController: startDateController,
@@ -177,8 +182,11 @@ class _SalesReportViewState extends State<SalesReportView> with TickerProviderSt
                 /// Bottom Buttons
                 LightBlueButton(
                   buttonText: LocaleKeys.search.tr(),
-                  onTap: () {
-                    debugPrint('${startDateController.text} ${endDateController.text}');
+                  onTap: () async {
+                    final startDate = DateHelper.stringToTimestamp(startDateController.text);
+                    final endDate = DateHelper.stringToTimestamp(endDateController.text);
+                    await AppContainerItems.reportsCubit.getCategoryReports(ReportsRequestModel(
+                        startDate: startDate.toString(), endDate: endDate.toString()));
                   },
                 ),
                 LightBlueButton(
@@ -221,41 +229,11 @@ class _MiddleTableCellTextWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TableRowInkWell(
+    return MiddleTableCellTextWidget(
       onTap: () => context
           .read<ProductCubit>()
           .setSelectedProduct(product, product.prices?.first ?? const PriceModel()),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Text(
-          text,
-          style: const TextStyle(fontSize: 14),
-          overflow: TextOverflow.visible,
-        ),
-      ),
-    );
-  }
-}
-
-class _TableCellTitleWidget extends StatelessWidget {
-  const _TableCellTitleWidget({
-    required this.title,
-  });
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return TableCell(
-      child: Center(
-          child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Text(title,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-              overflow: TextOverflow.visible,
-            )),
-      )),
+      text: text,
     );
   }
 }
@@ -276,26 +254,5 @@ class _TableCellTextWidget extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class _DateFromToTitle extends StatelessWidget {
-  const _DateFromToTitle({required this.title});
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-        width: context.dynamicWidth(0.05),
-        child: Padding(
-          padding: const EdgeInsets.only(left: 28.0),
-          child: Text(
-            title,
-            style: CustomFontStyle.titlesTextStyle.copyWith(
-              color: context.colorScheme.tertiary,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ));
   }
 }

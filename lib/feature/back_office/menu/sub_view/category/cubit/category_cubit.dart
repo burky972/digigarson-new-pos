@@ -157,9 +157,10 @@ class CategoryCubit extends ICategoryCubit {
 
   /// ADD NEW EMPTY CATEGORY
   Future<void> addNewSubCategory() async {
-    if (state.selectedSubCategory == null ||
-        state.subCategories.last.title == '' ||
-        state.subCategories.last.title == null) return;
+    if (state.subCategories.length > 1 &&
+        (state.selectedSubCategory == null ||
+            state.subCategories.last.title == '' ||
+            state.subCategories.last.title == null)) return;
     subTitleController.clear();
     emit(state.copyWith(selectedSubCategory: () => null));
     emit(state.copyWith(

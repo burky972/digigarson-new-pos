@@ -474,7 +474,6 @@ class _RightCheckoutWidget extends StatelessWidget {
       tableCubit.setTotalDue(0);
 
       await ResponseActionService.getTableAndNavigate(
-        context: context,
         response: isPaidSuccess,
         tableCubit: tableCubit,
         action: ButtonAction.checkout,

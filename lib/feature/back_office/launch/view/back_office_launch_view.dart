@@ -68,7 +68,12 @@ class BackOfficeLaunchView extends StatelessWidget {
             width: context.dynamicWidth(1),
             height: context.dynamicHeight(0.2),
             child: Row(children: [
-              const Expanded(flex: 1, child: _EachTitleContainer(title: 'Employee')),
+              Expanded(
+                  flex: 1,
+                  child: InkWell(
+                    onTap: () => routeManager.push(RouteConstants.employeeLaunchView),
+                    child: const _EachTitleContainer(title: 'Employee'),
+                  )),
               Expanded(
                 flex: 1,
                 child: InkWell(

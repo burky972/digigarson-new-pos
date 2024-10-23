@@ -350,11 +350,7 @@ class CancelProductDialog {
             ],
             cancelReason: cancelReason ?? ''),
         tableId: state.selectedTable!.id!);
-    if (!context.mounted) return;
     ResponseActionService.getTableAndNavigate(
-        context: context,
-        response: response,
-        tableCubit: tableCubit,
-        action: ButtonAction.cancelProduct);
+        response: response, tableCubit: tableCubit, action: ButtonAction.cancelProduct);
   }
 }

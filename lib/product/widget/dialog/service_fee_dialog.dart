@@ -267,10 +267,13 @@ class ServiceFeeDialog {
                     title == ServiceFeeType.AMOUNT.value
                         ? LightBlueButton(
                             buttonText: LocaleKeys.save.tr(),
-                            onTap: () {
+                            onTap: () async {
                               try {
-                                postService(context, state, double.parse(_amountController.text));
-                              } catch (e) {}
+                                await postService(
+                                    context, state, double.parse(_amountController.text));
+                              } catch (e) {
+                                appLogger.warning('Error in remainingTotal', e.toString());
+                              }
                             },
                           )
                         : const SizedBox(),
@@ -308,7 +311,7 @@ class ServiceFeeDialog {
           await showOrderErrorDialog(LocaleKeys.serviceFeeNotCreated.tr());
         }
       } catch (e) {
-        print('Error in postService: $e');
+        debugPrint('Error in postService: $e');
         await showOrderErrorDialog(LocaleKeys.serviceFeeNotCreated.tr());
       }
     } else {

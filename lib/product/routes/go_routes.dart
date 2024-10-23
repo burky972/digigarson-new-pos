@@ -1,8 +1,10 @@
 import 'package:a_pos_flutter/feature/auth/login/view/login_view.dart';
+import 'package:a_pos_flutter/feature/back_office/employee_information/view/employee_information_view.dart';
 import 'package:a_pos_flutter/feature/back_office/launch/view/back_office_launch_view.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/view/menu_view.dart';
 import 'package:a_pos_flutter/feature/back_office/reports/initial_report/view/initial_report_view.dart';
 import 'package:a_pos_flutter/feature/back_office/reports/sales_report/view/sales_report_view.dart';
+import 'package:a_pos_flutter/feature/back_office/reports/time_clock/view/time_clock_view.dart';
 import 'package:a_pos_flutter/feature/back_office/table_layout/view/table_layout_view.dart';
 import 'package:a_pos_flutter/feature/home/case/view/case_view.dart';
 import 'package:a_pos_flutter/feature/home/checks/view/check_view.dart';
@@ -55,18 +57,6 @@ final class AppRoute {
         builder: (context, state) => const TableLayoutView(),
       ),
 
-      /// Sales Report View
-      GoRoute(
-        path: RouteConstants.initialReport,
-        builder: (context, state) => const InitialReportView(),
-      ),
-
-      /// Sales Report View
-      GoRoute(
-        path: RouteConstants.salesReport,
-        builder: (context, state) => const SalesReportView(),
-      ),
-
       /// Table View
       GoRoute(
         path: RouteConstants.table,
@@ -83,6 +73,31 @@ final class AppRoute {
       GoRoute(
         path: RouteConstants.backOfficeLaunch,
         builder: (context, state) => const BackOfficeLaunchView(),
+      ),
+
+      /// Employee Launch View
+      GoRoute(
+        path: RouteConstants.employeeLaunchView,
+        builder: (context, state) => const EmployeeInformationView(),
+      ),
+
+      //! -******-REPORTS-******-
+      /// Sales Report View
+      GoRoute(
+        path: RouteConstants.initialReport,
+        builder: (context, state) => const InitialReportView(),
+      ),
+
+      /// Sales Report View
+      GoRoute(
+        path: RouteConstants.salesReport,
+        builder: (context, state) => const SalesReportView(),
+      ),
+
+      /// Time Clock View
+      GoRoute(
+        path: RouteConstants.timeClock,
+        builder: (context, state) => const TimeClockView(),
       ),
     ],
   );

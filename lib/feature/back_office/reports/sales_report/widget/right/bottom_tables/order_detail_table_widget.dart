@@ -39,10 +39,10 @@ class _OrderDetailTableWidget extends StatelessWidget {
                             const TableRow(
                               decoration: BoxDecoration(color: Colors.grey),
                               children: [
-                                _TableCellTitleWidget(title: 'ST'),
-                                _TableCellTitleWidget(title: 'Item'),
-                                _TableCellTitleWidget(title: 'Price'),
-                                _TableCellTitleWidget(title: 'Qty'),
+                                TableCellTitleWidget(title: 'ST'),
+                                TableCellTitleWidget(title: 'Item'),
+                                TableCellTitleWidget(title: 'Price'),
+                                TableCellTitleWidget(title: 'Qty'),
                               ],
                             ),
                             ...state.allOptions.map((option) {
