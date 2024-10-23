@@ -43,14 +43,14 @@ class _TopTableWidget extends StatelessWidget {
                         const TableRow(
                           decoration: BoxDecoration(color: Colors.grey),
                           children: [
-                            _TableCellTitleWidget(title: 'Category'),
-                            _TableCellTitleWidget(title: 'Dine-In'),
-                            _TableCellTitleWidget(title: 'Delivery'),
-                            _TableCellTitleWidget(title: 'Take Out'),
-                            _TableCellTitleWidget(title: 'Pick Up'),
-                            _TableCellTitleWidget(title: 'Q-Service'),
-                            _TableCellTitleWidget(title: 'Bar'),
-                            _TableCellTitleWidget(title: 'Grand Total'),
+                            TableCellTitleWidget(title: 'Category'),
+                            TableCellTitleWidget(title: 'Dine-In'),
+                            TableCellTitleWidget(title: 'Delivery'),
+                            TableCellTitleWidget(title: 'Take Out'),
+                            TableCellTitleWidget(title: 'Pick Up'),
+                            TableCellTitleWidget(title: 'Q-Service'),
+                            TableCellTitleWidget(title: 'Bar'),
+                            TableCellTitleWidget(title: 'Grand Total'),
                           ],
                         ),
                         ...productsToDisplay.map((product) {

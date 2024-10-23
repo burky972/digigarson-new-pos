@@ -12,4 +12,6 @@ class RouteConstants {
   static const table = '/table';
   static const check = '/check';
   static const backOfficeLaunch = '/backOfficeLaunchView';
+  static const employeeLaunchView = '/employeeLaunchView';
+  static const timeClock = '/timeClock';
 }

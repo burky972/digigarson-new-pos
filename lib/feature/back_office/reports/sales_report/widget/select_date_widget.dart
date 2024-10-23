@@ -13,6 +13,7 @@ class SelectDateWidget extends StatefulWidget {
 
   final TextEditingController startDateController;
   final TextEditingController endDateController;
+
   final bool isStartDay;
 
   @override
@@ -56,7 +57,7 @@ class _SelectDateWidgetState extends State<SelectDateWidget> {
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
+      lastDate: DateTime.now(), // can't be greater than today
     );
 
     if (picked != null) {

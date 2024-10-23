@@ -1,3 +1,4 @@
+
 {
   "error_selected": "Zorunlu alanlar seçilmedi",
   "User": "Kullanıcı",
@@ -196,7 +197,12 @@
   "receipt" : "Fiş",
   "export" : "Dışa aktar",
   "refund": "İade",
-  "search":"Ara"
-
-
+  "search":"Ara",
+  "swipeCard": "Kartı okut: ",
+  "timeIn": "Giriş Saati: ",
+  "timeOut": "Çıkış Saati: ",
+  "timeClock": "Zaman Saati",
+  "add": "Ekle",
+  "printRecord": "Kayıt Yazdır",
+  "printSummary": "Özet Yazdır"
 }

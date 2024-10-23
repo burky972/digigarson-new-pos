@@ -10,6 +10,9 @@ import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/service/o
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/cubit/product_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/service/i_product_service.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/service/product_service.dart';
+import 'package:a_pos_flutter/feature/back_office/reports/sales_report/cubit/reports_cubit.dart';
+import 'package:a_pos_flutter/feature/back_office/reports/sales_report/service/i_reports_service.dart';
+import 'package:a_pos_flutter/feature/back_office/reports/sales_report/service/reports_service.dart';
 import 'package:a_pos_flutter/feature/back_office/restaurant/cubit/restaurant_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/sections/cubit/section_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/sections/service/i_section_service.dart';
@@ -75,6 +78,7 @@ abstract final class AppContainer {
       ..registerLazySingleton<IOptionService>(() => OptionService())
       ..registerLazySingleton<ISectionService>(() => SectionService())
       ..registerLazySingleton<IExpenseService>(() => ExpenseService())
+      ..registerLazySingleton<IReportsService>(() => ReportsService(_getIt<DioClient>()))
 
       // cubit
       ..registerFactory<LoginCubit>(() => LoginCubit(_getIt<ILoginService>()))
@@ -95,7 +99,8 @@ abstract final class AppContainer {
       ..registerFactory<RestaurantCubit>(() => RestaurantCubit())
       ..registerFactory<QuickServiceCubit>(() => QuickServiceCubit())
       ..registerFactory<SectionCubit>(() => SectionCubit(_getIt<ISectionService>()))
-      ..registerFactory<ExpenseCubit>(() => ExpenseCubit(_getIt<IExpenseService>()));
+      ..registerFactory<ExpenseCubit>(() => ExpenseCubit(_getIt<IExpenseService>()))
+      ..registerFactory<ReportsCubit>(() => ReportsCubit(_getIt<IReportsService>()));
 
     // Register NetworkManager as a singleton
     _getIt.registerLazySingleton<DioClient>(

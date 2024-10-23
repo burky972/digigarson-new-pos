@@ -234,7 +234,6 @@ class OldCheckDialog {
                                 checkId: state.selectedCheck!.id.toString(),
                                 checkModel: paymentPut);
                             await ResponseActionService.getTableAndNavigate(
-                                context: context,
                                 response: return_,
                                 tableCubit: tableCubit,
                                 action: ButtonAction.changePrice);
@@ -261,11 +260,15 @@ class OldCheckDialog {
     for (var txt in amountControllers) {
       try {
         total_ += double.parse(double.parse(txt.text).toStringAsFixed(2));
-      } catch (e) {}
+      } catch (e) {
+        appLogger.warning('Error in remainingTotal', e.toString());
+      }
     }
     try {
       remaining = double.parse((total - total_).toStringAsFixed(2));
-    } catch (e) {}
+    } catch (e) {
+      appLogger.warning('Error in remainingTotal', e.toString());
+    }
     return remaining;
   }
 }

@@ -45,7 +45,11 @@ class InitialReportView extends StatelessWidget {
                           title: 'Product', icon: Icons.shopping_basket),
                       const _LeftClickableReportTitle(title: 'Inventory', icon: Icons.inventory),
                       const _LeftClickableReportTitle(title: 'Void', icon: Icons.block),
-                      const _LeftClickableReportTitle(title: 'Time Clock', icon: Icons.access_time),
+                      _LeftClickableReportTitle(
+                        title: 'Time Clock',
+                        icon: Icons.access_time,
+                        onTap: () => routeManager.push(RouteConstants.timeClock),
+                      ),
                       const SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: () {},

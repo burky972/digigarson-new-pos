@@ -39,10 +39,10 @@ class _CardSummaryTableWidget extends StatelessWidget {
                             const TableRow(
                               decoration: BoxDecoration(color: Colors.grey),
                               children: [
-                                _TableCellTitleWidget(title: 'Card'),
-                                _TableCellTitleWidget(title: 'Amount'),
-                                _TableCellTitleWidget(title: 'Tip'),
-                                _TableCellTitleWidget(title: 'Total'),
+                                TableCellTitleWidget(title: 'Card'),
+                                TableCellTitleWidget(title: 'Amount'),
+                                TableCellTitleWidget(title: 'Tip'),
+                                TableCellTitleWidget(title: 'Total'),
                               ],
                             ),
                             ...state.allOptions.map((option) {

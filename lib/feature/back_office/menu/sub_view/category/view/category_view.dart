@@ -92,36 +92,44 @@ class _MenuGroupViewState extends State<CategoryView> with AutomaticKeepAliveCli
                                             const Expanded(flex: 2, child: Text('Category Name')),
                                             Expanded(
                                               flex: 3,
-                                              child: DropdownButton<CategoryModel>(
-                                                value: state.mainCategories.firstWhere(
-                                                  (category) =>
-                                                      category.id ==
-                                                      state.selectedSubCategory?.parentCategory,
-                                                  orElse: () => CategoryModel.empty(),
-                                                ),
-                                                isExpanded: true,
-                                                items: state.mainCategories
-                                                    .map<DropdownMenuItem<CategoryModel>>(
-                                                        (CategoryModel value) {
-                                                  return DropdownMenuItem<CategoryModel>(
-                                                    value: value,
-                                                    child: Text(value.title ?? ''),
-                                                  );
-                                                }).toList(),
-                                                onChanged: (CategoryModel? newValue) {
-                                                  appLogger.info('NEW VALUE: ',
-                                                      newValue?.id.toString() ?? 'xx');
-                                                  if (newValue != null) {
-                                                    context
-                                                        .read<CategoryCubit>()
-                                                        .setSelectedCategory(newValue);
-                                                    context
-                                                        .read<CategoryCubit>()
-                                                        .updateParentCategory(newValue.id);
-                                                  }
-                                                },
-                                              ),
-                                            ),
+                                              child: state.mainCategories.isNotEmpty
+                                                  ? DropdownButton<CategoryModel>(
+                                                      value: state.mainCategories.any((category) =>
+                                                              category.id ==
+                                                              state.selectedSubCategory
+                                                                  ?.parentCategory)
+                                                          ? state.mainCategories.firstWhere(
+                                                              (category) =>
+                                                                  category.id ==
+                                                                  state.selectedSubCategory
+                                                                      ?.parentCategory,
+                                                            )
+                                                          : state.mainCategories
+                                                              .first, // Varsayılan değer olarak ilk kategori
+                                                      isExpanded: true,
+                                                      items: state.mainCategories
+                                                          .map<DropdownMenuItem<CategoryModel>>(
+                                                              (CategoryModel value) {
+                                                        return DropdownMenuItem<CategoryModel>(
+                                                          value: value,
+                                                          child: Text(value.title ?? ''),
+                                                        );
+                                                      }).toList(),
+                                                      onChanged: (CategoryModel? newValue) {
+                                                        appLogger.info('NEW VALUE: ',
+                                                            newValue?.id.toString() ?? 'xx');
+                                                        if (newValue != null) {
+                                                          context
+                                                              .read<CategoryCubit>()
+                                                              .setSelectedCategory(newValue);
+                                                          context
+                                                              .read<CategoryCubit>()
+                                                              .updateParentCategory(newValue.id);
+                                                        }
+                                                      },
+                                                    )
+                                                  : Container(),
+                                            )
                                           ],
                                         ),
                                       ),

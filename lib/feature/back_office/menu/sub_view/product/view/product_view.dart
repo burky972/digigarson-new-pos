@@ -11,6 +11,7 @@ import 'package:a_pos_flutter/product/responsive/paddings.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
 import 'package:a_pos_flutter/product/widget/button/light_blue_button.dart';
 import 'package:a_pos_flutter/product/widget/cached_network_image/cached_network_image.dart';
+import 'package:a_pos_flutter/product/widget/table_cell/table_cell_widget.dart';
 import 'package:a_pos_flutter/product/widget/textfield/custom_border_all_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -74,20 +75,11 @@ class _MiddleTableCellTextWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TableRowInkWell(
+    return MiddleTableCellTextWidget(
+      text: text,
       onTap: () => context
           .read<ProductCubit>()
           .setSelectedProduct(product, product.prices?.first ?? const PriceModel()),
-      child: Padding(
-        padding: const AppPadding.minAll(),
-        child: Center(
-          child: Text(
-            text,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ),
     );
   }
 }

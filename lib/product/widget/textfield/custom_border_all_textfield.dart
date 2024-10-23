@@ -9,10 +9,12 @@ class CustomBorderAllTextfield extends StatelessWidget {
     required this.controller,
     required this.onChanged,
     this.isReadOnly = false,
+    this.isObscure = false,
   });
   final TextEditingController controller;
   final void Function(String)? onChanged;
   final bool isReadOnly;
+  final bool isObscure;
   @override
   Widget build(BuildContext context) {
     return TextField(
@@ -20,6 +22,7 @@ class CustomBorderAllTextfield extends StatelessWidget {
       style: CustomFontStyle.formsTextStyle.copyWith(
         fontSize: context.dynamicWidth(0.008),
       ),
+      obscureText: isObscure,
       controller: controller,
       onChanged: onChanged,
       decoration: const InputDecoration(

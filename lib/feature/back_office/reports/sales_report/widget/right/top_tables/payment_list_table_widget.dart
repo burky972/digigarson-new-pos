@@ -39,12 +39,12 @@ class _PaymentListTableWidget extends StatelessWidget {
                             const TableRow(
                               decoration: BoxDecoration(color: Colors.grey),
                               children: [
-                                _TableCellTitleWidget(title: 'Order#'),
-                                _TableCellTitleWidget(title: 'Table'),
-                                _TableCellTitleWidget(title: 'Type'),
-                                _TableCellTitleWidget(title: 'Paid'),
-                                _TableCellTitleWidget(title: 'Total'),
-                                _TableCellTitleWidget(title: 'Time'),
+                                TableCellTitleWidget(title: 'Order#'),
+                                TableCellTitleWidget(title: 'Table'),
+                                TableCellTitleWidget(title: 'Type'),
+                                TableCellTitleWidget(title: 'Paid'),
+                                TableCellTitleWidget(title: 'Total'),
+                                TableCellTitleWidget(title: 'Time'),
                               ],
                             ),
                             ...state.allOptions.map((option) {

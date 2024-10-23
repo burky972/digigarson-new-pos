@@ -204,7 +204,7 @@ class _ProductListWidget extends StatelessWidget {
                                         border: BorderConstants.borderAllSmall),
                                     child: GestureDetector(
                                       onTap: () {
-                                        debugPrint('onProductTap initilaized!!!');
+                                        debugPrint('onProductTap initialized!!!');
                                         onProductTap(context, product, state,
                                             Random().nextInt(10000).toString());
                                       },
@@ -310,7 +310,6 @@ Future<void> handleButtonAction(
         bool isClosed = await tableCubit.closeTable(state.selectedTable!.id!);
         if (!context.mounted) return;
         ResponseActionService.getTableAndNavigate(
-          context: context,
           response: isClosed,
           tableCubit: tableCubit,
           action: ButtonAction.closeTable,
@@ -339,7 +338,6 @@ Future<void> handleButtonAction(
       final response = await context.read<TableCubit>().postTableNewOrder(context);
       if (!context.mounted) return;
       ResponseActionService.getTableAndNavigate(
-        context: context,
         response: response,
         tableCubit: tableCubit,
         action: ButtonAction.newSale,

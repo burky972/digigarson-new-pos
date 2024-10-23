@@ -203,9 +203,9 @@ class _MoveTableButtons extends StatelessWidget {
                       ? null
                       : () async {
                           if (isTransfer) {
-                            await _transferTable(orderCubit, state, tableCubit, context);
+                            await _transferTable(orderCubit, state, tableCubit);
                           } else {
-                            await _moveProduct(orderCubit, state, tableCubit, context);
+                            await _moveProduct(orderCubit, state, tableCubit);
                           }
                         },
                   child: const LightBlueButton(buttonText: 'OK')),
@@ -222,14 +222,12 @@ class _MoveTableButtons extends StatelessWidget {
   }
 
   /// Move Product Function
-  Future<void> _moveProduct(
-      OrderCubit orderCubit, TableState state, TableCubit tableCubit, BuildContext context) async {
+  Future<void> _moveProduct(OrderCubit orderCubit, TableState state, TableCubit tableCubit) async {
     final response = await orderCubit.moveProducts(
         tableId: state.selectedMoveTable!.id!,
         targetTableId: state.selectedTable!.id!,
         moveProduct: MoveProduct(orderIds: [state.newOrderProduct!.id!]));
     await ResponseActionService.getTableAndNavigate(
-      context: context,
       response: response,
       tableCubit: tableCubit,
       action: ButtonAction.moveProduct,
@@ -238,7 +236,7 @@ class _MoveTableButtons extends StatelessWidget {
 
   /// Transfer Table Function
   Future<void> _transferTable(
-      OrderCubit orderCubit, TableState state, TableCubit tableCubit, BuildContext context) async {
+      OrderCubit orderCubit, TableState state, TableCubit tableCubit) async {
     final response = await orderCubit.transferTable(
         tableId: state.selectedMoveTable!.id!,
         targetTableId: state.selectedTable!.id!,
@@ -247,7 +245,6 @@ class _MoveTableButtons extends StatelessWidget {
                 .map((e) => e!.id.toString())
                 .toList()));
     await ResponseActionService.getTableAndNavigate(
-      context: context,
       response: response,
       tableCubit: tableCubit,
       action: ButtonAction.moveTable,

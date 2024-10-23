@@ -14,7 +14,7 @@ class LoggingInterceptor extends Interceptor {
   @override
   Future<void> onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
     APosLogger.instance.info('onRequest: ',
-        'method: ${options.method}, baseUrl:${options.baseUrl.toString()}, path:${options.path}');
+        'method: ${options.method}, baseUrl:${options.baseUrl.toString()}, path:${options.path} -> queryParams: ${options.queryParameters.toString()}');
     APosLogger.instance.info('Headers: ', options.headers.toString());
     APosLogger.instance.info('onRequest data: ', options.data.toString());
     handler.next(options); // Continue the request

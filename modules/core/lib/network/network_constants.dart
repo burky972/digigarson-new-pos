@@ -43,4 +43,8 @@ class NetworkConstants {
   static const String cover = '/pos/cover';
   static const String expense = 'pos/expenses';
   static const String specialItem = 'pos/specialproduct';
+
+  /// reports
+  static const String reportProduct = '/pos/reports/product';
+  static const String reportCategory = '/pos/reports/category';
 }
