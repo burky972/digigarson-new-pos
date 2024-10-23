@@ -130,7 +130,8 @@ class _TableHeaderWidgetState extends State<TableHeaderWidget> {
                   context.read<TableCubit>().clearNewOrderProducts();
                   context.read<TableCubit>().setIsQuickService(false);
                   context.read<TableCubit>().setSelectedEditProduct(null);
-                  routeManager.go(RouteConstants.main);
+                  context.read<TableCubit>().getTable();
+                  routeManager.replace(RouteConstants.main);
                 },
               ),
             ]))
