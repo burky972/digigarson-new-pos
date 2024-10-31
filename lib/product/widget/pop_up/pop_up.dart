@@ -62,9 +62,12 @@ showOrderErrorDialog(String title, {bool? secondClose}) {
 }
 
 //! pop op without closing depends on the duration- only ok button on center bottom
-showOrderDialogWithOutCustomDuration(BuildContext context, String title, {DialogType? type}) {
+showOrderDialogWithOutCustomDuration(BuildContext context, String title,
+    {DialogType? type, void Function()? onPressed}) {
   AwesomeDialog(
-    btnOk: TextButton(onPressed: () => routeManager.pop(), child: const Text('Ok')),
+    btnOk: TextButton(
+        onPressed: () => onPressed != null ? onPressed() : routeManager.pop(),
+        child: const Text('Ok')),
     width: 550,
     context: context,
     animType: AnimType.leftSlide,

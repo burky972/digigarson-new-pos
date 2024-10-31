@@ -41,8 +41,20 @@ class InitialReportView extends StatelessWidget {
                         icon: Icons.bar_chart,
                         onTap: () => routeManager.push(RouteConstants.salesReport),
                       ),
-                      const _LeftClickableReportTitle(
-                          title: 'Product', icon: Icons.shopping_basket),
+                      _LeftClickableReportTitle(
+                        title: 'Product',
+                        icon: Icons.shopping_basket,
+                        onTap: () => routeManager.push(
+                          RouteConstants.productReport,
+                        ),
+                      ),
+                      _LeftClickableReportTitle(
+                        title: 'Category',
+                        icon: Icons.shopping_basket,
+                        onTap: () => routeManager.push(
+                          RouteConstants.categoryReport,
+                        ),
+                      ),
                       const _LeftClickableReportTitle(title: 'Inventory', icon: Icons.inventory),
                       const _LeftClickableReportTitle(title: 'Void', icon: Icons.block),
                       _LeftClickableReportTitle(

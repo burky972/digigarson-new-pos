@@ -209,7 +209,7 @@ class TableModel extends BaseModel<TableModel> {
         children: [
           ColorFiltered(
             colorFilter: ColorFilter.mode(
-              customerCount == null ? Colors.blue : Colors.red,
+              (customerCount == null || customerCount == 0) ? Colors.blue : Colors.red,
               BlendMode.srcIn,
             ),
             child: assetWidget,

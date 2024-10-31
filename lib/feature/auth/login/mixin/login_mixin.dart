@@ -52,7 +52,7 @@ mixin LoginMixin on State<LoginBodyWidget> {
     passwordController = TextEditingController();
     _updateTime();
     timer = Timer.periodic(const Duration(seconds: 1), (Timer t) => _updateTime());
-    NetworkInfo().listen(context); // listen for network change
+    NetworkInfo().listen(context);
     branchCustomIdController.text = context.read<LoginCubit>().getUserEmail();
   }
 
@@ -75,7 +75,7 @@ mixin LoginMixin on State<LoginBodyWidget> {
         } catch (e) {
           port++; // Try the next port
           if (port > 65535) {
-            appLogger.warning('load func SignIn Widget', 'Hata: port bulunamadı');
+            appLogger.warning('load func SignIn Widget', 'error: port bulunamadı');
             throw Exception('No available ports');
           }
         }
@@ -86,11 +86,11 @@ mixin LoginMixin on State<LoginBodyWidget> {
               appLogger.info('load func SignIn Widget', message);
             },
             onError: (error) {
-              appLogger.error('load func SignIn Widget', 'Hata: $error');
+              appLogger.error('load func SignIn Widget', 'error: $error');
               socket.destroy();
             },
             onDone: () {
-              appLogger.error('load func SignIn Widget', 'Bağlantı: kesildi ');
+              appLogger.error('load func SignIn Widget', 'No connection from server');
               socket.destroy();
             },
             cancelOnError: true,
@@ -98,7 +98,7 @@ mixin LoginMixin on State<LoginBodyWidget> {
         }
       }
     } catch (e) {
-      appLogger.error('load func SignIn Widget', 'Sunucu başlatılamadı: $e');
+      appLogger.error('load func SignIn Widget', 'Server could not be started: $e');
     }
   }
 

@@ -44,7 +44,7 @@ class TableItem {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          ColoredBox(color: Colors.red, child: assetWidget),
+          ColoredBox(color: Colors.transparent, child: assetWidget),
           Positioned(
               child: Text(name ?? '',
                   style: CustomFontStyle.generalTextStyle

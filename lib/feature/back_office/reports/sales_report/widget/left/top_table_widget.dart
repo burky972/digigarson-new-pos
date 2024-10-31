@@ -8,18 +8,34 @@ class _TopTableWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final ScrollController verticalScrollController = ScrollController();
     final ScrollController horizontalScrollController = ScrollController();
-    return BlocBuilder<ProductCubit, ProductState>(
+    // Category list ve karşılık gelen model field'ları
+    final List<MapEntry<String, String>> categoryMap = [
+      const MapEntry('Guests', 'guests'),
+      const MapEntry('Type', 'type'),
+      const MapEntry('Quantity', 'quantity'),
+      const MapEntry('Tax', 'tax'),
+      const MapEntry('Discount', 'discount'),
+      const MapEntry('Total Service Fee', 'totalServiceFee'),
+      const MapEntry('Tip', 'tip'),
+      const MapEntry('Cash', 'cash'),
+      const MapEntry('Credit Card', 'creditCard'),
+      const MapEntry('Sub Total', 'subTotal'),
+      const MapEntry('Total', 'total'),
+    ];
+    return BlocBuilder<ReportsCubit, ReportsState>(
       builder: (context, state) {
-        List<ProductModel>? productsToDisplay = [];
-        if (context.read<CategoryCubit>().selectedSubCategory?.id != null) {
-          productsToDisplay =
-              state.categorizedProducts?[context.read<CategoryCubit>().selectedSubCategory?.id] ??
-                  [];
+        if (state.status == ReportStatus.loading) {
+          return SizedBox(
+              width: context.dynamicWidth(0.7),
+              height: context.dynamicHeight(0.7),
+              child: const Center(child: CircularProgressIndicator()));
         }
+        ReportsOrderTypeModel orderTypeReports =
+            state.orderTypeReports ?? ReportsOrderTypeModel.empty();
+
         return Container(
-          padding: const EdgeInsets.only(left: 8.0),
-          width: context.dynamicWidth(0.75),
-          height: context.dynamicHeight(0.5),
+          width: context.dynamicWidth(0.7),
+          height: context.dynamicHeight(0.7),
           decoration: BoxDecoration(border: Border.all(color: Colors.black)),
           child: Scrollbar(
             controller: verticalScrollController,
@@ -33,9 +49,9 @@ class _TopTableWidget extends StatelessWidget {
                 child: SingleChildScrollView(
                   controller: horizontalScrollController,
                   scrollDirection: Axis.horizontal,
-                  child: SizedBox(
-                    width: context.dynamicWidth(0.75),
-                    height: context.dynamicHeight(0.5),
+                  child: Container(
+                    constraints: BoxConstraints(minWidth: context.dynamicWidth(0.75)),
+                    height: context.dynamicHeight(0.75),
                     child: Table(
                       border: TableBorder.all(),
                       defaultColumnWidth: const IntrinsicColumnWidth(),
@@ -47,64 +63,31 @@ class _TopTableWidget extends StatelessWidget {
                             TableCellTitleWidget(title: 'Dine-In'),
                             TableCellTitleWidget(title: 'Delivery'),
                             TableCellTitleWidget(title: 'Take Out'),
-                            TableCellTitleWidget(title: 'Pick Up'),
                             TableCellTitleWidget(title: 'Q-Service'),
                             TableCellTitleWidget(title: 'Bar'),
                             TableCellTitleWidget(title: 'Grand Total'),
                           ],
                         ),
-                        ...productsToDisplay.map((product) {
+                        ...categoryMap.map((category) {
                           return TableRow(
-                            decoration: BoxDecoration(
-                              color: product.id == state.selectedProduct?.id
-                                  ? context.colorScheme.tertiary
-                                  : null,
-                            ),
                             children: [
-                              _MiddleTableCellTextWidget(
-                                product: product,
-                                text: product.title ?? '',
+                              // Kategori ismi
+                              _MiddleTableCellOrderTextWidget(
+                                orderTypeModel: orderTypeReports.dineIn ?? OrderTypeModel.empty(),
+                                text: category.key,
                               ),
-                              _MiddleTableCellTextWidget(
-                                product: product,
-                                text: product.prices!.isNotEmpty
-                                    ? product.prices!.first.price.toString()
-                                    : '',
-                              ),
-                              _MiddleTableCellTextWidget(
-                                product: product,
-                                text: product.prices!.isNotEmpty
-                                    ? product.prices!.first.amount.toString()
-                                    : '',
-                              ),
-                              _MiddleTableCellTextWidget(
-                                product: product,
-                                text: product.prices!.isNotEmpty
-                                    ? product.prices!.first.amount.toString()
-                                    : '',
-                              ),
-                              _MiddleTableCellTextWidget(
-                                product: product,
-                                text: product.prices!.isNotEmpty
-                                    ? product.prices!.first.amount.toString()
-                                    : '',
-                              ),
-                              _MiddleTableCellTextWidget(
-                                product: product,
-                                text: product.prices!.isNotEmpty
-                                    ? product.prices!.first.amount.toString()
-                                    : '',
-                              ),
-                              _MiddleTableCellTextWidget(
-                                product: product,
-                                text: product.prices!.isNotEmpty
-                                    ? product.prices!.first.vatRate.toString()
-                                    : '',
-                              ),
-                              _MiddleTableCellTextWidget(
-                                product: product,
-                                text: '0',
-                              ),
+                              // Dine-In
+                              _buildTableCell(orderTypeReports.dineIn, category.value),
+                              // Delivery
+                              _buildTableCell(orderTypeReports.delivery, category.value),
+                              // Take Out
+                              _buildTableCell(orderTypeReports.takeOut, category.value),
+                              // Quick Service
+                              _buildTableCell(orderTypeReports.quickService, category.value),
+                              // Bar
+                              _buildTableCell(orderTypeReports.bar, category.value),
+                              // Grand Total
+                              _buildTableCell(orderTypeReports.grandTotal, category.value),
                             ],
                           );
                         }),
@@ -118,5 +101,47 @@ class _TopTableWidget extends StatelessWidget {
         );
       },
     );
+  }
+
+  Widget _buildTableCell(OrderTypeModel? model, String field) {
+    String value = '0';
+    if (model != null) {
+      switch (field) {
+        case 'guests':
+          value = model.guests?.toString() ?? '0';
+          break;
+        case 'type':
+          value = model.type?.toString() ?? '0';
+          break;
+        case 'quantity':
+          value = model.quantity?.toString() ?? '0';
+          break;
+        case 'tax':
+          value = (model.tax?.toStringAsFixed(2) ?? '0.00');
+          break;
+        case 'discount':
+          value = (model.discount?.toStringAsFixed(2) ?? '0.00');
+          break;
+        case 'totalServiceFee':
+          value = (model.totalServiceFee?.toStringAsFixed(2) ?? '0.00');
+          break;
+        case 'tip':
+          value = (model.tip?.toStringAsFixed(2) ?? '0.00');
+          break;
+        case 'cash':
+          value = (model.cash?.toStringAsFixed(2) ?? '0.00');
+          break;
+        case 'creditCard':
+          value = (model.creditCard?.toStringAsFixed(2) ?? '0.00');
+          break;
+        case 'subTotal':
+          value = (model.subTotal?.toStringAsFixed(2) ?? '0.00');
+          break;
+        case 'total':
+          value = (model.total?.toStringAsFixed(2) ?? '0.00');
+          break;
+      }
+    }
+    return _TableCellTextWidget(text: value);
   }
 }

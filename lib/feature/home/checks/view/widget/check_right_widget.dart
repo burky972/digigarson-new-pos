@@ -74,56 +74,132 @@ class _CheckRightWidgetState extends State<CheckRightWidget> with _CheckRightMix
                     ),
                   ),
                   Expanded(
-                    child: Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: BlocSelector<CheckCubit, CheckState, SingleCheckModel?>(
-                          selector: (state) => state.selectedCheck,
-                          builder: (context, selectedCheck) {
-                            return ListView(
-                              scrollDirection: Axis.vertical,
-                              children: List.generate(
-                                selectedCheck != null
-                                    ? selectedCheck.orders?.first.products.length ?? 0
-                                    : 0,
-                                (rowIndex) {
-                                  List<Product?> product =
+                      child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: BlocSelector<CheckCubit, CheckState, SingleCheckModel?>(
+                            selector: (state) => state.selectedCheck,
+                            builder: (context, selectedCheck) {
+                              return ListView.builder(
+                                scrollDirection: Axis.vertical,
+                                itemCount: selectedCheck?.orders?.first.products.length ?? 0,
+                                itemBuilder: (context, rowIndex) {
+                                  List<Product?> products =
                                       selectedCheck!.orders?.first.products ?? [];
-                                  List<String> data = [
-                                    (product[rowIndex]?.cancelStatus?.isCancelled ?? false
-                                        ? '0'
-                                        : ''),
-                                    product[rowIndex]?.productName.toString() ?? '',
-                                    product[rowIndex]?.priceAfterTax.toString() ?? '',
+                                  Product? product = products[rowIndex];
+
+                                  // Main product data
+                                  List<String> productData = [
+                                    (product?.cancelStatus?.isCancelled ?? false ? '0' : ''),
+                                    product?.productName.toString() ?? '',
+                                    product?.price.toString() ?? '',
                                     DoubleConvert()
-                                        .formatDouble(product[rowIndex]?.quantity?.toDouble() ?? 0)
+                                        .formatDouble(product?.quantity?.toDouble() ?? 0)
                                         .toString()
                                   ];
-                                  return Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                    children: List.generate(
-                                      headTitle.length,
-                                      (index) => Container(
-                                        padding: const EdgeInsets.only(left: 3, right: 3),
-                                        width: context.dynamicWidth(headTitle[index].width),
-                                        child: index == 0
-                                            ? Icon(
-                                                data[index] == "0"
-                                                    ? Icons.cancel_rounded
-                                                    : Icons.check,
-                                                color:
-                                                    data[index] == "0" ? Colors.red : Colors.green)
-                                            : Text(data[index],
-                                                style: CustomFontStyle.menuTextStyle
-                                                    .copyWith(fontSize: 16)),
+
+                                  return Column(
+                                    children: [
+                                      // Main product row
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                        children: List.generate(
+                                          headTitle.length,
+                                          (index) => Container(
+                                            padding: const EdgeInsets.only(left: 3, right: 3),
+                                            width: context.dynamicWidth(headTitle[index].width),
+                                            child: index == 0
+                                                ? Icon(
+                                                    productData[index] == "0"
+                                                        ? Icons.cancel_rounded
+                                                        : Icons.check,
+                                                    color: productData[index] == "0"
+                                                        ? Colors.red
+                                                        : Colors.green)
+                                                : Text(
+                                                    productData[index],
+                                                    style: CustomFontStyle.menuTextStyle
+                                                        .copyWith(fontSize: 16),
+                                                  ),
+                                          ),
+                                        ),
                                       ),
-                                    ),
+                                      // Options and items if they exist
+                                      if (product?.options != null && product!.options.isNotEmpty)
+                                        ...product.options.map((option) {
+                                          if (option.items.isNotEmpty) {
+                                            return Column(
+                                              children: option.items.map((item) {
+                                                return Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(left: 40.0, right: 10),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.spaceEvenly,
+                                                    children: [
+                                                      Container(
+                                                        padding: const EdgeInsets.only(
+                                                            left: 3, right: 3),
+                                                        width: context
+                                                            .dynamicWidth(headTitle[0].width),
+                                                        child:
+                                                            const SizedBox(), // Empty space for alignment
+                                                      ),
+                                                      Container(
+                                                        padding: const EdgeInsets.only(
+                                                            left: 3, right: 3),
+                                                        width: context
+                                                            .dynamicWidth(headTitle[1].width),
+                                                        child: Text(
+                                                          "++ ${item.itemName}",
+                                                          style: CustomFontStyle.menuTextStyle
+                                                              .copyWith(
+                                                            fontSize: 14,
+                                                            color: Colors.grey,
+                                                            fontWeight: FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        padding: const EdgeInsets.only(
+                                                            left: 3, right: 3),
+                                                        width: context
+                                                            .dynamicWidth(headTitle[2].width),
+                                                        child: Text(
+                                                          "${item.price}",
+                                                          style: CustomFontStyle.menuTextStyle
+                                                              .copyWith(
+                                                            fontSize: 14,
+                                                            color: Colors.grey,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        padding: const EdgeInsets.only(
+                                                            left: 3, right: 3),
+                                                        width: context
+                                                            .dynamicWidth(headTitle[3].width),
+                                                        child: const Text(
+                                                          "1",
+                                                          style: TextStyle(
+                                                            fontSize: 14,
+                                                            color: Colors.grey,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              }).toList(),
+                                            );
+                                          }
+                                          return const SizedBox.shrink();
+                                        }),
+                                    ],
                                   );
                                 },
-                              ),
-                            );
-                          },
-                        )),
-                  ),
+                              );
+                            },
+                          ))),
                 ],
               ),
             ),

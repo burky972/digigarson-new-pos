@@ -1,33 +1,21 @@
 import 'package:a_pos_flutter/feature/auth/login/cubit/login_cubit.dart';
-import 'package:a_pos_flutter/feature/auth/login/service/i_login_service.dart';
+import 'package:a_pos_flutter/feature/back_office/employee_information/sub_views/employee/cubit/employee_cubit.dart';
+import 'package:a_pos_flutter/feature/back_office/employee_information/sub_views/roles/cubit/roles_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/cubit/category_cubit.dart';
-import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/service/i_category_service.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/cubit/option_cubit.dart';
-import 'package:a_pos_flutter/feature/back_office/menu/sub_view/option/service/i_option_service.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/cubit/product_cubit.dart';
-import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/service/i_product_service.dart';
 import 'package:a_pos_flutter/feature/back_office/reports/sales_report/cubit/reports_cubit.dart';
-import 'package:a_pos_flutter/feature/back_office/reports/sales_report/service/i_reports_service.dart';
 import 'package:a_pos_flutter/feature/back_office/restaurant/cubit/restaurant_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/sections/cubit/section_cubit.dart';
-import 'package:a_pos_flutter/feature/back_office/sections/service/i_section_service.dart';
 import 'package:a_pos_flutter/feature/back_office/table_layout/utility_item/cubit/utility_item_cubit.dart';
-import 'package:a_pos_flutter/feature/back_office/table_layout/utility_item/service/i_utility_item_service.dart';
 import 'package:a_pos_flutter/feature/home/branch/cubit/branch_cubit.dart';
-import 'package:a_pos_flutter/feature/home/branch/service/i_branch_service.dart';
 import 'package:a_pos_flutter/feature/home/case/cubit/case_cubit.dart';
-import 'package:a_pos_flutter/feature/home/case/service/i_case_service.dart';
 import 'package:a_pos_flutter/feature/home/checks/cubit/check_cubit.dart';
-import 'package:a_pos_flutter/feature/home/checks/service/i_check_service.dart';
 import 'package:a_pos_flutter/feature/home/expense/cubit/expense_cubit.dart';
-import 'package:a_pos_flutter/feature/home/expense/service/i_expense_service.dart';
 import 'package:a_pos_flutter/feature/home/note_serve_payment_cancel_reason/cubit/note_cubit.dart';
-import 'package:a_pos_flutter/feature/home/note_serve_payment_cancel_reason/service/i_note_service.dart';
 import 'package:a_pos_flutter/feature/home/order/cubit/order_cubit.dart';
-import 'package:a_pos_flutter/feature/home/order/service/i_order_service.dart';
 import 'package:a_pos_flutter/feature/home/printer/cubit/printer_cubit.dart';
 import 'package:a_pos_flutter/feature/home/table/cubit/table_cubit.dart';
-import 'package:a_pos_flutter/feature/home/table/service/i_table_service.dart';
 import 'package:a_pos_flutter/product/global/cubit/global_cubit.dart';
 import 'package:a_pos_flutter/product/global/cubit/quick_service/quick_service_cubit.dart';
 import 'package:core/cache/shared_manager.dart';
@@ -45,22 +33,23 @@ final class AppContainerItems {
   static RouteManager get routeManager => AppContainer.read<RouteManager>();
   static DioClient get dioClient => AppContainer.read<DioClient>();
 
-  ///getter for each AppContainer service method
-  static ILoginService get loginService => AppContainer.read<ILoginService>();
-  static ICaseService get caseService => AppContainer.read<ICaseService>();
-  static IBranchService get branchService => AppContainer.read<IBranchService>();
-  static INoteServePaymentCancelReasonService get noteService =>
-      AppContainer.read<INoteServePaymentCancelReasonService>();
-  static ICheckService get checkService => AppContainer.read<ICheckService>();
-  static ITableService get tableService => AppContainer.read<ITableService>();
-  static IUtilityItemService get utilityItemService => AppContainer.read<IUtilityItemService>();
-  static IOrderService get orderService => AppContainer.read<IOrderService>();
-  static ICategoryService get categoryService => AppContainer.read<ICategoryService>();
-  static IProductService get productService => AppContainer.read<IProductService>();
-  static IOptionService get optionService => AppContainer.read<IOptionService>();
-  static ISectionService get sectionService => AppContainer.read<ISectionService>();
-  static IExpenseService get expenseService => AppContainer.read<IExpenseService>();
-  static IReportsService get reportsService => AppContainer.read<IReportsService>();
+  //! getter for each AppContainer service method -> NOT USING ANYWHERE
+  // static ILoginService get loginService => AppContainer.read<ILoginService>();
+  // static ICaseService get caseService => AppContainer.read<ICaseService>();
+  // static IBranchService get branchService => AppContainer.read<IBranchService>();
+  // static INoteServePaymentCancelReasonService get noteService =>
+  //     AppContainer.read<INoteServePaymentCancelReasonService>();
+  // static ICheckService get checkService => AppContainer.read<ICheckService>();
+  // static ITableService get tableService => AppContainer.read<ITableService>();
+  // static IUtilityItemService get utilityItemService => AppContainer.read<IUtilityItemService>();
+  // static IOrderService get orderService => AppContainer.read<IOrderService>();
+  // static ICategoryService get categoryService => AppContainer.read<ICategoryService>();
+  // static IProductService get productService => AppContainer.read<IProductService>();
+  // static IOptionService get optionService => AppContainer.read<IOptionService>();
+  // static ISectionService get sectionService => AppContainer.read<ISectionService>();
+  // static IExpenseService get expenseService => AppContainer.read<IExpenseService>();
+  // static IReportsService get reportsService => AppContainer.read<IReportsService>();
+  // static IRolesService get rolesService => AppContainer.read<IRolesService>();
 
   /// getter for each AppContainer Cubit method
   static LoginCubit get loginCubit => AppContainer.read<LoginCubit>();
@@ -82,4 +71,6 @@ final class AppContainerItems {
   static SectionCubit get sectionCubit => AppContainer.read<SectionCubit>();
   static ExpenseCubit get expenseCubit => AppContainer.read<ExpenseCubit>();
   static ReportsCubit get reportsCubit => AppContainer.read<ReportsCubit>();
+  static RolesCubit get rolesCubit => AppContainer.read<RolesCubit>();
+  static EmployeeCubit get employeeCubit => AppContainer.read<EmployeeCubit>();
 }

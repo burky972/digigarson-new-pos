@@ -12,7 +12,6 @@ import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
 import 'package:a_pos_flutter/product/global/cubit/global_cubit.dart';
 import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/routes/route_constants.dart';
-import 'package:a_pos_flutter/product/widget/dialog/edit_customer_count_dialog.dart';
 import 'package:a_pos_flutter/product/widget/dialog/set_initial_customer_count_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:a_pos_flutter/feature/back_office/table_layout/model/table_layout_model.dart';
@@ -150,7 +149,7 @@ class _MainSavedTableViewState extends State<MainSavedTableView> with TickerProv
                       },
                       child: DecoratedBox(
                         decoration: BoxDecoration(
-                            color: context.colorScheme.tertiary,
+                            color: context.colorScheme.errorContainer,
                             borderRadius: BorderRadius.circular(8.0)),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,

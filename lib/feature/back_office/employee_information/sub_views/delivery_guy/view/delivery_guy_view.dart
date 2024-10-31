@@ -1,7 +1,6 @@
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/cubit/category_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/cubit/product_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/product/model/product_model.dart';
-import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
 import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
@@ -81,74 +80,13 @@ class _TopTableWidget extends StatelessWidget {
                           decoration: BoxDecoration(color: Colors.grey),
                           children: tableCellTitleList,
                         ),
-                        ...productsToDisplay.map((product) {
-                          return TableRow(
-                            decoration: BoxDecoration(
-                              color: product.id == state.selectedProduct?.id
-                                  ? context.colorScheme.tertiary
-                                  : null,
-                            ),
-                            children: [
-                              MiddleTableCellTextWidget(
-                                onTap: () => context.read<ProductCubit>().setSelectedProduct(
-                                    product, product.prices?.first ?? const PriceModel()),
-                                text: product.title ?? '',
-                              ),
-                              MiddleTableCellTextWidget(
-                                onTap: () => context.read<ProductCubit>().setSelectedProduct(
-                                    product, product.prices?.first ?? const PriceModel()),
-                                text: product.prices!.isNotEmpty
-                                    ? product.prices!.first.price.toString()
-                                    : '',
-                              ),
-                              MiddleTableCellTextWidget(
-                                onTap: () => context.read<ProductCubit>().setSelectedProduct(
-                                    product, product.prices?.first ?? const PriceModel()),
-                                text: product.prices!.isNotEmpty
-                                    ? product.prices!.first.amount.toString()
-                                    : '',
-                              ),
-                              MiddleTableCellTextWidget(
-                                onTap: () => context.read<ProductCubit>().setSelectedProduct(
-                                    product, product.prices?.first ?? const PriceModel()),
-                                text: product.prices!.isNotEmpty
-                                    ? product.prices!.first.amount.toString()
-                                    : '',
-                              ),
-                              MiddleTableCellTextWidget(
-                                onTap: () => context.read<ProductCubit>().setSelectedProduct(
-                                    product, product.prices?.first ?? const PriceModel()),
-                                text: product.prices!.isNotEmpty
-                                    ? product.prices!.first.amount.toString()
-                                    : '',
-                              ),
-                              MiddleTableCellTextWidget(
-                                onTap: () => context.read<ProductCubit>().setSelectedProduct(
-                                    product, product.prices?.first ?? const PriceModel()),
-                                text: product.prices!.isNotEmpty
-                                    ? product.prices!.first.amount.toString()
-                                    : '',
-                              ),
-                              MiddleTableCellTextWidget(
-                                onTap: () => context.read<ProductCubit>().setSelectedProduct(
-                                    product, product.prices?.first ?? const PriceModel()),
-                                text: product.prices!.isNotEmpty
-                                    ? product.prices!.first.vatRate.toString()
-                                    : '',
-                              ),
-                              MiddleTableCellTextWidget(
-                                onTap: () => context.read<ProductCubit>().setSelectedProduct(
-                                    product, product.prices?.first ?? const PriceModel()),
-                                text: '0',
-                              ),
-                              MiddleTableCellTextWidget(
-                                onTap: () => context.read<ProductCubit>().setSelectedProduct(
-                                    product, product.prices?.first ?? const PriceModel()),
-                                text: '0',
-                              ),
-                            ],
+                        TableRow(
+                            children: List.generate(9, (index) {
+                          return MiddleTableCellTextWidget(
+                            onTap: () {},
+                            text: '--',
                           );
-                        }),
+                        }))
                       ],
                     ),
                   ),

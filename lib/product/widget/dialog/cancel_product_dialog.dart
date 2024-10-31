@@ -160,8 +160,7 @@ class CancelProductDialog {
               BlocBuilder<TableCubit, TableState>(
                 builder: (context, state) {
                   return LightBlueButton(
-                      buttonText: LocaleKeys.voidText.tr(),
-                      onTap: () => _handleSave(context, state));
+                      buttonText: LocaleKeys.save.tr(), onTap: () => _handleSave(context, state));
                 },
               ),
               LightBlueButton(

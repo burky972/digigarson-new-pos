@@ -6,4 +6,8 @@ abstract class IReportsCubit extends BaseCubit<ReportsState> {
   IReportsCubit(super.initialState);
   Future<bool> getProductReports(ReportsRequestModel requestModel);
   Future<bool> getCategoryReports(ReportsRequestModel requestModel);
+  Future<bool> getOrderTypeReports(ReportsRequestModel requestModel);
+  Future<bool> getExpenseReports(ReportsRequestModel requestModel);
+  Future<bool> getCancelReports(ReportsRequestModel requestModel);
+  Future<bool> getWaiterReports(ReportsRequestModel requestModel);
 }

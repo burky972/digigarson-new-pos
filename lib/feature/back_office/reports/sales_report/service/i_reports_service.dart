@@ -9,4 +9,17 @@ abstract class IReportsService {
   BaseResponseData<BaseResponseModel> getCategoryReports({
     required ReportsRequestModel requestReportModel,
   });
+
+  BaseResponseData<BaseResponseModel> getOrderTypeReports({
+    required ReportsRequestModel requestReportModel,
+  });
+  BaseResponseData<BaseResponseModel> getExpenseReports({
+    required ReportsRequestModel requestReportModel,
+  });
+  BaseResponseData<BaseResponseModel> getCancelReports({
+    required ReportsRequestModel requestReportModel,
+  });
+  BaseResponseData<BaseResponseModel> getWaiterReports({
+    required ReportsRequestModel requestReportModel,
+  });
 }

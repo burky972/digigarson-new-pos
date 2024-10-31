@@ -87,7 +87,10 @@ class _TableHeaderWidgetState extends State<TableHeaderWidget> {
                     _TopRichTextWidget(
                         leftText: 'Seat ',
                         rightText: context.read<GlobalCubit>().selectedTableName),
-                    const _TopRichTextWidget(leftText: 'Guests', rightText: ''),
+                    _TopRichTextWidget(
+                        leftText: 'Guests',
+                        rightText:
+                            '${context.read<TableCubit>().state.selectedTable?.customerCount ?? 0}'),
                   ],
                 ),
               ),

@@ -10,20 +10,30 @@ class _BottomButtonFields extends StatelessWidget {
       children: [
         LightBlueButton(
           buttonText: 'Add',
-          onTap: () {},
+          onTap: () => context.read<EmployeeCubit>().addNewEmployee(Role(
+                roleId: context.read<RolesCubit>().state.roles.first.id,
+                roleName: context.read<RolesCubit>().state.roles.first.name,
+              )),
         ),
         LightBlueButton(
           buttonText: 'Delete',
-          onTap: () {},
+          onTap: () {
+            context.read<EmployeeCubit>().deleteSelectedEmployee();
+          },
         ),
         LightBlueButton(
           buttonText: 'Save',
-          onTap: () {},
+          onTap: () async {
+            await context.read<EmployeeCubit>().saveChanges();
+          },
         ),
         const LightBlueButton(buttonText: 'Export'),
         LightBlueButton(
           buttonText: 'Exit',
-          onTap: () => routeManager.pop(),
+          onTap: () {
+            context.read<EmployeeCubit>().clearTemporaryEmployees();
+            routeManager.pop();
+          },
         ),
       ],
     );

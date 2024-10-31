@@ -1,6 +1,12 @@
 import 'package:a_pos_flutter/feature/auth/login/cubit/login_cubit.dart';
 import 'package:a_pos_flutter/feature/auth/login/service/i_login_service.dart';
 import 'package:a_pos_flutter/feature/auth/login/service/login_service.dart';
+import 'package:a_pos_flutter/feature/back_office/employee_information/sub_views/employee/cubit/employee_cubit.dart';
+import 'package:a_pos_flutter/feature/back_office/employee_information/sub_views/employee/service/employee_service.dart';
+import 'package:a_pos_flutter/feature/back_office/employee_information/sub_views/employee/service/i_employee_service.dart';
+import 'package:a_pos_flutter/feature/back_office/employee_information/sub_views/roles/cubit/roles_cubit.dart';
+import 'package:a_pos_flutter/feature/back_office/employee_information/sub_views/roles/service/i_roles_service.dart';
+import 'package:a_pos_flutter/feature/back_office/employee_information/sub_views/roles/service/roles_service.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/cubit/category_cubit.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/service/category_service.dart';
 import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/service/i_category_service.dart';
@@ -79,6 +85,8 @@ abstract final class AppContainer {
       ..registerLazySingleton<ISectionService>(() => SectionService())
       ..registerLazySingleton<IExpenseService>(() => ExpenseService())
       ..registerLazySingleton<IReportsService>(() => ReportsService(_getIt<DioClient>()))
+      ..registerLazySingleton<IRolesService>(() => RolesService(_getIt<DioClient>()))
+      ..registerLazySingleton<IEmployeeService>(() => EmployeeService(_getIt<DioClient>()))
 
       // cubit
       ..registerFactory<LoginCubit>(() => LoginCubit(_getIt<ILoginService>()))
@@ -100,7 +108,9 @@ abstract final class AppContainer {
       ..registerFactory<QuickServiceCubit>(() => QuickServiceCubit())
       ..registerFactory<SectionCubit>(() => SectionCubit(_getIt<ISectionService>()))
       ..registerFactory<ExpenseCubit>(() => ExpenseCubit(_getIt<IExpenseService>()))
-      ..registerFactory<ReportsCubit>(() => ReportsCubit(_getIt<IReportsService>()));
+      ..registerFactory<ReportsCubit>(() => ReportsCubit(_getIt<IReportsService>()))
+      ..registerFactory<RolesCubit>(() => RolesCubit(_getIt<IRolesService>()))
+      ..registerFactory<EmployeeCubit>(() => EmployeeCubit(_getIt<IEmployeeService>()));
 
     // Register NetworkManager as a singleton
     _getIt.registerLazySingleton<DioClient>(

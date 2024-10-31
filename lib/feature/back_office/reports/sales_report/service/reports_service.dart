@@ -30,4 +30,48 @@ class ReportsService implements IReportsService {
     );
     return ApiResponseHandler.handleResponse(responseModel);
   }
+
+  @override
+  BaseResponseData<BaseResponseModel> getOrderTypeReports({
+    required ReportsRequestModel requestReportModel,
+  }) async {
+    BaseResponseModel responseModel = await _dioClient.get(
+      NetworkConstants.reportOrderType,
+      queryParameters: requestReportModel.toJson(),
+    );
+    return ApiResponseHandler.handleResponse(responseModel);
+  }
+
+  @override
+  BaseResponseData<BaseResponseModel> getExpenseReports({
+    required ReportsRequestModel requestReportModel,
+  }) async {
+    BaseResponseModel responseModel = await _dioClient.get(
+      NetworkConstants.reportExpense,
+      queryParameters: requestReportModel.toJson(),
+    );
+    return ApiResponseHandler.handleResponse(responseModel);
+  }
+
+  @override
+  BaseResponseData<BaseResponseModel> getCancelReports({
+    required ReportsRequestModel requestReportModel,
+  }) async {
+    BaseResponseModel responseModel = await _dioClient.get(
+      NetworkConstants.reportCancel,
+      queryParameters: requestReportModel.toJson(),
+    );
+    return ApiResponseHandler.handleResponse(responseModel);
+  }
+
+  @override
+  BaseResponseData<BaseResponseModel> getWaiterReports({
+    required ReportsRequestModel requestReportModel,
+  }) async {
+    BaseResponseModel responseModel = await _dioClient.get(
+      NetworkConstants.reportWaiter,
+      queryParameters: requestReportModel.toJson(),
+    );
+    return ApiResponseHandler.handleResponse(responseModel);
+  }
 }

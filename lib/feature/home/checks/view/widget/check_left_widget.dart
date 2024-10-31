@@ -59,7 +59,7 @@ class _ReOpenLeftWidgetState extends State<CheckLeftWidget> with ReOpenLeftMixin
                     state.checkModelList?.length ?? 0,
                     (index) {
                       List<String> data = [
-                        state.checkModelList![index].checkNo.toString(),
+                        state.checkModelList?[index].checkNo.toString() ?? '-',
                         state.checkModelList![index].table?.title.toString() ?? '-',
                         state.checkModelList![index].orderType.toString(),
                         state.checkModelList![index].totalProducts.toString(),

@@ -7,12 +7,14 @@ class _TitleWithTextfieldWidget extends StatelessWidget {
     required this.maxCharacter,
     required this.onChanged,
     this.isObscure = false,
+    this.validator,
   });
   final String title;
   final TextEditingController controller;
   final int maxCharacter;
   final void Function(String)? onChanged;
   final bool isObscure;
+  final String? Function(String?)? validator;
 
   @override
   Widget build(BuildContext context) {
@@ -31,11 +33,11 @@ class _TitleWithTextfieldWidget extends StatelessWidget {
             Expanded(
               flex: 12,
               child: CustomBorderAllTextfield(
+                maxCharacter: maxCharacter,
+                validator: validator,
                 isObscure: isObscure,
                 isReadOnly: false,
-                controller: TextEditingController(
-                  text: controller.text,
-                ),
+                controller: controller,
                 onChanged: onChanged,
               ),
             ),

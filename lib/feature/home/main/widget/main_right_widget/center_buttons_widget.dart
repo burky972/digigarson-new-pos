@@ -83,7 +83,9 @@ class CenterButtonsWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              const MainRightButton(text: 'Waiter Report'),
+              InkWell(
+                  onTap: () => routeManager.push(RouteConstants.waiterReport),
+                  child: const MainRightButton(text: 'Waiter Report')),
               Container(
                 width: context.dynamicWidth(.08),
                 constraints: const BoxConstraints(

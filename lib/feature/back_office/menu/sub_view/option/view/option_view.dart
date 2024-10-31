@@ -110,12 +110,14 @@ class _MenuOptionsViewState extends State<OptionsView> with AutomaticKeepAliveCl
                                                     Expanded(
                                                       flex: 2,
                                                       child: CustomBorderAllTextfield(
-                                                        isReadOnly: isItemReadOnly,
-                                                        controller: optionCubit.itemNameController,
-                                                        onChanged: (value) =>
+                                                          isReadOnly: isItemReadOnly,
+                                                          controller:
+                                                              optionCubit.itemNameController,
+                                                          onChanged: (value) {
+                                                            appLogger.error('TAG', value);
                                                             optionCubit.updateSelectedItemValue(
-                                                                UpdatedItemValue.itemName, value),
-                                                      ),
+                                                                UpdatedItemValue.itemName, value);
+                                                          }),
                                                     ),
                                                   ],
                                                 ),

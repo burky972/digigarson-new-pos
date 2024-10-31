@@ -5,6 +5,7 @@ import 'package:a_pos_flutter/feature/home/checks/model/re_open_model.dart';
 
 import 'package:a_pos_flutter/product/constant/app/app_constant.dart';
 import 'package:a_pos_flutter/product/constant/string/incoive.dart';
+import 'package:a_pos_flutter/product/global/getters/getter.dart';
 import 'package:a_pos_flutter/product/global/model/print/customer_printer_model.dart';
 import 'package:a_pos_flutter/product/global/model/print/print_invoice_model.dart';
 import 'package:a_pos_flutter/product/responsive/border.dart';
@@ -15,7 +16,6 @@ import 'package:flutter/material.dart';
 import 'package:printing/printing.dart';
 
 import 'package:pdf/widgets.dart' as pw;
-import 'package:logger/logger.dart';
 import 'package:pdf/pdf.dart';
 
 class InvoiceWidget {
@@ -24,6 +24,7 @@ class InvoiceWidget {
     const ReOpenModel(text: 'Qty', width: 0.05),
     const ReOpenModel(text: 'Price', width: 0.06)
   ];
+  static String TAG = 'InvoiceWidget';
 
   static pw.Widget buildItems(
       {required double screenWidth,
@@ -41,7 +42,7 @@ class InvoiceWidget {
     int rowCount = (value.length / divider).ceil();
     num totalRow = rowCount > 0 ? rowCount : 1;
     totalRow *= multiplier;
-    Logger().i(
+    appLogger.info(TAG,
         'value length: $value / row count: $screenWidth / height size: $reducedWidth / width size: ${screenWidth - reducedWidth}');
 
     return pw.Container(
@@ -107,7 +108,8 @@ class InvoiceWidget {
     int rowCount = (value.length / divider).ceil();
     num totalRow = rowCount > 0 ? rowCount : 1;
     totalRow *= multiplier;
-    Logger().i('value length: ${value.length} / row count: $rowCount / height size: $totalRow');
+    appLogger.info(
+        TAG, 'value length: ${value.length} / row count: $rowCount / height size: $totalRow');
 
     return pw.Container(
       height: double.parse(totalRow.toString()),
@@ -223,7 +225,7 @@ class InvoiceWidget {
         child: pw.Row(
           children: [
             ...List.generate(index_, (index) {
-              Logger().i(index);
+              appLogger.info(TAG, index.toString());
               return pw.Expanded(
                   child: pw.Container(
                 height: 2,
@@ -508,9 +510,9 @@ class InvoiceWidget {
     );
 
     if (res) {
-      Logger().i("Printer");
+      appLogger.info(TAG, "Printer");
     } else {
-      Logger().i(res);
+      appLogger.info(TAG, res.toString());
     }
   }
 
@@ -813,9 +815,9 @@ class InvoiceWidget {
     );
 
     if (res) {
-      Logger().i("Printer");
+      appLogger.info(TAG, "Printer");
     } else {
-      Logger().i(res);
+      appLogger.info(TAG, res.toString());
     }
   }
 
@@ -995,14 +997,14 @@ class InvoiceWidget {
     );
 
     if (res) {
-      Logger().i("Printer");
+      appLogger.info(TAG, "Printer");
     } else {
-      Logger().i(res);
+      appLogger.info(TAG, res.toString());
     }
   }
 
   Future<List<Printer>> findPrinters() async {
-    Logger().i(await Printing.listPrinters());
+    appLogger.info(TAG, Printing.listPrinters().toString());
     return await Printing.listPrinters();
   }
 }

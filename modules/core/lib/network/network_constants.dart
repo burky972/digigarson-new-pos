@@ -47,4 +47,13 @@ class NetworkConstants {
   /// reports
   static const String reportProduct = '/pos/reports/product';
   static const String reportCategory = '/pos/reports/category';
+  static const String reportOrderType = '/pos/reports/order-type';
+  static const String reportExpense = '/pos/reports/expense';
+  static const String reportCancel = '/pos/reports/cancel';
+  static const String reportWaiter = '/pos/reports/staff';
+
+  /// branch
+  static const String branchRoles = '/pos/branch-roles';
+  static const String branchEmployee = '/pos/branch-staff';
+  static const String branchUpdateEmployee = '/pos/branch-staff/';
 }

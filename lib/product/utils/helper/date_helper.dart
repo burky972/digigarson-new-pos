@@ -31,4 +31,16 @@ final class DateHelper {
   static DateTime fromTimestamp(int timestamp) {
     return DateTime.fromMillisecondsSinceEpoch(timestamp);
   }
+
+  /// Get nex Day
+  static int nextDay(String selectedDate) {
+    final date = stringToTimestamp(selectedDate);
+    return DateTime.fromMillisecondsSinceEpoch(date).getNextDay();
+  }
+}
+
+extension NextDay on DateTime {
+  int getNextDay() {
+    return add(const Duration(days: 1)).millisecondsSinceEpoch;
+  }
 }

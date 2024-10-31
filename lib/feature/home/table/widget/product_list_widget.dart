@@ -297,7 +297,7 @@ Future<void> handleButtonAction(
 
     /// Edit Customer Count
     case 5:
-      if (state.selectedTable?.orders != null && state.selectedTable!.orders.isNotEmpty) {
+      if (state.selectedTable != null) {
         tableCubit.setCustomerCount(state.selectedTable!.customerCount.toString());
         EditCustomerCountDialog().show(context);
       }

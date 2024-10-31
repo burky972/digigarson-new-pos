@@ -10,18 +10,23 @@ class CustomBorderAllTextfield extends StatelessWidget {
     required this.onChanged,
     this.isReadOnly = false,
     this.isObscure = false,
+    this.validator,
+    this.maxCharacter,
   });
   final TextEditingController controller;
   final void Function(String)? onChanged;
   final bool isReadOnly;
   final bool isObscure;
+  final String? Function(String?)? validator;
+  final int? maxCharacter;
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
       readOnly: isReadOnly,
       style: CustomFontStyle.formsTextStyle.copyWith(
         fontSize: context.dynamicWidth(0.008),
       ),
+      validator: validator,
       obscureText: isObscure,
       controller: controller,
       onChanged: onChanged,

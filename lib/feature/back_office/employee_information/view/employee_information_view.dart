@@ -1,6 +1,6 @@
 import 'package:a_pos_flutter/feature/back_office/employee_information/sub_views/delivery_guy/view/delivery_guy_view.dart';
 import 'package:a_pos_flutter/feature/back_office/employee_information/sub_views/employee/view/employee_view.dart';
-import 'package:a_pos_flutter/feature/back_office/menu/sub_view/category/view/category_view.dart';
+import 'package:a_pos_flutter/feature/back_office/employee_information/sub_views/roles/view/roles_view.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
 import 'package:a_pos_flutter/product/theme/custom_font_style.dart';
@@ -52,7 +52,7 @@ class _EmployeeInformationViewState extends State<EmployeeInformationView>
                 controller: tabController,
                 children: const [
                   EmployeeView(),
-                  CategoryView(),
+                  RolesView(),
                   DeliveryGuyView(),
                 ],
               ),

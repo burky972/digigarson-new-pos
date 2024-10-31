@@ -9,19 +9,15 @@ class _ExpenseTableWidget extends StatelessWidget {
     final ScrollController smallTableScrollController = ScrollController();
     final ScrollController smallTableHorizontalController = ScrollController();
 
-    return BlocBuilder<ProductCubit, ProductState>(
+    return BlocBuilder<ReportsCubit, ReportsState>(
       builder: (context, state) {
-        final selectedProduct = state.selectedProduct;
-        if (selectedProduct == null) {
-          return const Center(child: Text('No product selected'));
-        }
         return Padding(
           padding: const AppPadding.minAll(),
           child: Column(
             children: [
               Container(
-                width: context.dynamicWidth(0.25),
-                height: context.dynamicHeight(0.35),
+                width: context.dynamicWidth(0.3),
+                height: context.dynamicHeight(0.67),
                 decoration: BoxDecoration(border: BorderConstants.borderAllSmall),
                 child: Scrollbar(
                   controller: smallTableScrollController,
@@ -44,28 +40,30 @@ class _ExpenseTableWidget extends StatelessWidget {
                                 TableCellTitleWidget(title: 'Created By'),
                               ],
                             ),
-                            ...state.allOptions.map((option) {
+                            ...state.expenseReports.map((expense) {
                               return TableRow(
-                                decoration: BoxDecoration(
-                                  color: option == state.selectedOption
-                                      ? context.colorScheme.tertiary
-                                      : null,
-                                ),
+                                decoration: const BoxDecoration(
+                                    // color: option == state.selectedOption
+                                    //     ? context.colorScheme.tertiary
+                                    //     : null,
+                                    ),
                                 children: [
                                   TableRowInkWell(
-                                    onTap: () =>
-                                        context.read<ProductCubit>().setSelectedOption(option),
-                                    child: _TableCellTextWidget(text: option!.name!),
+                                    onTap: () {},
+                                    //  =>
+                                    // context.read<ProductCubit>().setSelectedOption(option),
+                                    child: _TableCellTextWidget(text: expense!.title ?? ''),
                                   ),
                                   TableRowInkWell(
-                                    onTap: () =>
-                                        context.read<ProductCubit>().setSelectedOption(option),
-                                    child: _TableCellTextWidget(text: option.name!),
+                                    onTap: () {},
+                                    child: _TableCellTextWidget(
+                                        text: expense.expenseAmount.toString()),
                                   ),
                                   TableRowInkWell(
-                                    onTap: () =>
-                                        context.read<ProductCubit>().setSelectedOption(option),
-                                    child: _TableCellTextWidget(text: option.name!),
+                                    onTap: () {},
+                                    child: _TableCellTextWidget(
+                                        text:
+                                            '${expense.caseReportModel?.user?.name} ${expense.caseReportModel?.user?.lastName}'),
                                   ),
                                 ],
                               );

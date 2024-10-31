@@ -48,13 +48,22 @@ class BlocProviderInitializeWidget extends StatelessWidget {
           create: (context) => AppContainerItems.restaurantCubit,
         ),
         BlocProvider(
+          create: (context) => AppContainerItems.expenseCubit..init(),
+        ),
+        BlocProvider(
           create: (context) => AppContainerItems.quickServiceCubit,
         ),
         BlocProvider(
           create: (context) => AppContainerItems.sectionCubit..getSections(),
         ),
         BlocProvider(
-          create: (context) => AppContainerItems.reportsCubit,
+          create: (context) => AppContainerItems.reportsCubit..init(),
+        ),
+        BlocProvider(
+          create: (context) => AppContainerItems.rolesCubit..init(),
+        ),
+        BlocProvider(
+          create: (context) => AppContainerItems.employeeCubit..init(),
         ),
       ],
       child: child,

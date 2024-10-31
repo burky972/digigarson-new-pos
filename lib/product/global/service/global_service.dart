@@ -58,4 +58,9 @@ class GlobalService {
   static String generateUniqueId() {
     return DateTime.now().millisecondsSinceEpoch.toString();
   }
+
+  /// generate unique id
+  static String generateCustomUniqueId() {
+    return 'SDT${DateTime.now().millisecondsSinceEpoch}';
+  }
 }
