@@ -239,7 +239,7 @@ class _PermissionDetailItem extends StatelessWidget {
       child: Row(
         children: [
           Checkbox(
-            value: isChecked, // Checkbox değeri artık `isChecked`
+            value: isChecked, // Checkbox değeri artık isChecked
             onChanged: (value) {
               if (state.selectedRole == state.roles.first) {
                 return;

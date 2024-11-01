@@ -1,4 +1,5 @@
 import 'package:a_pos_flutter/feature/back_office/restaurant/view/restaurant_dialog_view.dart';
+import 'package:a_pos_flutter/feature/back_office/settings/view/setting_view.dart';
 import 'package:a_pos_flutter/gen/assets.gen.dart';
 import 'package:a_pos_flutter/product/extension/context/context.dart';
 import 'package:a_pos_flutter/product/extension/responsive/responsive.dart';
@@ -80,7 +81,13 @@ class BackOfficeLaunchView extends StatelessWidget {
                     onTap: () => routeManager.push(RouteConstants.initialReport),
                     child: const _EachTitleContainer(title: 'Reports')),
               ),
-              const Expanded(flex: 1, child: _EachTitleContainer(title: 'Settings')),
+              Expanded(
+                flex: 1,
+                child: InkWell(
+                    onTap: () => Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => const SettingView())),
+                    child: const _EachTitleContainer(title: 'Settings')),
+              ),
               const Expanded(flex: 1, child: _EachTitleContainer(title: 'Member Cards')),
             ]),
           ),
